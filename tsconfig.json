@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "outDir": "lib",
+    "strict": true,
+    "target": "ES5",
+    "lib": ["es2015", "es6", "dom", "es2015.promise"],
+    "baseUrl": "./",
+    "paths": {
+      "config": ["config"]
+    },
+    "plugins": [
+      {
+        "name": "typescript-tslint-plugin",
+        "alwaysShowRuleFailuresAsWarnings": true
+      }
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "files": [
+    "src/index.ts"
+  ]
+}

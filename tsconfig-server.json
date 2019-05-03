@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "outDir": "server_utils",
+    "strict": true,
+    "target": "ES5",
+    "lib": ["es6", "es2017.object"],
+    "plugins": [
+      {
+        "name": "typescript-tslint-plugin",
+        "alwaysShowRuleFailuresAsWarnings": true
+      }
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "files": [
+    "server_utils/auth_utils.ts"
+  ]
+}
