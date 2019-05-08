@@ -18,6 +18,7 @@
     "lint": "tslint --project tsconfig.json --format stylish 'src/**/*.ts' 'server_utils/*.ts'",
     "lint-fix": "tslint --fix --project tsconfig.json  --format stylish 'src/**/*.ts' 'server_utils/*.ts'",
     "start": "npm run build_utils && webpack-dev-server --config webpack-devserver.config.js --hot --inline --open --color --progress",
+    "python": "webpack --config webpack-devserver.config.js && python demo/demo.py",
     "test": "npm run lint && karma start karma.conf.js",
     "test-once": "npm run lint && karma start karma.conf.js --single-run "
   },
