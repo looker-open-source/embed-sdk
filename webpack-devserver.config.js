@@ -22,15 +22,19 @@ var webpackConfig = {
     rules: [
       {
         test: /\.ts$/,
-        loader: "ts-loader"
+        loader: "ts-loader",
+        options: {
+          compilerOptions: {
+            declaration: false
+          }
+        }
       }
     ]
   },
   devServer: {
     compress: true,
     contentBase: [
-      path.join(__dirname, "demo"),
-      path.join(__dirname, "demo", "build")
+      path.join(__dirname, "demo")
     ],
     watchContentBase: true,
     before: (app) => {

@@ -251,6 +251,15 @@ export const lookId = 1
 
 ### Step 3 - Build and run the demo
 
+#### Node server
+
 * `npm install`
 * `npm start`
 * The server will print out what host and port it is running on. If it is different than `http://localhost:8080` then you will need to add that to your Embedded Domain Whitelist.
+
+#### Python server
+
+* `npm install`
+* `pip install`
+* `npm run python`
+* The server will print out what host and port it is running on.

@@ -1,6 +1,8 @@
 .env
 .idea
 .npmrc
+__pycache__
+*.pyc
 demo/build
 node_modules
 coverage
