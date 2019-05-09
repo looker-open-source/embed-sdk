@@ -55,8 +55,8 @@ with open ("./.env", 'r') as f:
       value = key_value[1].strip().strip('"')
       env[key] = value
 
-def get_env(key):
-  return env[key] or os.getenv(key)
+def get_env(key, default=""):
+  return env.get(key) or os.getenv(key) or default
 
 #
 # Retrieve Looker host and secret from environment or .env
@@ -64,6 +64,9 @@ def get_env(key):
 
 HOST = get_env("LOOKER_EMBED_HOST")
 SECRET = get_env("LOOKER_EMBED_SECRET")
+
+DEMO_HOST = get_env("LOOKER_DEMO_HOST", 'localhost')
+DEMO_PORT = int(get_env("LOOKER_DEMO_PORT", '8080'))
 
 #
 # Very simple demo web server
@@ -78,25 +81,30 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
       filename = "/index.html"
     path = "./demo/%s" % filename
 
-    with open(path, 'rb') as f:
-      self.wfile.write(f.read())
+    try:
+      with open(path, 'rb') as f:
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(f.read())
+    except IOError:
+      self.send_response(404)
+      self.end_headers()
 
-  def do_auth(self, src)
+  def do_auth(self, src):
     # Combine 'src' from query with demo user configuration, host and secret to create signed url
     # Any session validation should happen here.
     url = create_signed_url(src, user, HOST, SECRET)
 
     # Return singed url as json blob {"url":"<signed_url>"}
+    self.send_response(200)
+    self.end_headers()
     self.wfile.write(json.dumps({
-      'url':
+      'url': url
     }).encode())
 
   # Override simple GET callback
 
   def do_GET(self):
-    self.send_response(200)
-    self.end_headers()
-
     parts = urlparse(self.path)
     query = parse_qs(parts.query)
 
@@ -106,5 +114,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
       self.do_file(parts.path)
 
 
-httpd = HTTPServer(('localhost', 8080), SimpleHTTPRequestHandler)
+httpd = HTTPServer((DEMO_HOST, DEMO_PORT), SimpleHTTPRequestHandler)
+print('Server listening on %s:%s' % (DEMO_HOST, DEMO_PORT))
 httpd.serve_forever()
