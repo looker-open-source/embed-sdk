@@ -95,7 +95,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     # Any session validation should happen here.
     url = create_signed_url(src, user, HOST, SECRET)
 
-    # Return singed url as json blob {"url":"<signed_url>"}
+    # Return signed url as json blob {"url":"<signed_url>"}
     self.send_response(200)
     self.end_headers()
     self.wfile.write(json.dumps({
