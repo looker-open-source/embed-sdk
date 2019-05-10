@@ -1,8 +1,9 @@
 .env
 .idea
 .npmrc
+.vscode
 __pycache__
 *.pyc
-demo/build
+demo/demo.js
 node_modules
 coverage
