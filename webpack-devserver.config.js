@@ -10,7 +10,7 @@ var webpackConfig = {
   },
   output: {
     filename: "[name].js",
-    path: path.join(__dirname, "demo", "build")
+    path: path.join(__dirname, "demo")
   },
   resolve: {
     extensions: [".ts", ".js"],
