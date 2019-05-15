@@ -144,9 +144,33 @@ describe('LookerEmbedBuilder', () => {
       expect(builder.handlers.party).toEqual([dance])
     })
 
+    it('should add a second on<action> handler', () => {
+      const dance = jasmine.createSpy('dance')
+      const pizza = jasmine.createSpy('pizza')
+      builder.on('party', dance)
+      builder.on('party', pizza)
+      expect(builder.handlers.party).toEqual([dance, pizza])
+    })
+
     it('should add url parameters', () => {
       builder.withParams({ alpha: 1, beta: 2 })
       expect(builder.embedUrl).toMatch('alpha=1&beta=2')
+    })
+
+    it('should allow specifying a theme', () => {
+      builder.withTheme('Fancy')
+      expect(builder.embedUrl).toMatch('theme=Fancy')
+    })
+
+    it('should allow specifying filters for dashboards', () => {
+      builder.withFilters({ 'State / Region': 'California' })
+      expect(builder.embedUrl).toMatch('State%20%2F%20Region=California')
+    })
+
+    it('should allow specifying filters for looks', () => {
+      builder = LookerEmbedSDK.createLookWithId(1)
+      builder.withFilters({ 'State / Region': 'California' })
+      expect(builder.embedUrl).toMatch('f%5BState%20%2F%20Region%5D=California')
     })
 
     it('should allow adding sandbox attributes', () => {

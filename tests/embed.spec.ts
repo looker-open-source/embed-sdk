@@ -63,7 +63,7 @@ describe('LookerEmbed', () => {
           expect(client.connection).not.toEqual(null)
           done()
         })
-        .catch(expect(false))
+        .catch(done.fail)
     })
 
     afterEach(() =>
@@ -73,14 +73,29 @@ describe('LookerEmbed', () => {
     it('should only connect once', (done) => {
       client.connect()
         .then(() => false)
-        .catch(expect(false))
+        .catch(done.fail)
 
       client.connect()
         .then(() => {
           expect(client.createIframe.calls.count()).toEqual(1)
           done()
         })
-        .catch(expect(false))
+        .catch(done.fail)
+    })
+
+    it('should handle failures', (done) => {
+      mock.reset()
+      mock.get(/\/auth\?src=/, (req, res) => {
+        expect(req.header('Cache-Control')).toEqual('no-cache')
+        return res.status(403).statusText('foo')
+      })
+
+      client.connect()
+        .then(done.fail)
+        .catch((error) => {
+          expect(error).toEqual('foo')
+          done()
+        })
     })
   })
 
@@ -105,20 +120,20 @@ describe('LookerEmbed', () => {
           expect(client.connection).not.toEqual(null)
           done()
         })
-        .catch(expect(false))
+        .catch(done.fail)
     })
 
     it('should only connect once', (done) => {
       client.connect()
         .then(() => false)
-        .catch(expect(false))
+        .catch(done.fail)
 
       client.connect()
         .then(() => {
           expect(client.createIframe.calls.count()).toEqual(1)
           done()
         })
-        .catch(expect(false))
+        .catch(done.fail)
     })
   })
 
@@ -159,7 +174,7 @@ describe('LookerEmbed', () => {
           expect(iframe.src).toMatch(testUrl)
           done()
         })
-        .catch(expect(false))
+        .catch(done.fail)
     })
   })
 })
