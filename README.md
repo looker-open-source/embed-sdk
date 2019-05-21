@@ -184,6 +184,11 @@ There is a simple demo provided, but because of Looker's attention to security, 
 * Provide your embed secret to the server. You can do this a couple ways.
   * Set it as `LOOKER_EMBED_SECRET` in your shell environment.
   * Create a file named `.env` in the root of the sdk directory. Add a line to that file: `LOOKER_EMBED_SECRET="YourLookerSecret"`
+
+* Provide your Looker instance host address to the server by either:
+  * Setting it as `LOOKER_EMBED_HOST` in your shell environment.
+  * Adding `LOOKER_EMBED_HOST="yourinstance.looker.com:yourport"` to the `.env` file.
+
 * Edit the `demo/demo_config.ts` file to be appropriate for the pages you want to embed.
 
 ```javascript
@@ -260,6 +265,7 @@ export const lookId = 1
 #### Python server
 
 * `npm install`
-* `pip install`
 * `npm run python`
 * The server will print out what host and port it is running on.
+
+You may need to `pip install six` to install the Python 2/3 compatibility layer.
