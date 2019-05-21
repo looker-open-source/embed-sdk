@@ -27,7 +27,7 @@ import sys
 sys.path.append('./server_utils')
 from auth_utils import User, create_signed_url
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from six.moves.BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from six.moves.urllib.parse import urlparse, parse_qs
 
 import json
