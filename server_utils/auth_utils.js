@@ -23,11 +23,14 @@
  * THE SOFTWARE.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var crypto_1 = require("crypto");
+var createHmac = require("create-hmac");
 function stringify(params) {
     var result = [];
     for (var key in params) {
-        result.push(key + "=" + encodeURIComponent(params[key]));
+        var param = params[key];
+        if (typeof param === 'string') {
+            result.push(key + "=" + encodeURIComponent(param));
+        }
     }
     return result.join('&');
 }
@@ -35,7 +38,7 @@ function forceUnicodeEncoding(val) {
     return decodeURIComponent(encodeURIComponent(val));
 }
 function signEmbedUrl(data, secret) {
-    var stringToSign = [
+    var stringsToSign = [
         data.host,
         data.embed_path,
         data.nonce,
@@ -43,15 +46,19 @@ function signEmbedUrl(data, secret) {
         data.session_length,
         data.external_user_id,
         data.permissions,
-        data.models,
-        data.group_ids,
-        data.external_group_id,
-        data.user_attributes,
-        data.access_filters
-    ].join('\n');
-    return crypto_1.createHmac('sha1', secret).update(forceUnicodeEncoding(stringToSign)).digest('base64').trim();
+        data.models
+    ];
+    if (data.group_ids)
+        stringsToSign.push(data.group_ids);
+    if (data.external_group_id)
+        stringsToSign.push(data.external_group_id);
+    if (data.user_attributes)
+        stringsToSign.push(data.user_attributes);
+    stringsToSign.push(data.access_filters);
+    var stringToSign = stringsToSign.join('\n');
+    return createHmac('sha1', secret).update(forceUnicodeEncoding(stringToSign)).digest('base64').trim();
 }
-function nonce(len) {
+function createNonce(len) {
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var text = '';
     for (var i = 0; i < len; i++) {
@@ -59,19 +66,20 @@ function nonce(len) {
     }
     return text;
 }
-function createSignedUrl(src, user, host, secret) {
+function createSignedUrl(src, user, host, secret, nonce) {
     var jsonTime = JSON.stringify(Math.floor((new Date()).getTime() / 1000));
-    var jsonNonce = JSON.stringify(nonce(16));
+    var jsonNonce = JSON.stringify(nonce || createNonce(16));
     var params = {
         external_user_id: JSON.stringify(user.external_user_id),
         first_name: JSON.stringify(user.first_name),
         last_name: JSON.stringify(user.last_name),
         permissions: JSON.stringify(user.permissions),
         models: JSON.stringify(user.models),
-        group_ids: JSON.stringify(user.group_ids || []),
+        group_ids: JSON.stringify(user.group_ids),
         user_attributes: JSON.stringify(user.user_attributes),
         external_group_id: JSON.stringify(user.external_group_id),
-        access_filters: JSON.stringify(user.access_filters),
+        access_filters: JSON.stringify(user.access_filters || {}),
+        user_timezone: JSON.stringify(user.user_timezone),
         force_logout_login: JSON.stringify(user.force_logout_login),
         session_length: JSON.stringify(user.session_length),
         nonce: jsonNonce,

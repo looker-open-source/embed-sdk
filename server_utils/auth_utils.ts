@@ -22,12 +22,15 @@
  * THE SOFTWARE.
  */
 
-import { createHmac } from 'crypto'
+import * as createHmac from 'create-hmac'
 
-function stringify (params: {[key: string]: string}) {
+function stringify (params: {[key: string]: string | undefined}) {
   const result = []
   for (const key in params) {
-    result.push(`${key}=${encodeURIComponent(params[key])}`)
+    const param = params[key]
+    if (typeof param === 'string') {
+      result.push(`${key}=${encodeURIComponent(param)}`)
+    }
   }
   return result.join('&')
 }
@@ -37,7 +40,7 @@ function forceUnicodeEncoding (val: string) {
 }
 
 function signEmbedUrl (data: {[key: string]: string}, secret: string) {
-  const stringToSign = [
+  const stringsToSign = [
     data.host,
     data.embed_path,
     data.nonce,
@@ -46,16 +49,18 @@ function signEmbedUrl (data: {[key: string]: string}, secret: string) {
     data.session_length,
     data.external_user_id,
     data.permissions,
-    data.models,
-    data.group_ids,
-    data.external_group_id,
-    data.user_attributes,
-    data.access_filters
-  ].join('\n')
+    data.models
+  ]
+  if (data.group_ids) stringsToSign.push(data.group_ids)
+  if (data.external_group_id) stringsToSign.push(data.external_group_id)
+  if (data.user_attributes) stringsToSign.push(data.user_attributes)
+  stringsToSign.push(data.access_filters)
+
+  const stringToSign = stringsToSign.join('\n')
   return createHmac('sha1', secret).update(forceUnicodeEncoding(stringToSign)).digest('base64').trim()
 }
 
-function nonce (len: number) {
+function createNonce (len: number) {
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let text = ''
 
@@ -90,28 +95,36 @@ export interface LookerEmbedUser {
   first_name?: string
   last_name?: string
   session_length: number
-  force_logout_login?: boolean,
+  force_logout_login: boolean,
   permissions: LookerUserPermission[]
   models: string[]
   group_ids?: number[]
   external_group_id?: string
   user_attributes?: {[key: string]: any}
-  access_filters: {[key: string]: any}
+  user_timezone?: string | null
+  access_filters?: {[key: string]: any}
 }
 
-export function createSignedUrl (src: string, user: LookerEmbedUser, host: string, secret: string) {
+export function createSignedUrl (
+  src: string,
+  user: LookerEmbedUser,
+  host: string,
+  secret: string,
+  nonce?: string
+) {
   const jsonTime = JSON.stringify(Math.floor((new Date()).getTime() / 1000))
-  const jsonNonce = JSON.stringify(nonce(16))
+  const jsonNonce = JSON.stringify(nonce || createNonce(16))
   const params = {
     external_user_id: JSON.stringify(user.external_user_id),
     first_name: JSON.stringify(user.first_name),
     last_name: JSON.stringify(user.last_name),
     permissions: JSON.stringify(user.permissions),
     models: JSON.stringify(user.models),
-    group_ids: JSON.stringify(user.group_ids || []),
+    group_ids: JSON.stringify(user.group_ids),
     user_attributes: JSON.stringify(user.user_attributes),
     external_group_id: JSON.stringify(user.external_group_id),
-    access_filters: JSON.stringify(user.access_filters),
+    access_filters: JSON.stringify(user.access_filters || {}),
+    user_timezone: JSON.stringify(user.user_timezone),
 
     force_logout_login: JSON.stringify(user.force_logout_login),
     session_length: JSON.stringify(user.session_length),
