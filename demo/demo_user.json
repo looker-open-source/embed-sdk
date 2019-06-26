@@ -15,6 +15,5 @@
     "embed_browse_spaces"
   ],
   "models": ["powered_by", "thelook"],
-  "user_attributes": { "locale": "en_US" },
-  "access_filters": { "powered_by": { "products.brand": "Allegra K" } }
+  "user_attributes": { "locale": "en_US" }
 }

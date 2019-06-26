@@ -16,6 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       {pattern: 'src/**/*.ts'},
+      {pattern: 'server_utils/**/*.ts'},
       {pattern: 'tests/**/*.spec.ts'},
       {pattern: 'tests/**/*.html'}
     ],

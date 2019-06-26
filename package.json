@@ -34,9 +34,11 @@
   "homepage": "https://github.com/looker-open-source/embed-sdk",
   "devDependencies": {
     "@babel/core": "^7.3.3",
+    "@types/create-hmac": "^1.1.0",
     "@types/jasmine": "^2.8.2",
     "@types/node": "^11.12.1",
     "babel-loader": "^8.0.5",
+    "create-hmac": "^1.1.7",
     "dotenv": "^6.2.0",
     "jasmine-core": "^2.8.0",
     "karma": "^4.0.1",
