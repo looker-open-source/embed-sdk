@@ -66,6 +66,7 @@ function createNonce(len) {
     }
     return text;
 }
+;
 function createSignedUrl(src, user, host, secret, nonce) {
     var jsonTime = JSON.stringify(Math.floor((new Date()).getTime() / 1000));
     var jsonNonce = JSON.stringify(nonce || createNonce(16));
