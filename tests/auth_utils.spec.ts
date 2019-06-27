@@ -35,7 +35,7 @@ const testUser = () => ({
   'permissions': [
     'access_data',
     'see_looks',
-    'see_user_dashboards',
+    'see_user_dashboards'
   ] as LookerUserPermission[],
   'models': ['powered_by', 'thelook'],
   'user_attributes': { 'locale': 'en_US' },
@@ -48,7 +48,7 @@ const testHost = 'test.looker.com'
 const testSecret = 'hunter2'
 const testNonce = 'abc123'
 
-fdescribe('createSignedUrl', () => {
+describe('createSignedUrl', () => {
   beforeEach(() => {
     jasmine.clock().install()
     jasmine.clock().mockDate(new Date(1561486800168))

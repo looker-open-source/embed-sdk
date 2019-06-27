@@ -1,10 +1,12 @@
 {
   "defaultSeverity": "error",
   "extends": [
+    "tslint-defocus",
     "tslint-config-standard"
   ],
   "jsRules": {},
   "rules": {
+    "defocus": true,
     "no-namespace": [true, "allow-declarations"],
     "prefer-const": [true, {"destructuring": "all"}],
     "no-reference": true,

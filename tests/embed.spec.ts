@@ -25,13 +25,14 @@
 import { LookerEmbedSDK, LookerEmbedDashboard } from '../src/index'
 import { ChattyHost } from '@looker/chatty'
 import mock from 'xhr-mock'
+import { EmbedClient } from '../src/embed'
 
 const testUrl = '/base/tests/test.html'
 
 describe('LookerEmbed', () => {
   let builder
   let el
-  let client
+  let client: any
 
   beforeEach(() => {
     LookerEmbedSDK.init('host.looker.com:9999', '/auth')
@@ -40,7 +41,7 @@ describe('LookerEmbed', () => {
   })
 
   describe('with ID', () => {
-    let fakeDashboardClient
+    let fakeDashboardClient: any
 
     beforeEach(() => {
       mock.setup()
@@ -92,7 +93,7 @@ describe('LookerEmbed', () => {
 
       client.connect()
         .then(done.fail)
-        .catch((error) => {
+        .catch((error: any) => {
           expect(error).toEqual('foo')
           done()
         })
@@ -100,7 +101,7 @@ describe('LookerEmbed', () => {
   })
 
   describe('with URL', () => {
-    let fakeDashboardClient
+    let fakeDashboardClient: any
 
     beforeEach(() => {
       fakeDashboardClient = {}
@@ -139,8 +140,8 @@ describe('LookerEmbed', () => {
 
   describe('creating an iframe', () => {
     let fakeDashboardClient
-    let el
-    let iframe
+    let el: HTMLDivElement
+    let iframe: HTMLIFrameElement
 
     beforeEach(() => {
       el = document.createElement('div')
@@ -155,7 +156,7 @@ describe('LookerEmbed', () => {
       builder.withClassName('classy')
       client = builder.build()
       spyOn(window, 'fetch')
-      spyOn(ChattyHost.prototype, 'connect').and.callFake(async function () {
+      spyOn(ChattyHost.prototype, 'connect').and.callFake(async function (this: any) {
         iframe = this.iframe
         return Promise.resolve({})
       })
@@ -170,6 +171,7 @@ describe('LookerEmbed', () => {
         .then(() => {
           expect(iframe.sandbox.toString()).toEqual('allow-scripts')
           expect(iframe.classList.toString()).toEqual('classy')
+          // tslint:disable-next-line:deprecation
           expect(iframe.frameBorder).toEqual('0')
           expect(iframe.src).toMatch(testUrl)
           done()

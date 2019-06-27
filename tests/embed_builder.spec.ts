@@ -24,13 +24,14 @@
 
 import { LookerEmbedDashboard } from '../src/dashboard_client'
 import { EmbedClient } from '../src/embed'
+import { EmbedBuilder } from '../src/embed_builder'
 import { LookerEmbedExplore } from '../src/explore_client'
 import { LookerEmbedSDK } from '../src/index'
 import { LookerEmbedLook } from '../src/look_client'
 
 describe('LookerEmbedBuilder', () => {
-  let builder
-  let el
+  let builder: EmbedBuilder<LookerEmbedDashboard>
+  let el: HTMLDivElement
 
   beforeEach(() => {
     LookerEmbedSDK.init('host.looker.com:9999', '/auth')
@@ -153,7 +154,7 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should add url parameters', () => {
-      builder.withParams({ alpha: 1, beta: 2 })
+      builder.withParams({ alpha: '1', beta: '2' })
       expect(builder.embedUrl).toMatch('alpha=1&beta=2')
     })
 
