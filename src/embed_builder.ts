@@ -175,6 +175,18 @@ export class EmbedBuilder<T> {
     this._url = url
     return this
   }
+  
+  /**
+   * specify api host
+   *
+   * @param apiHost
+   */
+
+  withApiHost(apiHost: string) {
+    this._hostSettings.apiHost = apiHost;
+    return this;
+  }
+
 
   /**
    * The element to append the embedded content to.
