@@ -4,6 +4,9 @@
 .vscode
 __pycache__
 *.pyc
-demo/demo.js
-node_modules
 coverage
+demo/demo.js
+dist
+lib
+node_modules
+server_utils/auth_utils.js
