@@ -27,13 +27,16 @@ import { ChattyHostConnection } from '@looker/chatty'
 
 describe('ExplorerEmbedExplore', () => {
   let sendSpy: jasmine.Spy
+  let sendAndReceiveSpy: jasmine.Spy
   let host: ChattyHostConnection
   let client: LookerEmbedExplore
 
   beforeEach(() => {
     sendSpy = jasmine.createSpy()
+    sendAndReceiveSpy = jasmine.createSpy()
     host = {
-      send: sendSpy
+      send: sendSpy,
+      sendAndReceive: sendAndReceiveSpy
     }
     client = new LookerEmbedExplore(host)
   })
