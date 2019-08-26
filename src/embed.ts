@@ -66,9 +66,10 @@ export class EmbedClient<T> {
       }
     }
     for (const attr of this._builder.sandboxAttrs) {
-      this._hostBuilder.sandbox(attr)
+      this._hostBuilder.withSandboxAttribute(attr)
     }
     this._host = this._hostBuilder
+      // tslint:disable-next-line:deprecation
       .frameBorder(this._builder.frameBorder)
       .withTargetOrigin(`https://${this._builder.apiHost}`)
       .appendTo(this._builder.el)
