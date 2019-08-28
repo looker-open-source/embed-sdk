@@ -7,7 +7,7 @@
     "outDir": "lib",
     "strict": true,
     "target": "ES5",
-    "lib": ["es2015", "es6", "dom", "es2015.promise"],
+    "lib": ["es6", "dom", "es2015.promise"],
     "baseUrl": "./",
     "paths": {
       "config": ["config"]

@@ -88,17 +88,33 @@ export interface DashboardTileEvent {
 }
 
 /**
- * Dashboard download event
+ * Dashboard tile download event
  */
 
-export interface DashboardDownloadEvent extends LookerEmbedEvent {
-  dashboard: DashboardEventDetail
+export interface DashboardTileDownloadEvent extends DashboardTileEvent {
   fileFormat: string
-  tile: {
-    title: string
+}
 
-    [key: string]: any
-  }
+/**
+ * Dashboard tile Explore from Here event
+ *
+ * Requires Looker 6.20
+ */
+
+export interface DashboardTileExploreEvent extends DashboardTileEvent {
+  label: string
+  url: string
+}
+
+/**
+ * Dashboard tile View Original Look event
+ *
+ * Requires Looker 6.20
+ */
+
+export interface DashboardTileViewEvent extends DashboardTileEvent {
+  label: string
+  url: string
 }
 
 /**
@@ -119,8 +135,19 @@ export interface DrillMenuEvent extends LookerEmbedEvent {
   label: string
   link_type: string
   url: string
+  modal: boolean
   context: string
   addFilterJson: AddFilterJson
+}
+
+/**
+ * Drill Modal Explore from Here event
+ *
+ * Requires Looker 6.20
+ */
+export interface DrillModalExploreEvent extends LookerEmbedEvent {
+  label: string
+  url: string
 }
 
 /**
@@ -183,27 +210,38 @@ export interface PagePropertiesChangedEvent extends LookerEmbedEvent {
 }
 
 /**
- * Current Looker embed events as of version 6.12
+ * Cancellable event response
+ */
+
+export interface CancellableEventResponse {
+  cancel: boolean
+}
+
+/**
+ * Current Looker embed events as of version 6.20
  */
 
 export interface LookerEmbedEventMap {
-  'dashboard:run:start': DashboardEvent
-  'dashboard:run:complete': DashboardEvent
-  'dashboard:filters:changed': DashboardEvent
-  'dashboard:tile:start': DashboardTileEvent
-  'dashboard:tile:complete': DashboardTileEvent
-  'dashboard:tile:download': DashboardDownloadEvent
+  'dashboard:run:start': (event: DashboardEvent) => void
+  'dashboard:run:complete': (event: DashboardEvent) => void
+  'dashboard:filters:changed': (event: DashboardEvent) => void
+  'dashboard:tile:start': (event: DashboardTileEvent) => void
+  'dashboard:tile:complete': (event: DashboardTileEvent) => void
+  'dashboard:tile:download': (event: DashboardTileDownloadEvent) => void
+  'dashboard:tile:explore': (event: DashboardTileExploreEvent) => CancellableEventResponse | undefined
+  'dashboard:tile:view': (event: DashboardTileViewEvent) => CancellableEventResponse | undefined
 
-  'drill:menu': DrillMenuEvent
+  'drillmenu:click': (event: DrillMenuEvent) => CancellableEventResponse | undefined
+  'drillmodal:explore': (event: DrillModalExploreEvent) => CancellableEventResponse | undefined
 
-  'explore:run:start': ExploreEvent
-  'explore:run:complete': ExploreEvent
+  'explore:run:start': (event: ExploreEvent) => void
+  'explore:run:complete': (event: ExploreEvent) => void
 
-  'look:run:start': LookEvent
-  'look:run:complete': LookEvent
+  'look:run:start': (event: LookEvent) => void
+  'look:run:complete': (event: LookEvent) => void
 
-  'page:changed': PageChangedEvent
-  'page:properties:changed': PagePropertiesChangedEvent
+  'page:changed': (event: PageChangedEvent) => void
+  'page:properties:changed': (event: PagePropertiesChangedEvent) => void
 
   [key: string]: any
 }

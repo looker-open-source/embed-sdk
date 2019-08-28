@@ -34,7 +34,7 @@ export class LookerEmbedBase {
   constructor (private _host: ChattyHostConnection) {}
 
   /**
-   * Send a message to the embedded Explore.
+   * Send a message to the embedded content.
    *
    * @param message String message identifier.
    * @param params Additional parameters to be sent to the client. After transmission ownership
@@ -43,5 +43,17 @@ export class LookerEmbedBase {
 
   send (message: string, params?: any) {
     this._host.send(message, params)
+  }
+
+  /**
+   * Send a message to the embedded content and resolve with a response
+   *
+   * @param message String message identifier.
+   * @param params Additional parameters to be sent to the client. After transmission ownership
+   * of the parameters is transferred to the embedded Explore.
+   */
+
+  async sendAndReceive (message: string, params?: any) {
+    return this._host.sendAndReceive(message, params)
   }
 }
