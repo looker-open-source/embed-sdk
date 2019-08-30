@@ -93,10 +93,10 @@ If you want to send and receive messages to the embedded element you need to cal
 
 ## Building URLs for the SDK
 
-The main documentation for Looker SSO embed URLs is [here](https://docs.looker.com/r/sdk/sso-embed). The only difference when creating URLs for the SDK is that you will need to add an `sdk=1` parameter to the Embed URL alongside other parameters like filters and the `embed_domain` parameter. This parameter allows Looker to identify that the SDK is present and can take advantage of additional features provided by the SDK.
+The main documentation for Looker SSO embed URLs is [here](https://docs.looker.com/r/sdk/sso-embed). The only difference when creating URLs for the SDK is that you will need to add an `sdk=2` parameter to the Embed URL alongside other parameters like filters and the `embed_domain` parameter. This parameter allows Looker to identify that the SDK is present and can take advantage of additional features provided by the SDK.
 
 ```html
-/embed/looks/4?embed_domain=https://mywebsite.com => /embed/looks/4?embed_domain=https://mywebsite.com&sdk=1
+/embed/looks/4?embed_domain=https://mywebsite.com => /embed/looks/4?embed_domain=https://mywebsite.com&sdk=2
 ```
 
 The SDK cannot add this parameter itself because it part of the signed SSO URL.
@@ -120,7 +120,7 @@ LookerEmbedSDK.createcreateDashboardWithId(11)
 This will call the /looker_auth endpoint and return a signed SSO URL that can be used to create the embedded content:
 
 ```html
-src=https://looker.example.com:443/embed/dashboards/11?sdk=1&embed_host=https://yourhost.example.com
+src=https://looker.example.com:443/embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com
 ```
 
 ### Node helper

@@ -76,7 +76,7 @@ export class EmbedBuilder<T> {
     const embedDomain = window.location.origin
     this._params = {
       embed_domain: embedDomain,
-      sdk: '1'
+      sdk: '2'
     }
   }
 
@@ -230,7 +230,7 @@ export class EmbedBuilder<T> {
 
   get embedUrl () {
     const params = stringify(this._params)
-    return `https://${this._hostSettings.apiHost}/embed/${this.type}s/${this.id}?${params}`
+    return `/embed/${this.type}s/${this.id}?${params}`
   }
 
   /**
