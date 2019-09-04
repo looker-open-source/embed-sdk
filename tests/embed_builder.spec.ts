@@ -55,7 +55,7 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should generate a dashboard URL', () => {
-      expect(builder.embedUrl).toMatch('https://host.looker.com:9999/embed/dashboards/11')
+      expect(builder.embedUrl).toMatch('/embed/dashboards/11')
     })
   })
 
@@ -85,7 +85,7 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should generate a look URL', () => {
-      expect(builder.embedUrl).toMatch('https://host.looker.com:9999/embed/looks/11')
+      expect(builder.embedUrl).toMatch('/embed/looks/11')
     })
   })
 
@@ -115,7 +115,7 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should generate a look URL', () => {
-      expect(builder.embedUrl).toMatch('https://host.looker.com:9999/embed/explores/alpha:beta')
+      expect(builder.embedUrl).toMatch('/embed/explores/alpha:beta')
     })
   })
 

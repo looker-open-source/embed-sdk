@@ -76,7 +76,7 @@ export class EmbedBuilder<T> {
     const embedDomain = window.location.origin
     this._params = {
       embed_domain: embedDomain,
-      sdk: '1'
+      sdk: '2'
     }
   }
 
@@ -230,7 +230,7 @@ export class EmbedBuilder<T> {
 
   get embedUrl () {
     const params = stringify(this._params)
-    return `https://${this._hostSettings.apiHost}/embed/${this.type}s/${this.id}?${params}`
+    return `/embed/${this.type}s/${this.id}?${params}`
   }
 
   /**
@@ -292,12 +292,12 @@ export class EmbedBuilder<T> {
   /**
    * Register an event handler.
    *
-   * @typeparam K A Looker embed event name
+   * @typeparam K: A Looker embed event name
    * @param name: string Name of the event to respond to.
    * @param handler: Callback A callback method to be invoked when the message is received.
    */
 
-  on<K extends keyof LookerEmbedEventMap> (name: K, handler: (params: LookerEmbedEventMap[K]) => any) {
+  on<K extends keyof LookerEmbedEventMap> (name: K, handler: LookerEmbedEventMap[K]) {
     this._handlers[name] = this._handlers[name] ? this._handlers[name] : []
     this._handlers[name].push(handler)
     return this
