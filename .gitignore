@@ -7,7 +7,6 @@ __pycache__
 coverage
 demo/demo.js
 dist
-docs
 lib
 node_modules
 server_utils/auth_utils.js
