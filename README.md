@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Looker JavaScript Embed SDK is designed to facilitate using Looker embedded content in your web application. The goal is to make communication between a host website and one or more embedded dashboards, looks or explores easier and more reliable.
+The Looker JavaScript Embed SDK simplifies using Looker embedded content in your web application. The goal is to make communication between a host website and one or more embedded dashboards, looks or explores easier and more reliable.
 
 A typical setup might look like this. In this case, a dashboard with an id of `11` is created inside a DOM element with the id `dashboard`. The `dashboard:run:start` and `dashboard:run:complete` events are used to update the state of the embedding window's UI, and a button with an id of `run` is scripted to send a `dashboard:run` message to the dashboard.
 
@@ -33,22 +33,40 @@ LookerEmbedSDK.createDashboardWithId(11)
 
 A more complete example can be found [here](demo/demo.ts). Detailed instructions on how to use it are [here](#demo).
 
-## Details
+## Using the Looker Embed SDK  
 
-The Looker Embed SDK uses a fluent interface pattern. The construction of the embedded content is broken into two phases, building and connecting.
+### Web App Setup
+The Looker Embed SDK is a JavaScript module that lives and runs in the browser with your web app. 
+
+The demo also includes a reference implementation of the Looker SSO embed URL signature algorithm as a NodeJS web server module. The URL signature is used to secure and authenticate the embed URL request on the Looker server.
+ 
+The instructions and demo web app shown below assume that the Looker Embed SDK is built into your web app using the included webpack build configuration. If your web app doesn't use the webpack stack, you can build the Embed SDK into a javascript module and then reference that module from your web app HTML. 
+
+### Clone the Repo
+To build and modify the demo, you should clone [the Looker Embed SDK repository](https://github.com/looker-open-source/embed-sdk) to a directory on your local machine.
+
+### Fluent Call Style
+The Looker Embed SDK uses a fluent interface pattern. Each function defined in the SDK returns an object instance or promise so that you can "chain" together a series of operaitons:  
+```javascript
+  sdk.this(a)
+     .that(b)
+     .then((data) => the_other(data))
+``` 
+
+Construction of embedded content is broken into two phases: building and connecting.
 
 ### Building
 
-First initialize the SDK with address of your Looker server and, optionally, the endpoint on your server that will perform authentication.
+First initialize the SDK with address of your Looker server and, optionally, the URL of your web server endpoint that will perform SSO embed URL signing.
 These are used by all the embedded content.
 
 ```javascript
 LookerEmbedSDK.init('looker.example.com:443', '/auth')
 ```
 
-Then the embedded content is built using a series of steps to define its parameters. Some if these parameters are optional, and some are mandatory.
+You build embedded content using a series of calls to define its parameters. Some of these parameters are optional, and some are mandatory.
 
-The process starts with creating the builder with an `id`, or a `url` created by the processed described [here](https://docs.looker.com/r/sdk/sso-embed):
+Create a content builder using either an `id` or using an [SSO Embed URL](https://docs.looker.com/r/sdk/sso-embed):
 
 ```javascript
 LookerEmbedSDK.createDashboardWithId(id)
@@ -59,6 +77,10 @@ or
 ```javascript
 LookerEmbedSDK.createDashboardWithUrl(url)
 ```
+
+Use the `id` form when you have initialized the Embed SDK with your authUrl to perform url signing. The Embed SDK will take care of constructing the embed URL to view the Looker content with that `id` and call your auth service to sign the URL.
+
+Use the `url` form when you want to take care of constructing and signing the Embed URL yourself.
 
 You can then add additional attributes to the builder to complete your setup:
 
@@ -77,13 +99,14 @@ You can add event handlers:
   )
 ```
 
-You finish by building the embedded element:
+You finish by building the embedded DOM element:
 
 ```javascript
   .build()
 ```
 
-If you want to send and receive messages to the embedded element you need to call `connect()` which returns a Promise that resolves to the communication interface of the given element:
+### Connecting
+If you want to send and receive messages between your web app and the embedded Looker content (and you probably do!) you need to call `connect()` which returns a Promise that resolves to the communication interface of the given element:
 
 ```javascript
   .connect()
@@ -93,23 +116,24 @@ If you want to send and receive messages to the embedded element you need to cal
 
 ## Building URLs for the SDK
 
-The main documentation for Looker SSO embed URLs is [here](https://docs.looker.com/r/sdk/sso-embed). The only difference when creating URLs for the SDK is that you will need to add an `sdk=2` parameter to the Embed URL alongside other parameters like filters and the `embed_domain` parameter. This parameter allows Looker to identify that the SDK is present and can take advantage of additional features provided by the SDK.
+The main documentation for Looker SSO embed URLs is [here](https://docs.looker.com/r/sdk/sso-embed). The only difference when creating URLs for the SDK is that you will need to add an `sdk=2` parameter to the Embed URL alongside other parameters like filters and the `embed_domain` parameter. This `sdk=2` parameter tells Looker that the Embed SDK is resident in your web app, allowing Looker to take advantage of advanced features supported by the Embed SDK that we can't assume all web apps support.
 
+Embed Target URL with required params, to pass to SSO Embed URL signing:
 ```html
-/embed/looks/4?embed_domain=https://mywebsite.com => /embed/looks/4?embed_domain=https://mywebsite.com&sdk=2
+/embed/looks/4?embed_domain=https://mywebsite.com&sdk=2
 ```
 
-The SDK cannot add this parameter itself because it part of the signed SSO URL.
+The SDK cannot add this parameter itself because the parameter is part of the signed SSO URL.
 
 ## The Auth Endpoint
 
 Because the embed secret needs to be carefully guarded, embed SSO URLs cannot be created in the browser. To make the process easier and secure, you can instead do the following:
 
-1. Implement a URL signing function in your web server. The server should return a signed URL using one of the processes documented in the [Looker Embed SSO Examples](https://github.com/looker/looker_embed_sso_examples) Github repository.
+1. Implement a URL signing function in your web server. The server should return a signed URL using one of the reference implementation examples documented in the [Looker Embed SSO Examples](https://github.com/looker/looker_embed_sso_examples) Github repository.
 
-2. Pass the embed SSO URL to that signing endpoint in the embed SDK. The location of the endpoint is specified by the `authUrl` parameter in `LookerEmbedSDK.init()`.
+2. Pass the URL of your server signing endpoint to the embed SDK in the `authUrl` parameter to `LookerEmbedSDK.init()`.
 
-If specified, whenever an embed element is created using just an ID, its embed URL is generated using the type of the element, the provided Looker host, and any provided parameters. For example:
+When you provide an `authUrl` to the Embed SDK, whenever you create an embed element using just an ID, the Embed SDK will construct the embed URL required and send it to the `authUrl` service for signing. For example:
 
 ```javascript
 LookerEmbedSDK.init('looker.example.com:443', '/looker_auth')
@@ -117,16 +141,16 @@ LookerEmbedSDK.createcreateDashboardWithId(11)
  .build()
 ```
 
-This will call the /looker_auth endpoint and return a signed SSO URL that can be used to create the embedded content:
+This will call the `/looker_auth` endpoint on your app's web server and return a signed SSO URL to display the indicated Looker content in the embed context:
 
 ```html
-src=https://looker.example.com:443/embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com
+src=https://looker.example.com:443/embed/dashboards/11?param=data&etc=etc&signature=ADSFWE$WEDASDFWE#WSADS
 ```
 
 ### Node helper
 
-A signing helper method `createSignedUrl()` is provided in
-[server_utils/auth_utils.ts](blob/master/demo/demo_config.ts). Its usage is as follows:
+This Embed SDK includes a reference implementation of the required URL signing algorithm in a NodeJS server module. The signing function is `createSignedUrl()` in file
+[server_utils/auth_utils.ts](blob/master/demo/demo_config.ts). The nodejs server module calls the signing function like this:
 
 ```javascript
 import { createSignedUrl } from './auth_utils'
@@ -160,15 +184,21 @@ interface LookerEmbedUser {
 }
 ```
 
+If NodeJS is not part of your web app server stack, you can port the reference URL signing algorithm to your language and toolset of choice. Check the [Looker SSO Embed Examples](https://github.com/looker/looker_embed_sso_examples) as we (or an OpenSource contributor) may have already ported the signing algorithm to your language!
+
 ## Demo
 
-There is a simple demo provided, but because of Looker's attention to security, it requires a bit of setup. It also requires Looker's "Embed Secret". Because the embed secret can grant access to all of your data:
+The Embed SDK includes a simple demo app which only requires a few minutes of configuration to get it up and running. 
 
-* Do not share your secret with anyone you do not want to have complete access to your instance.
+The first thing you need to do is to create an "embed secret" on your Looker instance. The embed secret is used as a cryptographic key to sign the SSO Embed URL to provide proof to the Looker server that the URL originates from a trusted party and proof that the URL contents were not modified in transit.
 
-* Do not reset your secret if you already are using it in another context.
+The embed URL, secured by the embed secret signature, specifies attributes and permissions to grant to a "synthetic" Looker user account created for the embed session.
+Because the embed secret (in the wrong hands) could be used to grant access to all of your data, you need to handle the embed secret very carefully:
 
-* Your code should never store the secret in the web browser.
+* Do not share your embed secret with anyone you do not want to have complete access to your instance.
+* Do not reset your embed secret if you already are using it in another context. (Resetting the embed secret destroys the old secret and creates a new one)
+* Never store or pass the embed secret to your web app code that runs in the browser.
+* Never store your embed secret in source code or in any file that is checked into a code repository (like git or GitHub).
 
 ### Step 1 - Enable Embedding in your Looker instance
 
