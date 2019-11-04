@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-import { LookerEmbedFilterParams } from './types'
+import { LookerDashboardOptions, LookerEmbedFilterParams } from './types'
 import { LookerEmbedBase } from './embed_base'
 
 /**
@@ -47,5 +47,15 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
 
   updateFilters (params: LookerEmbedFilterParams) {
     this.send('dashboard:filters:update', { filters: params })
+  }
+
+  /**
+   * Convenience method for setting options on the embedded dashboard.
+   *
+   * @param options An options object to be applied
+   */
+
+  setOptions (options: LookerDashboardOptions) {
+    this.send('dashboard:options:set', options)
   }
 }

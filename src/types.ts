@@ -31,6 +31,51 @@ export interface LookerEmbedFilterParams {
 }
 
 /**
+ * Dashboard Layout
+ *
+ * See the API documentation for more details on the structure of dashboard layouts.
+ */
+
+export interface DashboardLayout {
+  [key: string]: any
+}
+
+/**
+ * Visualization Config interface
+ */
+
+export interface VisConfig {
+  type: string
+  [key: string]: any
+}
+
+/**
+ * Element Options interface
+ */
+
+export interface ElementOptionItems {
+  title?: string | null
+  title_hidden?: boolean
+  vis_config?: VisConfig | null
+}
+
+/**
+ * Element to element options mapping interface
+ */
+export interface ElementOptions {
+  [id: string]: ElementOptionItems
+}
+
+/**
+ * Options interface
+ */
+
+export interface LookerDashboardOptions {
+  elements?: ElementOptions
+  layouts?: DashboardLayout[]
+}
+
+/**
  * A generic Looker embed event
  */
 
@@ -58,6 +103,7 @@ export interface DashboardEventDetail extends EventDetail {
   dashboard_filters: LookerEmbedFilterParams
   absoluteUrl: string
   url: string
+  options: LookerDashboardOptions
 }
 
 /**
