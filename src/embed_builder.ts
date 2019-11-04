@@ -62,6 +62,7 @@ export class EmbedBuilder<T> {
   private _frameBorder: string = '0'
   private _id?: number | string
   private _params: UrlParams
+  private _suffix: string = ''
   private _url?: string | null
 
   /**
@@ -155,8 +156,19 @@ export class EmbedBuilder<T> {
   }
 
   /**
+   * Allows specifying next generation content
+   *
+   * @param suffix Next generation suffix. Defaults to '-next'.
+   */
+
+  withNext (suffix: string = '-next') {
+    this._suffix = suffix
+    return this
+  }
+
+  /**
    * Allows specifying a theme for the content.
-   * *
+   *
    * @param theme Theme name
    */
 
@@ -230,7 +242,7 @@ export class EmbedBuilder<T> {
 
   get embedUrl () {
     const params = stringify(this._params)
-    return `/embed/${this.type}s/${this.id}?${params}`
+    return `/embed/${this.type}s${this.suffix}/${this.id}?${params}`
   }
 
   /**
@@ -255,6 +267,14 @@ export class EmbedBuilder<T> {
 
   get classNames () {
     return this._classNames
+  }
+
+  /**
+   * The the suffix to append to the content type portion of the url
+   */
+
+  get suffix () {
+    return this._suffix
   }
 
   /**

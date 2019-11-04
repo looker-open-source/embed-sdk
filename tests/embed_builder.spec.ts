@@ -57,6 +57,16 @@ describe('LookerEmbedBuilder', () => {
     it('should generate a dashboard URL', () => {
       expect(builder.embedUrl).toMatch('/embed/dashboards/11')
     })
+
+    it('should generate a next generation dashboard URL', () => {
+      builder = builder.withNext()
+      expect(builder.embedUrl).toMatch('/embed/dashboards-next/11')
+    })
+
+    it('should generate a dashboard URL with a provided suffix', () => {
+      builder = builder.withNext('-beta')
+      expect(builder.embedUrl).toMatch('/embed/dashboards-beta/11')
+    })
   })
 
   describe('dashboards with URL', () => {
