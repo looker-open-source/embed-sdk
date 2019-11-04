@@ -1,5 +1,6 @@
 var path = require('path')
 var config = require ('./config')
+
 var user = require('./demo/demo_user.json')
 var { createSignedUrl } = require('./server_utils/auth_utils')
 
@@ -36,6 +37,8 @@ var webpackConfig = {
     contentBase: [
       path.join(__dirname, "demo")
     ],
+    host: config.demo_host,
+    port: config.demo_port,
     watchContentBase: true,
     before: (app) => {
       app.get('/auth', function(req, res) {
