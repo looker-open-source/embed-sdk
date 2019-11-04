@@ -88,7 +88,7 @@ describe('LookerEmbed', () => {
       mock.reset()
       mock.get(/\/auth\?src=/, (req, res) => {
         expect(req.header('Cache-Control')).toEqual('no-cache')
-        return res.status(403).statusText('foo')
+        return res.status(403).reason('foo')
       })
 
       client.connect()
