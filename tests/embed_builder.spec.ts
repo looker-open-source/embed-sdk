@@ -30,7 +30,7 @@ import { LookerEmbedSDK } from '../src/index'
 import { LookerEmbedLook } from '../src/look_client'
 
 describe('LookerEmbedBuilder', () => {
-  let builder: EmbedBuilder<LookerEmbedDashboard>
+  let builder: EmbedBuilder<any>
   let el: HTMLDivElement
 
   beforeEach(() => {
