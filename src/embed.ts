@@ -75,7 +75,10 @@ export class EmbedClient<T> {
       .appendTo(this._builder.el)
       .build()
 
-    this._host.iframe.classList.add(...this._builder.classNames)
+    // IE doesn't like calling classList.add() with no arguments, so check
+    if (this._builder.classNames.length) {
+      this._host.iframe.classList.add(...this._builder.classNames)
+    }
 
     return this._host.connect()
       .then((host) => {
