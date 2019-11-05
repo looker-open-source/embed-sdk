@@ -179,4 +179,36 @@ describe('LookerEmbed', () => {
         .catch(done.fail)
     })
   })
+
+  describe('receiving messages', () => {
+    let mockDashboardClient: any
+    let embedDashboard: any
+
+    const startFn = jasmine.createSpy('onStart').and.callFake(function () {
+      expect(this).toEqual(embedDashboard)
+    })
+    const mockStartData = { dashboard: { id: '1' } }
+
+    beforeEach(() => {
+      spyOn(ChattyHost.prototype, 'connect').and.callFake(async function (this: any) {
+        return Promise.resolve({})
+      })
+      mockDashboardClient = {}
+      builder = LookerEmbedSDK.createDashboardWithUrl(testUrl)
+      builder.on('dashboard:run:start', startFn)
+      client = builder.build()
+    })
+
+    it('should call the callback with the passed data and this set to client.', (done) => {
+      const connection = client.connect()
+      connection.then((dashboard: LookerEmbedDashboard) => {
+        embedDashboard = dashboard
+        client._host._handlers['dashboard:run:start'][0].call(null, mockStartData)
+        expect(startFn).toHaveBeenCalledWith(mockStartData)
+        done()
+      })
+      .catch(done.fail)
+    })
+
+  })
 })

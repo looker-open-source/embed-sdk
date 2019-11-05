@@ -22,6 +22,10 @@
  * THE SOFTWARE.
  */
 
+import { LookerEmbedBase } from './embed_base'
+import { LookerEmbedDashboard } from './dashboard_client'
+import { LookerEmbedLook } from './look_client'
+
 /**
  * Data structure for filters.
  */
@@ -268,26 +272,26 @@ export interface CancellableEventResponse {
  */
 
 export interface LookerEmbedEventMap {
-  'dashboard:run:start': (event: DashboardEvent) => void
-  'dashboard:run:complete': (event: DashboardEvent) => void
-  'dashboard:filters:changed': (event: DashboardEvent) => void
-  'dashboard:tile:start': (event: DashboardTileEvent) => void
-  'dashboard:tile:complete': (event: DashboardTileEvent) => void
-  'dashboard:tile:download': (event: DashboardTileDownloadEvent) => void
-  'dashboard:tile:explore': (event: DashboardTileExploreEvent) => CancellableEventResponse | undefined
-  'dashboard:tile:view': (event: DashboardTileViewEvent) => CancellableEventResponse | undefined
+  'dashboard:run:start': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  'dashboard:run:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  'dashboard:filters:changed': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  'dashboard:tile:start': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
+  'dashboard:tile:complete': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
+  'dashboard:tile:download': (this: LookerEmbedDashboard, event: DashboardTileDownloadEvent) => void
+  'dashboard:tile:explore': (this: LookerEmbedDashboard, event: DashboardTileExploreEvent) => CancellableEventResponse | undefined
+  'dashboard:tile:view': (this: LookerEmbedDashboard, event: DashboardTileViewEvent) => CancellableEventResponse | undefined
 
-  'drillmenu:click': (event: DrillMenuEvent) => CancellableEventResponse | undefined
-  'drillmodal:explore': (event: DrillModalExploreEvent) => CancellableEventResponse | undefined
+  'drillmenu:click': (this: LookerEmbedBase, event: DrillMenuEvent) => CancellableEventResponse | undefined
+  'drillmodal:explore': (this: LookerEmbedBase, event: DrillModalExploreEvent) => CancellableEventResponse | undefined
 
-  'explore:run:start': (event: ExploreEvent) => void
-  'explore:run:complete': (event: ExploreEvent) => void
+  'explore:run:start': (this: LookerEmbedLook, event: ExploreEvent) => void
+  'explore:run:complete': (this: LookerEmbedLook, event: ExploreEvent) => void
 
-  'look:run:start': (event: LookEvent) => void
-  'look:run:complete': (event: LookEvent) => void
+  'look:run:start': (this: LookerEmbedLook, event: LookEvent) => void
+  'look:run:complete': (this: LookerEmbedLook, event: LookEvent) => void
 
-  'page:changed': (event: PageChangedEvent) => void
-  'page:properties:changed': (event: PagePropertiesChangedEvent) => void
+  'page:changed': (this: LookerEmbedBase, event: PageChangedEvent) => void
+  'page:properties:changed': (this: LookerEmbedBase, event: PagePropertiesChangedEvent) => void
 
   [key: string]: any
 }
