@@ -2,7 +2,7 @@
   "name": "@looker/embed-sdk",
   "version": "1.0.0-beta.3",
   "description": "A toolkit for embedding Looker",
-  "main": "dist/main.js",
+  "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "directories": {
     "test": "tests"
@@ -17,14 +17,14 @@
     "src/**/*"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build_utils && webpack",
+    "build": "npm run clean && npm run build_utils && tsc && webpack",
     "build_utils": "tsc --build tsconfig-server.json",
     "clean": "rm -rf lib dist",
     "docs": "typedoc --mode file --out docs",
     "lint": "tslint --project tsconfig-lint.json --format stylish",
     "lint-fix": "tslint --fix --project tsconfig-lint.json  --format stylish",
     "start": "npm run build_utils && webpack-dev-server --config webpack-devserver.config.js --hot --inline --open --color --progress",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run test-once",
     "python": "webpack --config webpack-devserver.config.js && python demo/demo.py",
     "test": "npm run lint && karma start karma.conf.js",
@@ -69,7 +69,7 @@
     "xhr-mock": "^2.4.1"
   },
   "dependencies": {
-    "@looker/chatty": "^2.0.0"
+    "@looker/chatty": "^2.2.0"
   },
   "pre-commit": [
     "test-once"

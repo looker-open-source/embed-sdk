@@ -4,6 +4,7 @@
 .vscode
 __pycache__
 *.pyc
+*.tgz
 coverage
 demo/demo.js
 dist
