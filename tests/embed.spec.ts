@@ -25,25 +25,60 @@
 import { LookerEmbedSDK, LookerEmbedDashboard } from '../src/index'
 import { ChattyHost } from '@looker/chatty'
 import mock from 'xhr-mock'
-import { EmbedClient } from '../src/embed'
+import { EmbedBuilder } from '../src/embed_builder'
 
 const testUrl = '/base/tests/test.html'
 
 describe('LookerEmbed', () => {
-  let builder
-  let el
+  let builder: EmbedBuilder<any>
+  let el: HTMLDivElement
   let client: any
 
   beforeEach(() => {
-    LookerEmbedSDK.init('host.looker.com:9999', '/auth')
     el = document.createElement('div')
     el.id = 'the-element'
+    document.body.append(el)
+  })
+
+  afterEach(() => {
+    document.body.removeChild(el)
+  })
+
+  describe('targetOrigin', () => {
+    it('accepts a host:port for apiHost', () => {
+      LookerEmbedSDK.init('host.looker.com:9999')
+
+      builder = LookerEmbedSDK.createDashboardWithId(11)
+      client = builder.build()
+
+      expect(client.targetOrigin).toEqual('https://host.looker.com:9999')
+    })
+
+    it('accepts https://host:port for apiHost', () => {
+      LookerEmbedSDK.init('https://host.looker.com:9999')
+
+      builder = LookerEmbedSDK.createDashboardWithId(11)
+      client = builder.build()
+
+      expect(client.targetOrigin).toEqual('https://host.looker.com:9999')
+    })
+
+    it('accepts http://host:port for apiHost', () => {
+      LookerEmbedSDK.init('http://host.looker.com:9999')
+
+      builder = LookerEmbedSDK.createDashboardWithId(11)
+      client = builder.build()
+
+      expect(client.targetOrigin).toEqual('http://host.looker.com:9999')
+    })
   })
 
   describe('with ID', () => {
     let fakeDashboardClient: any
 
     beforeEach(() => {
+      LookerEmbedSDK.init('host.looker.com:9999', '/auth')
+
       mock.setup()
       mock.get(/\/auth\?src=/, (req, res) => {
         expect(req.header('Cache-Control')).toEqual('no-cache')
@@ -104,6 +139,8 @@ describe('LookerEmbed', () => {
     let fakeDashboardClient: any
 
     beforeEach(() => {
+      LookerEmbedSDK.init('host.looker.com:9999', '/auth')
+
       fakeDashboardClient = {}
       builder = LookerEmbedSDK.createDashboardWithUrl(testUrl)
       client = builder.build()
@@ -140,13 +177,10 @@ describe('LookerEmbed', () => {
 
   describe('creating an iframe', () => {
     let fakeDashboardClient
-    let el: HTMLDivElement
     let iframe: HTMLIFrameElement
 
     beforeEach(() => {
-      el = document.createElement('div')
-      el.id = 'the-element'
-      document.body.append(el)
+      LookerEmbedSDK.init('host.looker.com:9999', '/auth')
 
       fakeDashboardClient = {}
       builder = LookerEmbedSDK.createDashboardWithUrl(testUrl)
@@ -160,10 +194,6 @@ describe('LookerEmbed', () => {
         iframe = this.iframe
         return Promise.resolve({})
       })
-    })
-
-    afterEach(() => {
-      document.body.removeChild(el)
     })
 
     it('it should create an iframe with the appropriate parameters', (done) => {

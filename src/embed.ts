@@ -25,6 +25,8 @@
 import { EmbedBuilder } from './embed_builder'
 import { Chatty, ChattyHost, ChattyHostBuilder } from '@looker/chatty'
 
+const IS_URL = /^https?:\/\//
+
 /**
  * Wrapper for Looker embedded content. Provides a mechanism for creating the embedded content element,
  * and for establishing two-way communication between the parent window and the embedded content.
@@ -58,6 +60,11 @@ export class EmbedClient<T> {
     return !!this._connection
   }
 
+  get targetOrigin () {
+    const apiHost = this._builder.apiHost
+    return IS_URL.test(apiHost) ? apiHost : `https://${apiHost}`
+  }
+
   private async createIframe (url: string) {
     this._hostBuilder = Chatty.createHost(url)
     for (const eventType in this._builder.handlers) {
@@ -71,7 +78,7 @@ export class EmbedClient<T> {
     this._host = this._hostBuilder
       // tslint:disable-next-line:deprecation
       .frameBorder(this._builder.frameBorder)
-      .withTargetOrigin(`https://${this._builder.apiHost}`)
+      .withTargetOrigin(this.targetOrigin)
       .appendTo(this._builder.el)
       .build()
 
