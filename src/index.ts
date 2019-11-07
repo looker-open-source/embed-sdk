@@ -33,6 +33,13 @@ export { LookerEmbedLook } from './look_client'
 
 export class LookerEmbedSDK {
 
+  /**
+   * Initialize the Embed SDK.
+   *
+   * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
+   * @param authUrl A server endpoint that will sign SSO embed URLs
+   */
+
   static init (apiHost: string, authUrl?: string) {
     this.apiHost = apiHost
     this.authUrl = authUrl
