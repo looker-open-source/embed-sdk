@@ -37,11 +37,35 @@ export interface LookerEmbedFilterParams {
 /**
  * Dashboard Layout
  *
- * See the API documentation for more details on the structure of dashboard layouts.
+ * Contains details of dashboard layout.
  */
 
-export interface DashboardLayout {
-  [key: string]: any
+interface DashboardLayout {
+  id: string
+  dashboard_id: string
+  type: 'newspaper'
+  active: boolean
+  column_width: number
+  width: number | null
+  deleted: boolean
+  dashboard_layout_components: DashboardLayoutComponent[]
+}
+
+/**
+ * Dashboard Layout Component
+ *
+ * Contains details of individual dashboard element layout.
+ */
+
+interface DashboardLayoutComponent {
+  id: string
+  dashboard_layout_id: string
+  dashboard_element_id: string
+  row: number
+  column: number
+  width: number
+  height: number
+  deleted: boolean
 }
 
 /**
