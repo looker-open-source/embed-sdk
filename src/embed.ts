@@ -36,6 +36,7 @@ export class EmbedClient<T> {
   _hostBuilder: ChattyHostBuilder | null = null
   _host: ChattyHost | null = null
   _connection: Promise<T> | null = null
+  _client: T | null = null
 
   /**
    * @hidden
@@ -69,7 +70,7 @@ export class EmbedClient<T> {
     this._hostBuilder = Chatty.createHost(url)
     for (const eventType in this._builder.handlers) {
       for (const handler of this._builder.handlers[eventType]) {
-        this._hostBuilder.on(eventType, handler)
+        this._hostBuilder.on(eventType, (...args) => handler.apply(this._client, args))
       }
     }
     for (const attr of this._builder.sandboxAttrs) {
@@ -89,7 +90,8 @@ export class EmbedClient<T> {
 
     return this._host.connect()
       .then((host) => {
-        return new this._builder.clientConstructor(host)
+        this._client = new this._builder.clientConstructor(host)
+        return this._client
       })
   }
 
