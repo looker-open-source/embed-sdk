@@ -64,6 +64,7 @@ export class EmbedBuilder<T> {
   private _params: UrlParams
   private _suffix: string = ''
   private _url?: string | null
+  private _sandboxedHost?: boolean
 
   /**
    * @hidden
@@ -74,10 +75,18 @@ export class EmbedBuilder<T> {
     private _type: string,
     private _clientConstructor: EmbedClientConstructor<T>
   ) {
-    const embedDomain = window.location.origin
-    this._params = {
-      embed_domain: embedDomain,
-      sdk: '2'
+    if (this.sandboxedHost) {
+      this._params = {
+        embed_domain: this._hostSettings.apiHost,
+        sdk: '2',
+        sandboxed_host: 'true'
+      }
+    } else {
+      const embedDomain = window.location.origin
+      this._params = {
+        embed_domain: embedDomain,
+        sdk: '2'
+      }
     }
   }
 
@@ -186,6 +195,26 @@ export class EmbedBuilder<T> {
   withUrl (url: string) {
     this._url = url
     return this
+  }
+
+  /**
+   * @hidden
+   */
+
+  set sandboxedHost (sandboxedHost: boolean) {
+    this._sandboxedHost = sandboxedHost
+  }
+
+  /**
+   * @hidden
+   */
+
+  get sandboxedHost () {
+    if (!this._sandboxedHost) {
+      const embedHostDomain = window.location.origin
+      this._sandboxedHost = embedHostDomain === 'null' || !embedHostDomain
+    }
+    return this._sandboxedHost
   }
 
   /**
