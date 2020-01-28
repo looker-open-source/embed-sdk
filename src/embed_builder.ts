@@ -210,7 +210,7 @@ export class EmbedBuilder<T> {
    */
 
   get sandboxedHost () {
-    if (!this._sandboxedHost) {
+    if (this._sandboxedHost === undefined) {
       const embedHostDomain = window.location.origin
       this._sandboxedHost = embedHostDomain === 'null' || !embedHostDomain
     }
