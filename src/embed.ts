@@ -62,6 +62,9 @@ export class EmbedClient<T> {
   }
 
   get targetOrigin () {
+    if (this._builder.sandboxedHost) {
+      return '*'
+    }
     const apiHost = this._builder.apiHost
     return IS_URL.test(apiHost) ? apiHost : `https://${apiHost}`
   }
@@ -97,7 +100,7 @@ export class EmbedClient<T> {
 
   private async createUrl () {
     const src = this._builder.embedUrl
-    if (!this._builder.authUrl) return src
+    if (!this._builder.authUrl) return `${this._builder.apiHost}${src}`
 
     const url = `${this._builder.authUrl}?src=${encodeURIComponent(src)}`
 
