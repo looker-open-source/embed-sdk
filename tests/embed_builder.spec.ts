@@ -116,7 +116,7 @@ describe('LookerEmbedBuilder', () => {
 
   describe('explores with ID', () => {
     beforeEach(() => {
-      builder = LookerEmbedSDK.createExploreWithId('alpha:beta')
+      builder = LookerEmbedSDK.createExploreWithId('alpha/beta')
     })
 
     it('should create an explore instance', () => {
@@ -124,8 +124,23 @@ describe('LookerEmbedBuilder', () => {
       expect(builder.clientConstructor).toEqual(LookerEmbedExplore)
     })
 
-    it('should generate a look URL', () => {
-      expect(builder.embedUrl).toMatch('/embed/explores/alpha:beta')
+    it('should generate an explore URL', () => {
+      expect(builder.embedUrl).toMatch('/embed/explore/alpha/beta')
+    })
+  })
+
+  describe('explores with old style ID', () => {
+    beforeEach(() => {
+      builder = LookerEmbedSDK.createExploreWithId('alpha::beta')
+    })
+
+    it('should create an explore instance', () => {
+      expect(builder.type).toEqual('explore')
+      expect(builder.clientConstructor).toEqual(LookerEmbedExplore)
+    })
+
+    it('should generate an explore URL', () => {
+      expect(builder.embedUrl).toMatch('/embed/explore/alpha/beta')
     })
   })
 

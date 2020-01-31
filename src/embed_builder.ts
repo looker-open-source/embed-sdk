@@ -73,6 +73,7 @@ export class EmbedBuilder<T> {
   constructor (
     private _hostSettings: LookerEmbedHostSettings,
     private _type: string,
+    private _endpoint: string,
     private _clientConstructor: EmbedClientConstructor<T>
   ) {
     if (this.sandboxedHost) {
@@ -172,6 +173,7 @@ export class EmbedBuilder<T> {
 
   withNext (suffix: string = '-next') {
     this._suffix = suffix
+    this._endpoint += this._suffix
     return this
   }
 
@@ -234,6 +236,14 @@ export class EmbedBuilder<T> {
   }
 
   /**
+   * The endpoint used to load content
+   */
+
+  get endpoint () {
+    return this._endpoint
+  }
+
+  /**
    * The type of embedded content, dashboard, look, and explore
    */
 
@@ -271,7 +281,7 @@ export class EmbedBuilder<T> {
 
   get embedUrl () {
     const params = stringify(this._params)
-    return `/embed/${this.type}s${this.suffix}/${this.id}?${params}`
+    return `${this.endpoint}/${this.id}?${params}`
   }
 
   /**
