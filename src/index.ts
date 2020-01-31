@@ -52,7 +52,7 @@ export class LookerEmbedSDK {
    */
 
   static createDashboardWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', LookerEmbedDashboard).withUrl(url)
+    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withUrl(url)
   }
 
   /**
@@ -62,7 +62,7 @@ export class LookerEmbedSDK {
    */
 
   static createDashboardWithId (id: string | number) {
-    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', LookerEmbedDashboard).withId(id)
+    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withId(id)
   }
 
   /**
@@ -72,7 +72,7 @@ export class LookerEmbedSDK {
    */
 
   static createExploreWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', LookerEmbedExplore).withUrl(url)
+    return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withUrl(url)
   }
 
   /**
@@ -82,7 +82,8 @@ export class LookerEmbedSDK {
    */
 
   static createExploreWithId (id: string) {
-    return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', LookerEmbedExplore).withId(id)
+    id = id.replace('::', '/') // Handle old format explore ids.
+    return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withId(id)
   }
 
   /**
@@ -92,7 +93,7 @@ export class LookerEmbedSDK {
    */
 
   static createLookWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedLook>(this, 'look', LookerEmbedLook).withUrl(url)
+    return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withUrl(url)
   }
 
   /**
@@ -102,7 +103,7 @@ export class LookerEmbedSDK {
    */
 
   static createLookWithId (id: number) {
-    return new EmbedBuilder<LookerEmbedLook>(this, 'look', LookerEmbedLook).withId(id)
+    return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withId(id)
   }
 
   /**
