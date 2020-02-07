@@ -24,7 +24,7 @@ import { LookerEmbedSDK, LookerEmbedLook, LookerEmbedDashboard } from '../src/in
  * THE SOFTWARE.
  */
 
-import { lookerHost, dashboardId, lookId } from './demo_config'
+import { lookerHost, dashboardId, lookId, exploreId, extensionId } from './demo_config'
 
 LookerEmbedSDK.init(lookerHost, '/auth')
 
@@ -103,5 +103,35 @@ document.addEventListener('DOMContentLoaded', function () {
       })
   } else {
     document.querySelector<HTMLDivElement>('#demo-look')!.style.display = 'none'
+  }
+
+  if (exploreId) {
+    LookerEmbedSDK.createExploreWithId(exploreId)
+      .appendTo('#explore')
+      .on('explore:run:start', () => updateState('#explore-state', 'Running'))
+      .on('explore:run:complete', () => updateState('#explore-state', 'Done'))
+      .withClassName('looker-embed')
+      .withFilters({ 'users.state': 'California' })
+      .build()
+      .connect()
+      .then(setupLook)
+      .catch((error: Error) => {
+        console.error('Connection error', error)
+      })
+  } else {
+    document.querySelector<HTMLDivElement>('#demo-explore')!.style.display = 'none'
+  }
+
+  if (extensionId) {
+    LookerEmbedSDK.createExtensionWithId(extensionId)
+      .appendTo('#extension')
+      .withClassName('looker-embed')
+      .build()
+      .connect()
+      .catch((error: Error) => {
+        console.error('Connection error', error)
+      })
+  } else {
+    document.querySelector<HTMLDivElement>('#demo-extension')!.style.display = 'none'
   }
 })
