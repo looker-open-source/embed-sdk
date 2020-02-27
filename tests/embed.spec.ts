@@ -240,6 +240,39 @@ describe('LookerEmbed', () => {
     })
   })
 
+  describe('creating an iframe in a sandboxed environment using withAppHost', () => {
+    let fakeDashboardClient
+    let iframe: HTMLIFrameElement
+    const embedSdk = LookerEmbedSDK as any
+
+    beforeEach(() => {
+      spyOn(EmbedBuilder.prototype, 'sandboxedHost').and.returnValue(true)
+      spyOn(window, 'fetch')
+      spyOn(ChattyHost.prototype, 'connect').and.callFake(async function (this: any) {
+        iframe = this.iframe
+        return Promise.resolve({})
+      })
+
+      embedSdk.apiHost = undefined
+      embedSdk.authUrl = undefined
+
+      fakeDashboardClient = {}
+      client = LookerEmbedSDK.createDashboardWithId(11)
+        .withApiHost('https://host.looker.com:9999')
+        .appendTo('#the-element')
+        .build()
+    })
+
+    it('sets embed domain to the api host', (done) => {
+      client.connect()
+        .then(() => {
+          expect(iframe.src).toEqual('https://host.looker.com:9999/embed/dashboards/11?embed_domain=https%3A%2F%2Fhost.looker.com%3A9999&sdk=2&sandboxed_host=true')
+          done()
+        })
+        .catch(done.fail)
+    })
+  })
+
   describe('receiving messages', () => {
     let mockDashboardClient: any
     let embedDashboard: any

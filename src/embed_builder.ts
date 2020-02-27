@@ -189,6 +189,40 @@ export class EmbedBuilder<T> {
   }
 
   /**
+   * Allows api host to be specified
+   *
+   * @param apiHost
+   */
+
+  withApiHost (apiHost: string) {
+    if (!this._hostSettings.apiHost) {
+      this._hostSettings.apiHost = apiHost
+      if (this.sandboxedHost) {
+        this._params.embed_domain = apiHost
+        this._params.sandboxed_host = 'true'
+      }
+    } else if (this._hostSettings.apiHost !== apiHost) {
+      throw new Error('not allowed to change api host')
+    }
+    return this
+  }
+
+  /**
+   * Allows auth url to be specified
+   *
+   * @param authUrl
+   */
+
+  withAuthUrl (authUrl: string) {
+    if (!this._hostSettings.authUrl) {
+      this._hostSettings.authUrl = authUrl
+    } else if (this._hostSettings.authUrl !== authUrl) {
+      throw new Error('not allowed to change auth url')
+    }
+    return this
+  }
+
+  /**
    * @hidden
    *
    * @param url

@@ -263,4 +263,52 @@ describe('LookerEmbedBuilder', () => {
       expect(embed).toEqual(jasmine.any(EmbedClient))
     })
   })
+
+  describe('api host and auth url set through embed builder api', () => {
+    const host = 'https://host.looker.com:9999'
+    const auth = '/auth'
+    const embedSdk = LookerEmbedSDK as any
+
+    beforeEach(() => {
+      embedSdk.apiHost = undefined
+      embedSdk.authUrl = undefined
+    })
+
+    it('builder allows api host and auth url to be set', () => {
+      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+        .withApiHost(host)
+        .withAuthUrl(auth)
+      expect(embedSdk.apiHost).toEqual(host)
+      expect(embedSdk.authUrl).toEqual(auth)
+    })
+
+    it('allows api host and auth to be specified again', () => {
+      LookerEmbedSDK.init(host, auth)
+      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+        .withApiHost(host)
+        .withAuthUrl(auth)
+      expect(embedSdk.apiHost).toEqual(host)
+      expect(embedSdk.authUrl).toEqual(auth)
+    })
+
+    it('prevents api host and auth url from being overriden', () => {
+      LookerEmbedSDK.init(host, auth)
+      try {
+        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+          .withApiHost(auth)
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('not allowed to change api host')
+      }
+      try {
+        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+          .withAuthUrl(host)
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('not allowed to change auth url')
+      }
+    })
+
+  })
+
 })
