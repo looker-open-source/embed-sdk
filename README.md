@@ -134,7 +134,7 @@ import { createSignedUrl } from './auth_utils'
 app.get('/looker_auth', function(req, res) {
   // Authenticate the request is from a valid user here
   const src = req.query.src;
-  const host = 'http://looker.example.com'
+  const host = 'https://looker.example.com'
   const secret = YOUR_EMBED_SECRET
   const user = authenticatedUser
   const url = createSignedUrl(src, user, host, secret);
