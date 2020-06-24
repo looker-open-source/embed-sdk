@@ -7,7 +7,7 @@ The Looker JavaScript Embed SDK is designed to facilitate using Looker embedded 
 A typical setup might look like this. In this case, a dashboard with an id of `11` is created inside a DOM element with the id `dashboard`. The `dashboard:run:start` and `dashboard:run:complete` events are used to update the state of the embedding window's UI, and a button with an id of `run` is scripted to send a `dashboard:run` message to the dashboard.
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com:443', '/auth')
+LookerEmbedSDK.init('looker.example.com', '/auth')
 
 const setupDashboard = (dashboard) => {
   document.querySelector('#run').addEventListener('click', () => {
@@ -39,11 +39,11 @@ The Looker Embed SDK uses a fluent interface pattern. The construction of the em
 
 ### Building
 
-First initialize the SDK with address of your Looker server and, optionally, the endpoint on your server that will perform authentication.
+First initialize the SDK with address of your Looker server and, optionally, the endpoint on your server that will perform authentication.  (Note: Port must be included if it is required to reach the Looker server from browser clients, e.g. looker.example.com:443)
 These are used by all the embedded content.
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com:443', '/auth')
+LookerEmbedSDK.init('looker.example.com', '/auth')
 ```
 
 Then the embedded content is built using a series of steps to define its parameters. Some if these parameters are optional, and some are mandatory.
@@ -112,7 +112,7 @@ Because the embed secret needs to be carefully guarded, embed SSO URLs cannot be
 If specified, whenever an embed element is created using just an ID, its embed URL is generated using the type of the element, the provided Looker host, and any provided parameters. For example:
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com:443', '/looker_auth')
+LookerEmbedSDK.init('looker.example.com', '/looker_auth')
 LookerEmbedSDK.createcreateDashboardWithId(11)
  .build()
 ```
@@ -120,7 +120,7 @@ LookerEmbedSDK.createcreateDashboardWithId(11)
 This will call the /looker_auth endpoint and return a signed SSO URL that can be used to create the embedded content:
 
 ```html
-src=https://looker.example.com:443/embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com
+src=https://looker.example.com/embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com
 ```
 
 ### Node helper
@@ -134,7 +134,7 @@ import { createSignedUrl } from './auth_utils'
 app.get('/looker_auth', function(req, res) {
   // Authenticate the request is from a valid user here
   const src = req.query.src;
-  const host = 'http://looker.example.com:443'
+  const host = 'https://looker.example.com'
   const secret = YOUR_EMBED_SECRET
   const user = authenticatedUser
   const url = createSignedUrl(src, user, host, secret);
