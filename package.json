@@ -23,7 +23,7 @@
     "docs": "typedoc --mode file --out docs",
     "lint": "tslint --project tsconfig-lint.json --format stylish",
     "lint-fix": "tslint --fix --project tsconfig-lint.json  --format stylish",
-    "start": "npm run build_utils && webpack-dev-server --config webpack-devserver.config.js --hot --inline --open --color --progress",
+    "start": "npm run build_utils && webpack-dev-server --config webpack-devserver.config.js --hot --inline --color --progress",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test-once",
     "python": "webpack --config webpack-devserver.config.js && python demo/demo.py",

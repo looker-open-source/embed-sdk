@@ -25,10 +25,12 @@
 import { EmbedBuilder } from './embed_builder'
 import { LookerEmbedDashboard } from './dashboard_client'
 import { LookerEmbedExplore } from './explore_client'
+import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
 
 export { LookerEmbedDashboard } from './dashboard_client'
 export { LookerEmbedExplore } from './explore_client'
+export { LookerEmbedExtension } from './extension_client'
 export { LookerEmbedLook } from './look_client'
 
 export class LookerEmbedSDK {
@@ -104,6 +106,26 @@ export class LookerEmbedSDK {
 
   static createLookWithId (id: number) {
     return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withId(id)
+  }
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker extension.
+   *
+   * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   */
+
+  static createExtensionWithUrl (url: string) {
+    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withUrl(url)
+  }
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker extension.
+   *
+   * @param id The ID of a Looker Look
+   */
+
+  static createExtensionWithId (id: string) {
+    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withId(id)
   }
 
   /**

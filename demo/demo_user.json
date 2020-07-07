@@ -14,6 +14,6 @@
     "save_content",
     "embed_browse_spaces"
   ],
-  "models": ["powered_by", "thelook"],
+  "models": ["powered_by", "thelook", "extension"],
   "user_attributes": { "locale": "en_US" }
 }
