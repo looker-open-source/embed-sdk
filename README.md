@@ -261,7 +261,6 @@ export const lookId = 1
 * `npm install`
 * `npm start`
 * The server will print out what host and port it is running on. If it is different than `http://localhost:8080` then you will need to add that to your Embedded Domain Whitelist.
-  * If you are running a Looker session in your browser already, you may want to open the demo in private browsing or incognito mode, since it will log in as the demo user.
 
 #### Python server
 
