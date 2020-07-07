@@ -50,7 +50,7 @@ function escapeFilterParam (param: string) {
 }
 
 /**
- * The builder class for [EmbedClient]. Contains methods for defining the properties of embedded
+ * The builder class for [[EmbedClient]]. Contains methods for defining the properties of embedded
  * Looker content.
  */
 

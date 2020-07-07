@@ -58,4 +58,18 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
   setOptions (options: LookerDashboardOptions) {
     this.send('dashboard:options:set', options)
   }
+
+  /**
+   * Convenience method for loading a new dashboard.
+   * Requires Looker 7.12 and Dashboards (Beta) (see [[EmbedBuilder.withNext]]).
+   * Throws an exception if the dashboard load did not happen, which can happen if the
+   * current dashboard is in edit mode.
+   *
+   * @param id The ID of the dashboard to load
+   * @param pushHistory Whether to push the new page onto history. Default is false.
+   */
+
+  async loadDashboard (id: string, pushHistory: boolean = false): Promise<void> {
+    return this.send('dashboard:load', { id, pushHistory })
+  }
 }
