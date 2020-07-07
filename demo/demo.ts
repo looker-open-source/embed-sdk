@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (dashboardId) {
     LookerEmbedSDK.createDashboardWithId(dashboardId)
       .appendTo('#dashboard')
+      .on('dashboard:loaded', () => updateState('#dashboard-state', 'Loaded'))
       .on('dashboard:run:start', () => updateState('#dashboard-state', 'Running'))
       .on('dashboard:run:complete', () => updateState('#dashboard-state', 'Done'))
       .on('drillmenu:click', canceller)
@@ -91,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (lookId) {
     LookerEmbedSDK.createLookWithId(lookId)
       .appendTo('#look')
+      .on('look:ready', () => updateState('#look-state', 'Loaded'))
       .on('look:run:start', () => updateState('#look-state', 'Running'))
       .on('look:run:complete', () => updateState('#look-state', 'Done'))
       .withClassName('looker-embed')
@@ -108,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (exploreId) {
     LookerEmbedSDK.createExploreWithId(exploreId)
       .appendTo('#explore')
+      .on('explore:ready', () => updateState('#explore-state', 'Loaded'))
       .on('explore:run:start', () => updateState('#explore-state', 'Running'))
       .on('explore:run:complete', () => updateState('#explore-state', 'Done'))
       .withClassName('looker-embed')
