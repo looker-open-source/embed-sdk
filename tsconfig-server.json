@@ -7,12 +7,6 @@
     "strict": true,
     "target": "ES5",
     "lib": ["es6", "es2017.object"],
-    "plugins": [
-      {
-        "name": "typescript-tslint-plugin",
-        "alwaysShowRuleFailuresAsWarnings": true
-      }
-    ]
   },
   "exclude": [
     "node_modules"

@@ -12,12 +12,6 @@
     "paths": {
       "config": ["config"]
     },
-    "plugins": [
-      {
-        "name": "typescript-tslint-plugin",
-        "alwaysShowRuleFailuresAsWarnings": true
-      }
-    ]
   },
   "exclude": [
     "node_modules"
