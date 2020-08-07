@@ -39,6 +39,7 @@ export class LookerEmbedSDK {
    * Initialize the Embed SDK.
    *
    * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
+   *                This is required for verification of messages sent from the embedded content.
    * @param authUrl A server endpoint that will sign SSO embed URLs
    */
 
@@ -119,7 +120,7 @@ export class LookerEmbedSDK {
   }
 
   /**
-   * Create an EmbedBuilder for an embedded Looker extension.
+   * Create an EmbedBuilder for an embedded Looker extension. Requires Looker 7.12
    *
    * @param id The ID of a Looker Look
    */

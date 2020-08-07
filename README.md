@@ -269,3 +269,21 @@ export const lookId = 1
 * The server will print out what host and port it is running on.
 
 You may need to `pip install six` to install the Python 2/3 compatibility layer.
+
+### Troubleshooting
+
+## Logging
+
+The Embed SDK is built on top of [chatty](https://github.com/looker-open-source/chatty). Chatty users [debug](https://github.com/visionmedia/debug) for logging. You can enable logging
+in a browser console with
+
+```javascript
+localStorage.debug = 'looker:chatty:*'
+```
+
+Note that both the parent window and the embedded content have separate local storage, so you can enable logging on one, the other or both. You can disable logging with
+
+```javascript
+localStorage.debug = ''
+```
+
