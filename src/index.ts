@@ -28,10 +28,10 @@ import { LookerEmbedExplore } from './explore_client'
 import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
 
-export { LookerEmbedDashboard } from './dashboard_client'
-export { LookerEmbedExplore } from './explore_client'
-export { LookerEmbedExtension } from './extension_client'
-export { LookerEmbedLook } from './look_client'
+export type { LookerEmbedDashboard } from './dashboard_client'
+export type { LookerEmbedExplore } from './explore_client'
+export type { LookerEmbedExtension } from './extension_client'
+export type { LookerEmbedLook } from './look_client'
 
 export class LookerEmbedSDK {
 

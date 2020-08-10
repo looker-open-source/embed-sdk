@@ -80,6 +80,6 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    */
 
   async loadDashboard (id: string, pushHistory: boolean = false): Promise<void> {
-    return this.send('dashboard:load', { id, pushHistory })
+    return this.sendAndReceive('dashboard:load', { id, pushHistory })
   }
 }
