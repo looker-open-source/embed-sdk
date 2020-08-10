@@ -67,13 +67,13 @@ const setupDashboard = (dashboard: LookerEmbedDashboard) => {
 // Set up the look or explore after the SDK connects.
 
 const setupLookOrExplore = (look: LookerEmbedLook) => {
-  // Add a listener to the "Run All" button and send a 'dashboard:run' message when clicked
+  // Add a listener to the "Run All" button and send a 'look:run' message when clicked
   const runAllButton = document.querySelector('#run-all')
   if (runAllButton) {
     runAllButton.addEventListener('click', () => look.run())
   }
 
-  // Add a listener to the state selector and update the dashboard filters when changed
+  // Add a listener to the state selector and update the look filters when changed
   const stateFilter = document.querySelector('#state')
   if (stateFilter) {
     stateFilter.addEventListener('change', (event) => {
@@ -85,9 +85,9 @@ const setupLookOrExplore = (look: LookerEmbedLook) => {
 // Handle status updates for each embedded element
 
 const updateState = (selector: string, state: string) => {
-  const dashboardState = document.querySelector(selector)
-  if (dashboardState) {
-    dashboardState.textContent = state
+  const stateElement = document.querySelector(selector)
+  if (stateElement) {
+    stateElement.textContent = state
   }
 }
 
