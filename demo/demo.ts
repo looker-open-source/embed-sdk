@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .on('dashboard:loaded', () => updateState('#dashboard-state', 'Loaded'))
       .on('dashboard:run:start', () => updateState('#dashboard-state', 'Running'))
       .on('dashboard:run:complete', () => updateState('#dashboard-state', 'Done'))
-      // Listen to messasges to prevent the user from navigating away
+      // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', canceller)
       .on('drillmodal:explore', canceller)
       .on('dashboard:tile:explore', canceller)
