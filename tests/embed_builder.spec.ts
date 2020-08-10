@@ -28,6 +28,7 @@ import { EmbedBuilder } from '../src/embed_builder'
 import { LookerEmbedExplore } from '../src/explore_client'
 import { LookerEmbedSDK } from '../src/index'
 import { LookerEmbedLook } from '../src/look_client'
+import { LookerEmbedExtension } from '../src/extension_client'
 
 describe('LookerEmbedBuilder', () => {
   let builder: EmbedBuilder<any>
@@ -154,7 +155,37 @@ describe('LookerEmbedBuilder', () => {
       expect(builder.clientConstructor).toEqual(LookerEmbedExplore)
     })
 
-    it('should generate a look URL', () => {
+    it('should generate a explore URL', () => {
+      expect(builder.url).toEqual('https://host.looker.com:9999/login/embed/etc')
+    })
+  })
+
+  describe('extension with ID', () => {
+    beforeEach(() => {
+      builder = LookerEmbedSDK.createExtensionWithId('kitchensink::kitchensink')
+    })
+
+    it('should create an extension instance', () => {
+      expect(builder.type).toEqual('extension')
+      expect(builder.clientConstructor).toEqual(LookerEmbedExtension)
+    })
+
+    it('should generate an extension URL', () => {
+      expect(builder.embedUrl).toMatch('/embed/extensions/kitchensink::kitchensink')
+    })
+  })
+
+  describe('extension with URL', () => {
+    beforeEach(() => {
+      builder = LookerEmbedSDK.createExtensionWithUrl('https://host.looker.com:9999/login/embed/etc')
+    })
+
+    it('should create an extension instance', () => {
+      expect(builder.type).toEqual('extension')
+      expect(builder.clientConstructor).toEqual(LookerEmbedExtension)
+    })
+
+    it('should generate a extension URL', () => {
       expect(builder.url).toEqual('https://host.looker.com:9999/login/embed/etc')
     })
   })

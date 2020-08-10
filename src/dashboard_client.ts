@@ -40,6 +40,16 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
   }
 
   /**
+   * Convenience method for sending a stop message to the embedded dashboard.
+   *
+   * Requires Looker 7.14 and Dashboards (Beta) (see [[EmbedBuilder.withNext]]).
+   */
+
+  stop () {
+    this.send('dashboard:stop')
+  }
+
+  /**
    * Convenience method for updating the filters of the embedded dashboard.
    *
    * @param filters A set of filter parameters to update
@@ -62,7 +72,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
   /**
    * Convenience method for loading a new dashboard.
    * Requires Looker 7.12 and Dashboards (Beta) (see [[EmbedBuilder.withNext]]).
-   * Throws an exception if the dashboard load did not happen, which can happen if the
+   * Throws an error if the dashboard load did not happen, which can happen if the
    * current dashboard is in edit mode.
    *
    * @param id The ID of the dashboard to load
@@ -70,6 +80,6 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    */
 
   async loadDashboard (id: string, pushHistory: boolean = false): Promise<void> {
-    return this.send('dashboard:load', { id, pushHistory })
+    return this.sendAndReceive('dashboard:load', { id, pushHistory })
   }
 }

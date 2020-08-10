@@ -150,6 +150,8 @@ export interface DashboardTileEventDetail extends EventDetail {
 
 export interface DashboardEvent extends LookerEmbedEvent {
   dashboard: DashboardEventDetail
+  /// Available on Dashboards Beta
+  status?: 'complete' | 'error' | 'stopped'
 }
 
 /**
@@ -159,6 +161,10 @@ export interface DashboardEvent extends LookerEmbedEvent {
 export interface DashboardTileEvent {
   dashboard: DashboardEventDetail
   tile: DashboardTileEventDetail
+  /// Available on Dashboards Beta
+  status?: 'complete' | 'error'
+  /// Available on Dashboards Beta
+  truncated?: boolean
 }
 
 /**

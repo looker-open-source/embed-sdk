@@ -92,6 +92,16 @@ describe('createSignedUrl', () => {
     expect(signed).toContain('signature=jcMKWo4eb4Y34CV7dpC6hAgi8oM%3D')
   })
 
+  it('creates a signed URL with a generated nonce', () => {
+    const user = testUser()
+    delete user.first_name
+    delete user.last_name
+    delete user.user_timezone
+
+    const signed = createSignedUrl(testUrl, user, testHost, testSecret)
+    expect(signed).toMatch('signature=[A-Za-z0-9%]+')
+  })
+
   it('creates a signed URL without optional signed parameters', () => {
     const user = testUser()
     delete user.group_ids
@@ -107,4 +117,5 @@ describe('createSignedUrl', () => {
     expect(signed).toContain('access_filters=%7B%7D')
     expect(signed).toContain('signature=RXMPyKsQerTI%2FfbPIwgoTqUsvio%3D')
   })
+
 })

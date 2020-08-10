@@ -28,10 +28,10 @@ import { LookerEmbedExplore } from './explore_client'
 import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
 
-export { LookerEmbedDashboard } from './dashboard_client'
-export { LookerEmbedExplore } from './explore_client'
-export { LookerEmbedExtension } from './extension_client'
-export { LookerEmbedLook } from './look_client'
+export type { LookerEmbedDashboard } from './dashboard_client'
+export type { LookerEmbedExplore } from './explore_client'
+export type { LookerEmbedExtension } from './extension_client'
+export type { LookerEmbedLook } from './look_client'
 
 export class LookerEmbedSDK {
 
@@ -39,6 +39,7 @@ export class LookerEmbedSDK {
    * Initialize the Embed SDK.
    *
    * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
+   *                This is required for verification of messages sent from the embedded content.
    * @param authUrl A server endpoint that will sign SSO embed URLs
    */
 
@@ -119,7 +120,7 @@ export class LookerEmbedSDK {
   }
 
   /**
-   * Create an EmbedBuilder for an embedded Looker extension.
+   * Create an EmbedBuilder for an embedded Looker extension. Requires Looker 7.12
    *
    * @param id The ID of a Looker Look
    */
