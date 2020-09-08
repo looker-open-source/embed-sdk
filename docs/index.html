@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>@looker/embed-sdk</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for @looker/embed-sdk">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -56,7 +56,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1> @looker/embed-sdk</h1>
+			<h1>@looker/embed-sdk</h1>
 		</div>
 	</div>
 </header>
@@ -72,27 +72,27 @@
 				</a>
 				<p>The Looker JavaScript Embed SDK is designed to facilitate using Looker embedded content in your web application. The goal is to make communication between a host website and one or more embedded dashboards, looks or explores easier and more reliable.</p>
 				<p>A typical setup might look like this. In this case, a dashboard with an id of <code>11</code> is created inside a DOM element with the id <code>dashboard</code>. The <code>dashboard:run:start</code> and <code>dashboard:run:complete</code> events are used to update the state of the embedding window&#39;s UI, and a button with an id of <code>run</code> is scripted to send a <code>dashboard:run</code> message to the dashboard.</p>
-				<pre><code class="language-javascript">LookerEmbedSDK.init(<span class="hljs-string">'looker.example.com:443'</span>, <span class="hljs-string">'/auth'</span>)
+				<pre><code class="language-javascript">LookerEmbedSDK.init(<span class="hljs-string">&#x27;looker.example.com&#x27;</span>, <span class="hljs-string">&#x27;/auth&#x27;</span>)
 
 <span class="hljs-keyword">const</span> setupDashboard = <span class="hljs-function">(<span class="hljs-params">dashboard</span>) =&gt;</span> {
-  <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#run'</span>).addEventListener(<span class="hljs-string">'click'</span>, () =&gt; {
-    dashboard.send(<span class="hljs-string">'dashboard:run'</span>)
+  <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">&#x27;#run&#x27;</span>).addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+    dashboard.send(<span class="hljs-string">&#x27;dashboard:run&#x27;</span>)
   })
 }
 
 LookerEmbedSDK.createDashboardWithId(<span class="hljs-number">11</span>)
-  .appendTo(<span class="hljs-string">'#dashboard'</span>)
-  .on(<span class="hljs-string">'dashboard:run:start'</span>,
-      () =&gt; updateState(<span class="hljs-string">'#dashboard-state'</span>, <span class="hljs-string">'Running'</span>)
+  .appendTo(<span class="hljs-string">&#x27;#dashboard&#x27;</span>)
+  .on(<span class="hljs-string">&#x27;dashboard:run:start&#x27;</span>,
+      <span class="hljs-function">() =&gt;</span> updateState(<span class="hljs-string">&#x27;#dashboard-state&#x27;</span>, <span class="hljs-string">&#x27;Running&#x27;</span>)
   )
-  .on(<span class="hljs-string">'dashboard:run:complete'</span>,
-      () =&gt; updateState(<span class="hljs-string">'#dashboard-state'</span>, <span class="hljs-string">'Done'</span>)
+  .on(<span class="hljs-string">&#x27;dashboard:run:complete&#x27;</span>,
+      <span class="hljs-function">() =&gt;</span> updateState(<span class="hljs-string">&#x27;#dashboard-state&#x27;</span>, <span class="hljs-string">&#x27;Done&#x27;</span>)
   )
   .build()
   .connect()
   .then(setupDashboard)
   .catch(<span class="hljs-function">(<span class="hljs-params">error: <span class="hljs-built_in">Error</span></span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'An unexpected error occurred'</span>, error)
+    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;An unexpected error occurred&#x27;</span>, error)
   })</code></pre>
 				<p>A more complete example can be found <a href="demo/demo.ts">here</a>. Detailed instructions on how to use it are <a href="#demo">here</a>.</p>
 				<a href="#details" id="details" style="color: inherit; text-decoration: none;">
@@ -102,22 +102,22 @@ LookerEmbedSDK.createDashboardWithId(<span class="hljs-number">11</span>)
 				<a href="#building" id="building" style="color: inherit; text-decoration: none;">
 					<h3>Building</h3>
 				</a>
-				<p>First initialize the SDK with address of your Looker server and, optionally, the endpoint on your server that will perform authentication.
+				<p>First initialize the SDK with address of your Looker server and, optionally, the endpoint on your server that will perform authentication.  (Note: Port must be included if it is required to reach the Looker server from browser clients, e.g. looker.example.com:443)
 				These are used by all the embedded content.</p>
-				<pre><code class="language-javascript">LookerEmbedSDK.init(<span class="hljs-string">'looker.example.com:443'</span>, <span class="hljs-string">'/auth'</span>)</code></pre>
+				<pre><code class="language-javascript">LookerEmbedSDK.init(<span class="hljs-string">&#x27;looker.example.com&#x27;</span>, <span class="hljs-string">&#x27;/auth&#x27;</span>)</code></pre>
 				<p>Then the embedded content is built using a series of steps to define its parameters. Some if these parameters are optional, and some are mandatory.</p>
 				<p>The process starts with creating the builder with an <code>id</code>, or a <code>url</code> created by the processed described <a href="https://docs.looker.com/r/sdk/sso-embed">here</a>:</p>
 				<pre><code class="language-javascript">LookerEmbedSDK.createDashboardWithId(id)</code></pre>
 				<p>or</p>
 				<pre><code class="language-javascript">LookerEmbedSDK.createDashboardWithUrl(url)</code></pre>
 				<p>You can then add additional attributes to the builder to complete your setup:</p>
-				<pre><code class="language-javascript">  .appendTo(<span class="hljs-string">'#dashboard'</span>)</code></pre>
+				<pre><code class="language-javascript">  .appendTo(<span class="hljs-string">&#x27;#dashboard&#x27;</span>)</code></pre>
 				<p>You can add event handlers:</p>
-				<pre><code class="language-javascript">  .on(<span class="hljs-string">'dashboard:run:start'</span>,
-      () =&gt; updateState(<span class="hljs-string">'#dashboard-state'</span>, <span class="hljs-string">'Running'</span>)
+				<pre><code class="language-javascript">  .on(<span class="hljs-string">&#x27;dashboard:run:start&#x27;</span>,
+      <span class="hljs-function">() =&gt;</span> updateState(<span class="hljs-string">&#x27;#dashboard-state&#x27;</span>, <span class="hljs-string">&#x27;Running&#x27;</span>)
   )
-  .on(<span class="hljs-string">'dashboard:run:complete'</span>,
-      () =&gt; updateState(<span class="hljs-string">'#dashboard-state'</span>, <span class="hljs-string">'Done'</span>)
+  .on(<span class="hljs-string">&#x27;dashboard:run:complete&#x27;</span>,
+      <span class="hljs-function">() =&gt;</span> updateState(<span class="hljs-string">&#x27;#dashboard-state&#x27;</span>, <span class="hljs-string">&#x27;Done&#x27;</span>)
   )</code></pre>
 				<p>You finish by building the embedded element:</p>
 				<pre><code class="language-javascript">  .build()</code></pre>
@@ -142,22 +142,22 @@ LookerEmbedSDK.createDashboardWithId(<span class="hljs-number">11</span>)
 					</li>
 				</ol>
 				<p>If specified, whenever an embed element is created using just an ID, its embed URL is generated using the type of the element, the provided Looker host, and any provided parameters. For example:</p>
-				<pre><code class="language-javascript">LookerEmbedSDK.init(<span class="hljs-string">'looker.example.com:443'</span>, <span class="hljs-string">'/looker_auth'</span>)
+				<pre><code class="language-javascript">LookerEmbedSDK.init(<span class="hljs-string">&#x27;looker.example.com&#x27;</span>, <span class="hljs-string">&#x27;/looker_auth&#x27;</span>)
 LookerEmbedSDK.createcreateDashboardWithId(<span class="hljs-number">11</span>)
  .build()</code></pre>
 				<p>This will call the /looker_auth endpoint and return a signed SSO URL that can be used to create the embedded content:</p>
-				<pre><code class="language-html">src=https://looker.example.com:443/embed/dashboards/11?sdk=2&amp;embed_host=https://yourhost.example.com</code></pre>
+				<pre><code class="language-html">src=https://looker.example.com/embed/dashboards/11?sdk=2&amp;embed_host=https://yourhost.example.com</code></pre>
 				<a href="#node-helper" id="node-helper" style="color: inherit; text-decoration: none;">
 					<h3>Node helper</h3>
 				</a>
 				<p>A signing helper method <code>createSignedUrl()</code> is provided in
 				<a href="blob/master/demo/demo_config.ts">server_utils/auth_utils.ts</a>. Its usage is as follows:</p>
-				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { createSignedUrl } <span class="hljs-keyword">from</span> <span class="hljs-string">'./auth_utils'</span>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { createSignedUrl } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./auth_utils&#x27;</span>
 
-app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) </span>{
+app.get(<span class="hljs-string">&#x27;/looker_auth&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) </span>{
   <span class="hljs-comment">// Authenticate the request is from a valid user here</span>
   <span class="hljs-keyword">const</span> src = req.query.src;
-  <span class="hljs-keyword">const</span> host = <span class="hljs-string">'http://looker.example.com:443'</span>
+  <span class="hljs-keyword">const</span> host = <span class="hljs-string">&#x27;https://looker.example.com&#x27;</span>
   <span class="hljs-keyword">const</span> secret = YOUR_EMBED_SECRET
   <span class="hljs-keyword">const</span> user = authenticatedUser
   <span class="hljs-keyword">const</span> url = createSignedUrl(src, user, host, secret);
@@ -219,7 +219,7 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 					</li>
 				</ul>
 				<pre><code class="language-javascript"><span class="hljs-comment">// The address of your Looker instance. Required.</span>
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> lookerHost = <span class="hljs-string">'self-signed.looker.com:9999'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> lookerHost = <span class="hljs-string">&#x27;self-signed.looker.com:9999&#x27;</span>
 
 <span class="hljs-comment">// A dashboard that the user can see. Set to 0 to disable dashboard.</span>
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> dashboardId = <span class="hljs-number">1</span>
@@ -230,18 +230,18 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 				</ul>
 				<pre><code class="language-javascript">{
   <span class="hljs-comment">// External embed user ID. IDs are not shared with regular users. Required</span>
-  <span class="hljs-string">"external_user_id"</span>: <span class="hljs-string">"user1"</span>,
+  <span class="hljs-string">&quot;external_user_id&quot;</span>: <span class="hljs-string">&quot;user1&quot;</span>,
   <span class="hljs-comment">// First and last name. Optional</span>
-  <span class="hljs-string">"first_name"</span>: <span class="hljs-string">"Pat"</span>,
-  <span class="hljs-string">"last_name"</span>: <span class="hljs-string">"Embed"</span>,
+  <span class="hljs-string">&quot;first_name&quot;</span>: <span class="hljs-string">&quot;Pat&quot;</span>,
+  <span class="hljs-string">&quot;last_name&quot;</span>: <span class="hljs-string">&quot;Embed&quot;</span>,
   <span class="hljs-comment">// Duration before session expires, in seconds. Required.</span>
-  <span class="hljs-string">"session_length"</span>: <span class="hljs-number">3600</span>,
+  <span class="hljs-string">&quot;session_length&quot;</span>: <span class="hljs-number">3600</span>,
   <span class="hljs-comment">// Enforce logging in with these permissions. Recommended.</span>
-  <span class="hljs-string">"force_logout_login"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-string">&quot;force_logout_login&quot;</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-comment">// External embed group ID. Optional.</span>
-  <span class="hljs-string">"external_group_id"</span>: <span class="hljs-string">"group1"</span>,
+  <span class="hljs-string">&quot;external_group_id&quot;</span>: <span class="hljs-string">&quot;group1&quot;</span>,
   <span class="hljs-comment">// Looker Group IDs. Optional</span>
-  <span class="hljs-string">"group_ids"</span>: [],
+  <span class="hljs-string">&quot;group_ids&quot;</span>: [],
   <span class="hljs-comment">// Permissions. See documentation for details. Required.</span>
   <span class="hljs-comment">// Can any combination of:</span>
   <span class="hljs-comment">//   access_data</span>
@@ -261,20 +261,20 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
   <span class="hljs-comment">//   send_to_s3</span>
   <span class="hljs-comment">//   send_outgoing_webhook</span>
   <span class="hljs-comment">//   schedule_external_look_emails</span>
-  <span class="hljs-string">"permissions"</span>: [
-    <span class="hljs-string">"access_data"</span>,
-    <span class="hljs-string">"see_looks"</span>,
-    <span class="hljs-string">"see_user_dashboards"</span>,
-    <span class="hljs-string">"explore"</span>
-    <span class="hljs-string">"save_content"</span>,
-    <span class="hljs-string">"embed_browse_spaces"</span>
+  <span class="hljs-string">&quot;permissions&quot;</span>: [
+    <span class="hljs-string">&quot;access_data&quot;</span>,
+    <span class="hljs-string">&quot;see_looks&quot;</span>,
+    <span class="hljs-string">&quot;see_user_dashboards&quot;</span>,
+    <span class="hljs-string">&quot;explore&quot;</span>
+    <span class="hljs-string">&quot;save_content&quot;</span>,
+    <span class="hljs-string">&quot;embed_browse_spaces&quot;</span>
   ],
   <span class="hljs-comment">// Model access permissions. Required.</span>
-  <span class="hljs-string">"models"</span>: [<span class="hljs-string">"powered_by"</span>, <span class="hljs-string">"thelook"</span>],
+  <span class="hljs-string">&quot;models&quot;</span>: [<span class="hljs-string">&quot;powered_by&quot;</span>, <span class="hljs-string">&quot;thelook&quot;</span>],
   <span class="hljs-comment">// User attributes. Optional.</span>
-  <span class="hljs-string">"user_attributes"</span>: { <span class="hljs-string">"locale"</span>: <span class="hljs-string">"en_US"</span> },
+  <span class="hljs-string">&quot;user_attributes&quot;</span>: { <span class="hljs-string">&quot;locale&quot;</span>: <span class="hljs-string">&quot;en_US&quot;</span> },
   <span class="hljs-comment">// Access filters. Optional.</span>
-  <span class="hljs-string">"access_filters"</span>: { <span class="hljs-string">"powered_by"</span>: { <span class="hljs-string">"products.brand"</span>: <span class="hljs-string">"Allegra K"</span> } }
+  <span class="hljs-string">&quot;access_filters&quot;</span>: { <span class="hljs-string">&quot;powered_by&quot;</span>: { <span class="hljs-string">&quot;products.brand&quot;</span>: <span class="hljs-string">&quot;Allegra K&quot;</span> } }
 }</code></pre>
 				<a href="#step-3---build-and-run-the-demo" id="step-3---build-and-run-the-demo" style="color: inherit; text-decoration: none;">
 					<h3>Step 3 - Build and run the demo</h3>
@@ -296,6 +296,17 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 					<li>The server will print out what host and port it is running on.</li>
 				</ul>
 				<p>You may need to <code>pip install six</code> to install the Python 2/3 compatibility layer.</p>
+				<a href="#troubleshooting" id="troubleshooting" style="color: inherit; text-decoration: none;">
+					<h2>Troubleshooting</h2>
+				</a>
+				<a href="#logging" id="logging" style="color: inherit; text-decoration: none;">
+					<h3>Logging</h3>
+				</a>
+				<p>The Embed SDK is built on top of <a href="https://github.com/looker-open-source/chatty">chatty</a>. Chatty users <a href="https://github.com/visionmedia/debug">debug</a> for logging. You can enable logging
+				in a browser console with</p>
+				<pre><code class="language-javascript"><span class="hljs-built_in">localStorage</span>.debug = <span class="hljs-string">&#x27;looker:chatty:*&#x27;</span></code></pre>
+				<p>Note that both the parent window and the embedded content have separate local storage, so you can enable logging on one, the other or both. You can disable logging with</p>
+				<pre><code class="language-javascript"><span class="hljs-built_in">localStorage</span>.debug = <span class="hljs-string">&#x27;&#x27;</span></code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -324,6 +335,9 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 						<a href="classes/lookerembedexplore.html" class="tsd-kind-icon">Looker<wbr>Embed<wbr>Explore</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/lookerembedextension.html" class="tsd-kind-icon">Looker<wbr>Embed<wbr>Extension</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/lookerembedlook.html" class="tsd-kind-icon">Looker<wbr>Embed<wbr>Look</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -341,10 +355,10 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/dashboardeventdetail.html" class="tsd-kind-icon">Dashboard<wbr>Event<wbr>Detail</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/dashboardlayout.html" class="tsd-kind-icon">Dashboard<wbr>Layout</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/dashboardlayoutcomponent.html" class="tsd-kind-icon">Dashboard<wbr>Layout<wbr>Component</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
@@ -401,7 +415,7 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/lookerembedfilterparams.html" class="tsd-kind-icon">Looker<wbr>Embed<wbr>Filter<wbr>Params</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/lookerembedhostsettings.html" class="tsd-kind-icon">Looker<wbr>Embed<wbr>Host<wbr>Settings</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
@@ -413,22 +427,22 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/pagepropertieschangedevent.html" class="tsd-kind-icon">Page<wbr>Properties<wbr>Changed<wbr>Event</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/urlparams.html" class="tsd-kind-icon">Url<wbr>Params</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/visconfig.html" class="tsd-kind-icon">Vis<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
 						<a href="globals.html#embedclientconstructor" class="tsd-kind-icon">Embed<wbr>Client<wbr>Constructor</a>
 					</li>
-					<li class=" tsd-kind-variable tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-variable tsd-is-external">
 						<a href="globals.html#is_url" class="tsd-kind-icon">IS_<wbr>URL</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-function tsd-is-external">
 						<a href="globals.html#escapefilterparam" class="tsd-kind-icon">escape<wbr>Filter<wbr>Param</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-external tsd-is-not-exported">
+					<li class=" tsd-kind-function tsd-is-external">
 						<a href="globals.html#stringify" class="tsd-kind-icon">stringify</a>
 					</li>
 				</ul>
@@ -441,57 +455,7 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 		</div>
 	</div>
@@ -501,6 +465,5 @@ app.get(<span class="hljs-string">'/looker_auth'</span>, <span class="hljs-funct
 </div>
 <div class="overlay"></div>
 <script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

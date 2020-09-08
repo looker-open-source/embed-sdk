@@ -270,11 +270,11 @@ export const lookId = 1
 
 You may need to `pip install six` to install the Python 2/3 compatibility layer.
 
-### Troubleshooting
+## Troubleshooting
 
-## Logging
+### Logging
 
-The Embed SDK is built on top of [chatty](https://github.com/looker-open-source/chatty). Chatty users [debug](https://github.com/visionmedia/debug) for logging. You can enable logging
+The Embed SDK is built on top of [chatty](https://github.com/looker-open-source/chatty). Chatty uses [debug](https://github.com/visionmedia/debug) for logging. You can enable logging
 in a browser console with
 
 ```javascript
