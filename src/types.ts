@@ -316,9 +316,13 @@ export interface LookerEmbedEventMap {
 
   'explore:run:start': (this: LookerEmbedLook, event: ExploreEvent) => void
   'explore:run:complete': (this: LookerEmbedLook, event: ExploreEvent) => void
+  'explore:ready': (this: LookerEmbedLook, event: ExploreEvent) => void
+  'explore:state:changed': (this: LookerEmbedLook, event: ExploreEvent) => void
 
   'look:run:start': (this: LookerEmbedLook, event: LookEvent) => void
   'look:run:complete': (this: LookerEmbedLook, event: LookEvent) => void
+  'look:ready': (this: LookerEmbedLook, event: LookEvent) => void
+  'look:state:changed': (this: LookerEmbedLook, event: LookEvent) => void
 
   'page:changed': (this: LookerEmbedBase, event: PageChangedEvent) => void
   'page:properties:changed': (this: LookerEmbedBase, event: PagePropertiesChangedEvent) => void
