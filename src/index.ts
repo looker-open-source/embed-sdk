@@ -134,13 +134,13 @@ export class LookerEmbedSDK {
   /**
    * Create an EmbedBuilder for an embedded Looker query.
    *
-   * @param explore_id The ID of a Looker explore
-   * @param client_id The client_id / qid / slug of a Looker query
+   * @param exploreId The ID of a Looker explore
+   * @param clientId The client_id / qid / slug of a Looker query
    */
 
-  static createQueryWithClientId (explore_id: string, client_id: string) {
-    explore_id = explore_id.replace('::', '/') // Handle old format explore ids.
-    return new EmbedBuilder<LookerEmbedQuery>(this, 'query', '/embed/query', LookerEmbedQuery).withId(explore_id).withParams({qid: client_id})
+  static createQueryWithClientId (exploreId: string, clientId: string) {
+    exploreId = exploreId.replace('::', '/') // Handle old format explore ids.
+    return new EmbedBuilder<LookerEmbedQuery>(this, 'query', '/embed/query', LookerEmbedQuery).withId(exploreId).withParams({ qid: clientId })
   }
 
   /**

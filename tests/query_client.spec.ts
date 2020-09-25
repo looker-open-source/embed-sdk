@@ -48,11 +48,11 @@ describe('LookerEmbedQuery', () => {
 
   it('it runs', () => {
     client.run()
-    expect(sendSpy).toHaveBeenCalledWith('explore:run', undefined)
+    expect(sendSpy).toHaveBeenCalledWith('look:run', undefined)
   })
 
   it('it sets filters', () => {
     client.updateFilters({ 'alpha': 'beta' })
-    expect(sendSpy).toHaveBeenCalledWith('explore:filters:update', { filters: { 'alpha': 'beta' } })
+    expect(sendSpy).toHaveBeenCalledWith('look:filters:update', { filters: { 'alpha': 'beta' } })
   })
 })
