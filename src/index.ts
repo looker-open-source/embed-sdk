@@ -27,11 +27,13 @@ import { LookerEmbedDashboard } from './dashboard_client'
 import { LookerEmbedExplore } from './explore_client'
 import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
+import { LookerEmbedQuery } from './query_client'
 
 export type { LookerEmbedDashboard } from './dashboard_client'
 export type { LookerEmbedExplore } from './explore_client'
 export type { LookerEmbedExtension } from './extension_client'
 export type { LookerEmbedLook } from './look_client'
+export type { LookerEmbedQuery } from './query_client'
 
 export class LookerEmbedSDK {
 
@@ -127,6 +129,18 @@ export class LookerEmbedSDK {
 
   static createExtensionWithId (id: string) {
     return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withId(id)
+  }
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker query.
+   *
+   * @param explore_id The ID of a Looker explore
+   * @param client_id The client_id / qid / slug of a Looker query
+   */
+
+  static createQueryWithClientId (explore_id: string, client_id: string) {
+    explore_id = explore_id.replace('::', '/') // Handle old format explore ids.
+    return new EmbedBuilder<LookerEmbedQuery>(this, 'query', '/embed/query', LookerEmbedQuery).withId(explore_id).withParams({qid: client_id})
   }
 
   /**
