@@ -32,6 +32,7 @@ export type { LookerEmbedDashboard } from './dashboard_client'
 export type { LookerEmbedExplore } from './explore_client'
 export type { LookerEmbedExtension } from './extension_client'
 export type { LookerEmbedLook } from './look_client'
+export * from './types'
 
 export class LookerEmbedSDK {
 
