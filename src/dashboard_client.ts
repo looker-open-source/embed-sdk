@@ -70,6 +70,15 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
   }
 
   /**
+   * Convenience method for opening the dashboard schedule dialog. Only
+   * supported by dashboards next.
+   */
+
+  async openScheduleDialog (): Promise<void> {
+    return this.sendAndReceive('dashboard:schedule_modal:open')
+  }
+
+  /**
    * Convenience method for loading a new dashboard.
    * Requires Looker 7.12 and Dashboards (Beta) (see [[EmbedBuilder.withNext]]).
    * Throws an error if the dashboard load did not happen, which can happen if the

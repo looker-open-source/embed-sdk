@@ -64,6 +64,11 @@ describe('LookerEmbedDashboard', () => {
     expect(sendSpy).toHaveBeenCalledWith('dashboard:options:set', { elements: {}, layouts: [] })
   })
 
+  it('opens shedule dialog', async () => {
+    await client.openScheduleDialog()
+    expect(sendAndReceiveSpy).toHaveBeenCalledWith('dashboard:schedule_modal:open', undefined)
+  })
+
   it('loads', async () => {
     await client.loadDashboard('1')
     expect(sendAndReceiveSpy).toHaveBeenCalledWith('dashboard:load', { id: '1', pushHistory: false })
