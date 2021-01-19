@@ -98,7 +98,7 @@ export class EmbedClient<T> {
       })
   }
 
-  private async createUrl () {
+  private async createUrl (headers?: Array<{ name: string, value: string }>) {
     const src = this._builder.embedUrl
     if (!this._builder.authUrl) return `${this._builder.apiHost}${src}`
 
@@ -108,7 +108,13 @@ export class EmbedClient<T> {
       // compute signature
       const xhr = new XMLHttpRequest()
       xhr.open('GET', url)
+      if (headers) {
+        headers.forEach((header) => {
+          xhr.setRequestHeader(header.name, header.value)
+        })
+      }
       xhr.setRequestHeader('Cache-Control', 'no-cache')
+
       xhr.onload = () => {
         if (xhr.status === 200) {
           resolve(JSON.parse(xhr.responseText).url)
@@ -132,7 +138,7 @@ export class EmbedClient<T> {
     if (this._builder.url) {
       this._connection = this.createIframe(this._builder.url)
     } else {
-      this._connection = this.createUrl().then(async (url) => this.createIframe(url))
+      this._connection = this.createUrl(this._builder.headers).then(async (url) => this.createIframe(url))
     }
     return this._connection
   }

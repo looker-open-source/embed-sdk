@@ -31,6 +31,7 @@ type EmbedClientConstructor<T> = { new(host: ChattyHostConnection): T ;}
 interface LookerEmbedHostSettings {
   apiHost: string
   authUrl?: string
+  headers?: Array<{ name: string, value: string }>
 }
 
 interface UrlParams {
@@ -307,6 +308,14 @@ export class EmbedBuilder<T> {
 
   get authUrl () {
     return this._hostSettings.authUrl
+  }
+
+  /**
+   * The auth headers of this embedded content, if provided
+   */
+
+  get headers () {
+    return this._hostSettings.headers
   }
 
   /**

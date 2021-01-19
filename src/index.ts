@@ -42,11 +42,13 @@ export class LookerEmbedSDK {
    * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
    *                This is required for verification of messages sent from the embedded content.
    * @param authUrl A server endpoint that will sign SSO embed URLs
+   * @param headers An array of HTTP headers that are providing to authUrl
    */
 
-  static init (apiHost: string, authUrl?: string) {
+  static init (apiHost: string, authUrl?: string, headers?: Array<{ name: string, value: string }>) {
     this.apiHost = apiHost
     this.authUrl = authUrl
+    this.headers = headers
   }
 
   /**
@@ -141,4 +143,10 @@ export class LookerEmbedSDK {
    */
 
   static authUrl?: string
+
+  /**
+   * @hidden
+   */
+
+  static headers?: Array<{ name: string, value: string }>
 }
