@@ -27,6 +27,7 @@ import { LookerEmbedDashboard } from './dashboard_client'
 import { LookerEmbedExplore } from './explore_client'
 import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
+import { LookerAuthConfig } from './types'
 
 export type { LookerEmbedDashboard } from './dashboard_client'
 export type { LookerEmbedExplore } from './explore_client'
@@ -44,9 +45,9 @@ export class LookerEmbedSDK {
    * @param authUrl A server endpoint that will sign SSO embed URLs
    */
 
-  static init (apiHost: string, authUrl?: string) {
+  static init (apiHost: string, auth?: string | LookerAuthConfig) {
     this.apiHost = apiHost
-    this.authUrl = authUrl
+    this.auth = typeof auth === 'string' ? { url: auth } : auth
   }
 
   /**
@@ -140,5 +141,5 @@ export class LookerEmbedSDK {
    * @hidden
    */
 
-  static authUrl?: string
+  static auth?: LookerAuthConfig
 }

@@ -280,7 +280,13 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should return the auth url', () => {
+      // tslint:disable-next-line:deprecation
       expect(builder.authUrl).toEqual('/auth')
+    })
+
+    it('should return the auth config', () => {
+      // tslint:disable-next-line:deprecation
+      expect(builder.auth).toEqual({ url: '/auth' })
     })
   })
 
@@ -295,48 +301,95 @@ describe('LookerEmbedBuilder', () => {
     })
   })
 
-  describe('api host and auth url set through embed builder api', () => {
+  describe('api host and auth set through embed builder api', () => {
     const host = 'https://host.looker.com:9999'
-    const auth = '/auth'
-    const embedSdk = LookerEmbedSDK as any
+    const host2 = 'https://host2.looker.com:9999'
+    const authUrl = '/auth'
+    const authUrl2 = '/auth2'
+    const authConfig = {
+      url: '/auth',
+      headers: [{ name: 'X-Foo', value: 'bar' }],
+      params: [{ name: 'baz', value: 'biff' }]
+    }
+    const authConfig2 = {
+      url: '/auth2',
+      headers: [{ name: 'X-Foo', value: 'bar' }],
+      params: [{ name: 'baz', value: 'biff' }]
+    }
+    const embedSdk = LookerEmbedSDK
 
     beforeEach(() => {
       embedSdk.apiHost = undefined
-      embedSdk.authUrl = undefined
+      embedSdk.auth = undefined
     })
 
     it('builder allows api host and auth url to be set', () => {
       LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
         .withApiHost(host)
-        .withAuthUrl(auth)
+        .withAuthUrl(authUrl)
       expect(embedSdk.apiHost).toEqual(host)
-      expect(embedSdk.authUrl).toEqual(auth)
+      expect(embedSdk.auth).toEqual({ url: authUrl })
     })
 
-    it('allows api host and auth to be specified again', () => {
-      LookerEmbedSDK.init(host, auth)
+    it('allows api host and auth url to be specified again', () => {
+      LookerEmbedSDK.init(host, authUrl)
       LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
         .withApiHost(host)
-        .withAuthUrl(auth)
+        .withAuthUrl(authUrl)
       expect(embedSdk.apiHost).toEqual(host)
-      expect(embedSdk.authUrl).toEqual(auth)
+      expect(embedSdk.auth).toEqual({ url: authUrl })
     })
 
-    it('prevents api host and auth url from being overriden', () => {
-      LookerEmbedSDK.init(host, auth)
+    it('prevents api host and auth url from being overridden', () => {
+      LookerEmbedSDK.init(host, authUrl)
       try {
         LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
-          .withApiHost(auth)
+          .withApiHost(host2)
         fail()
       } catch (err) {
         expect(err.message).toEqual('not allowed to change api host')
       }
       try {
         LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
-          .withAuthUrl(host)
+          .withAuthUrl(authUrl2)
         fail()
       } catch (err) {
         expect(err.message).toEqual('not allowed to change auth url')
+      }
+    })
+
+    it('builder allows api host and auth config to be set', () => {
+      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+        .withApiHost(host)
+        .withAuth(authConfig)
+      expect(embedSdk.apiHost).toEqual(host)
+      expect(embedSdk.auth).toEqual(authConfig)
+    })
+
+    it('allows api host and auth config to be specified again', () => {
+      LookerEmbedSDK.init(host, authConfig)
+      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+        .withApiHost(host)
+        .withAuth(authConfig)
+      expect(embedSdk.apiHost).toEqual(host)
+      expect(embedSdk.auth).toEqual(authConfig)
+    })
+
+    it('prevents api host and auth config from being overridden', () => {
+      LookerEmbedSDK.init(host, authConfig)
+      try {
+        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+          .withApiHost(host2)
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('not allowed to change api host')
+      }
+      try {
+        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+          .withAuth(authConfig2)
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('not allowed to change auth')
       }
     })
 

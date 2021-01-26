@@ -44,6 +44,75 @@ describe('LookerEmbed', () => {
     document.body.removeChild(el)
   })
 
+  describe('auth config', () => {
+    let fakeDashboardClient: any
+
+    beforeEach(() => {
+      mock.setup()
+      fakeDashboardClient = {}
+      builder = LookerEmbedSDK.createDashboardWithId(11)
+      client = builder.build()
+      spyOn<any>(client, 'createIframe').and.returnValue(Promise.resolve(fakeDashboardClient))
+    })
+
+    afterEach(() =>
+      mock.teardown()
+    )
+
+    it('should use the auth url string', (done) => {
+      LookerEmbedSDK.init('host.looker.com:9999', '/auth')
+      mock.get(/\/auth\?src=/, (req, res) => {
+        expect(req.url().toString()).toMatch(/^\/auth\?src=%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A\d+%26sdk%3D2$/)
+        expect(req.header('Cache-Control')).toEqual('no-cache')
+        return res.status(200).body(`{"url": "${testUrl}"}`)
+      })
+
+      client.connect()
+        .then(done)
+        .catch(done.fail)
+    })
+
+    it('should use the auth config url string', (done) => {
+      LookerEmbedSDK.init('host.looker.com:9999', { url: '/auth' })
+      mock.get(/\/auth\?src=/, (req, res) => {
+        expect(req.url().toString()).toMatch(/^\/auth\?src=%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A\d+%26sdk%3D2$/)
+        expect(req.header('Cache-Control')).toEqual('no-cache')
+        return res.status(200).body(`{"url": "${testUrl}"}`)
+      })
+
+      client.connect()
+        .then(done)
+        .catch(done.fail)
+    })
+
+    it('should use the auth config headers', (done) => {
+      LookerEmbedSDK.init('host.looker.com:9999', { url: '/auth', headers: [{ name: 'X-Foo', value: 'bar' }] })
+      mock.get(/\/auth\?src=/, (req, res) => {
+        expect(req.url().toString()).toMatch(/^\/auth\?src=%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A\d+%26sdk%3D2$/)
+        expect(req.header('Cache-Control')).toEqual('no-cache')
+        expect(req.header('X-Foo')).toEqual('bar')
+        return res.status(200).body(`{"url": "${testUrl}"}`)
+      })
+
+      client.connect()
+        .then(done)
+        .catch(done.fail)
+    })
+
+    it('should use the auth config parameters', (done) => {
+      LookerEmbedSDK.init('host.looker.com:9999', { url: '/auth', params: [{ name: 'foo', value: 'bar' }] })
+      mock.get(/\/auth\?src=/, (req, res) => {
+        expect(req.url().toString()).toMatch(/^\/auth\?src=%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A\d+%26sdk%3D2&foo=bar$/)
+        expect(req.header('Cache-Control')).toEqual('no-cache')
+        return res.status(200).body(`{"url": "${testUrl}"}`)
+      })
+
+      client.connect()
+        .then(done)
+        .catch(done.fail)
+    })
+  })
+
   describe('targetOrigin', () => {
     it('accepts a host:port for apiHost', () => {
       LookerEmbedSDK.init('host.looker.com:9999')
@@ -88,18 +157,6 @@ describe('LookerEmbed', () => {
       builder = LookerEmbedSDK.createDashboardWithId(11)
       client = builder.build()
       spyOn<any>(client, 'createIframe').and.returnValue(Promise.resolve(fakeDashboardClient))
-    })
-
-    it('should contact the auth endpoint to build the URL', (done) => {
-      client.connect()
-        .then((dashboard: LookerEmbedDashboard) => {
-          expect(dashboard).toEqual(fakeDashboardClient)
-          expect(client.createIframe).toHaveBeenCalledWith(testUrl)
-          expect(client.isConnected).toBe(true)
-          expect(client.connection).not.toEqual(null)
-          done()
-        })
-        .catch(done.fail)
     })
 
     afterEach(() =>

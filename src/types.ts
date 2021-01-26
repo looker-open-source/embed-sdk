@@ -27,6 +27,15 @@ import { LookerEmbedDashboard } from './dashboard_client'
 import { LookerEmbedLook } from './look_client'
 
 /**
+ * Auth server configuration
+ */
+export interface LookerAuthConfig {
+  url: string
+  headers?: Array<{name: string, value: string}>
+  params?: Array<{name: string, value: string}>
+}
+
+/**
  * Data structure for filters.
  */
 
