@@ -100,15 +100,26 @@ export class EmbedClient<T> {
 
   private async createUrl () {
     const src = this._builder.embedUrl
-    if (!this._builder.authUrl) return `${this._builder.apiHost}${src}`
+    const auth = this._builder.auth
+    if (!auth?.url) return `${this._builder.apiHost}${src}`
 
-    const url = `${this._builder.authUrl}?src=${encodeURIComponent(src)}`
+    let url = `${auth.url}?src=${encodeURIComponent(src)}`
+    if (auth.params) {
+      for (const param of auth.params) {
+        url += `&${encodeURIComponent(param.name)}=${encodeURIComponent(param.value)}`
+      }
+    }
 
     return new Promise<string>(async (resolve, reject) => {
       // compute signature
       const xhr = new XMLHttpRequest()
       xhr.open('GET', url)
       xhr.setRequestHeader('Cache-Control', 'no-cache')
+      if (auth.headers) {
+        for (const header of auth.headers) {
+          xhr.setRequestHeader(header.name, header.value)
+        }
+      }
       xhr.onload = () => {
         if (xhr.status === 200) {
           resolve(JSON.parse(xhr.responseText).url)

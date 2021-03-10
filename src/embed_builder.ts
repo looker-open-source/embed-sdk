@@ -23,14 +23,15 @@
  */
 
 import { ChattyHostConnection, CallbackStore } from '@looker/chatty'
+import { deprecate } from 'util'
 import { EmbedClient } from './embed'
-import { LookerEmbedEventMap, LookerEmbedFilterParams } from './types'
+import { LookerAuthConfig, LookerEmbedEventMap, LookerEmbedFilterParams } from './types'
 
 type EmbedClientConstructor<T> = { new(host: ChattyHostConnection): T ;}
 
 interface LookerEmbedHostSettings {
   apiHost: string
-  authUrl?: string
+  auth?: LookerAuthConfig
 }
 
 interface UrlParams {
@@ -210,14 +211,29 @@ export class EmbedBuilder<T> {
   /**
    * Allows auth url to be specified
    *
-   * @param authUrl
+   * @param authUrl URL to endpoint that can sign Looker SSO URLs
    */
 
   withAuthUrl (authUrl: string) {
-    if (!this._hostSettings.authUrl) {
-      this._hostSettings.authUrl = authUrl
-    } else if (this._hostSettings.authUrl !== authUrl) {
+    if (!this._hostSettings.auth?.url) {
+      this._hostSettings.auth = { url: authUrl }
+    } else if (this._hostSettings.auth.url !== authUrl) {
       throw new Error('not allowed to change auth url')
+    }
+    return this
+  }
+
+  /**
+   * Allows auth url to be specified
+   *
+   * @param auth
+   */
+
+  withAuth (auth: LookerAuthConfig) {
+    if (!this._hostSettings.auth) {
+      this._hostSettings.auth = auth
+    } else if (this._hostSettings.auth !== auth) {
+      throw new Error('not allowed to change auth')
     }
     return this
   }
@@ -303,10 +319,19 @@ export class EmbedBuilder<T> {
 
   /**
    * The auth URL of this embedded content, if provided
+   * @deprecated
    */
 
   get authUrl () {
-    return this._hostSettings.authUrl
+    return this._hostSettings.auth?.url
+  }
+
+  /**
+   * The auth config of this embedded content, if provided
+   */
+
+  get auth () {
+    return this._hostSettings.auth
   }
 
   /**
