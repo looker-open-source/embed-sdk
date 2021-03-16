@@ -375,6 +375,18 @@ describe('LookerEmbedBuilder', () => {
       expect(embedSdk.auth).toEqual(authConfig)
     })
 
+    it('builder allows withCredentials auth config to be set', () => {
+      const authWithCredentials = {
+        ...authConfig,
+        withCredentials: true
+      }
+      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+          .withApiHost(host)
+          .withAuth(authWithCredentials)
+      expect(embedSdk.apiHost).toEqual(host)
+      expect(embedSdk.auth).toEqual(authWithCredentials)
+    })
+
     it('prevents api host and auth config from being overridden', () => {
       LookerEmbedSDK.init(host, authConfig)
       try {

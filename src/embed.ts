@@ -114,6 +114,9 @@ export class EmbedClient<T> {
       // compute signature
       const xhr = new XMLHttpRequest()
       xhr.open('GET', url)
+      if (auth.withCredentials) {
+        xhr.withCredentials = auth.withCredentials
+      }
       xhr.setRequestHeader('Cache-Control', 'no-cache')
       if (auth.headers) {
         for (const header of auth.headers) {

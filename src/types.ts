@@ -33,6 +33,7 @@ export interface LookerAuthConfig {
   url: string
   headers?: Array<{name: string, value: string}>
   params?: Array<{name: string, value: string}>
+  withCredentials?: boolean
 }
 
 /**
