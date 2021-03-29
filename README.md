@@ -130,8 +130,8 @@ The Auth endpoint can be configured further, allowing custom Request Headers, as
 LookerEmbedSDK.init('looker.example.com', 
   {
     url: 'https://api.acme.com/looker/auth',
-    headers: { 'Foo Header': 'Foo' },
-    params: { foo: 'bar' },
+    headers: [{'name': 'Foo Header', 'value': 'Foo'}],
+    params: [{'name': 'foo', 'value': 'bar'}],
     withCredentials: true // Needed for CORS requests to Auth endpoint include Http Only cookie headers
   })
 ``` 
@@ -299,4 +299,3 @@ Note that both the parent window and the embedded content have separate local st
 ```javascript
 localStorage.debug = ''
 ```
-
