@@ -123,6 +123,19 @@ This will call the /looker_auth endpoint and return a signed SSO URL that can be
 src=https://looker.example.com/embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com
 ```
 
+### Advanced Auth Configuration
+The Auth endpoint can be configured further, allowing custom Request Headers, as well as CORS support by passing an options object to the `init` method 
+
+```javascript
+LookerEmbedSDK.init('looker.example.com', 
+  {
+    url: 'https://api.acme.com/looker/auth',
+    headers: [{'name': 'Foo Header', 'value': 'Foo'}],
+    params: [{'name': 'foo', 'value': 'bar'}],
+    withCredentials: true // Needed for CORS requests to Auth endpoint include Http Only cookie headers
+  })
+``` 
+
 ### Node helper
 
 A signing helper method `createSignedUrl()` is provided in
@@ -286,4 +299,3 @@ Note that both the parent window and the embedded content have separate local st
 ```javascript
 localStorage.debug = ''
 ```
-
