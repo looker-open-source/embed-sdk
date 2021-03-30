@@ -147,6 +147,17 @@ LookerEmbedSDK.createcreateDashboardWithId(<span class="hljs-number">11</span>)
  .build()</code></pre>
 				<p>This will call the /looker_auth endpoint and return a signed SSO URL that can be used to create the embedded content:</p>
 				<pre><code class="language-html">src=https://looker.example.com/embed/dashboards/11?sdk=2&amp;embed_host=https://yourhost.example.com</code></pre>
+				<a href="#advanced-auth-configuration" id="advanced-auth-configuration" style="color: inherit; text-decoration: none;">
+					<h3>Advanced Auth Configuration</h3>
+				</a>
+				<p>The Auth endpoint can be configured further, allowing custom Request Headers, as well as CORS support by passing an options object to the <code>init</code> method </p>
+				<pre><code class="language-javascript">LookerEmbedSDK.init(<span class="hljs-string">&#x27;looker.example.com&#x27;</span>,
+  {
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;https://api.acme.com/looker/auth&#x27;</span>,
+    <span class="hljs-attr">headers</span>: [{<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;Foo Header&#x27;</span>, <span class="hljs-string">&#x27;value&#x27;</span>: <span class="hljs-string">&#x27;Foo&#x27;</span>}],
+    <span class="hljs-attr">params</span>: [{<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;foo&#x27;</span>, <span class="hljs-string">&#x27;value&#x27;</span>: <span class="hljs-string">&#x27;bar&#x27;</span>}],
+    <span class="hljs-attr">withCredentials</span>: <span class="hljs-literal">true</span> <span class="hljs-comment">// Needed for CORS requests to Auth endpoint include Http Only cookie headers</span>
+  })</code></pre>
 				<a href="#node-helper" id="node-helper" style="color: inherit; text-decoration: none;">
 					<h3>Node helper</h3>
 				</a>
@@ -165,17 +176,17 @@ app.get(<span class="hljs-string">&#x27;/looker_auth&#x27;</span>, <span class="
 });</code></pre>
 				<p>The <code>user</code> data structure is</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> LookerEmbedUser {
-  external_user_id: <span class="hljs-built_in">string</span>
+  <span class="hljs-attr">external_user_id</span>: <span class="hljs-built_in">string</span>
   first_name?: <span class="hljs-built_in">string</span>
   last_name?: <span class="hljs-built_in">string</span>
-  session_length: <span class="hljs-built_in">number</span>
+  <span class="hljs-attr">session_length</span>: <span class="hljs-built_in">number</span>
   force_logout_login?: <span class="hljs-built_in">boolean</span>,
-  permissions: LookerUserPermission[]
-  models: <span class="hljs-built_in">string</span>[]
+  <span class="hljs-attr">permissions</span>: LookerUserPermission[]
+  <span class="hljs-attr">models</span>: <span class="hljs-built_in">string</span>[]
   group_ids?: <span class="hljs-built_in">number</span>[]
   external_group_id?: <span class="hljs-built_in">string</span>
   user_attributes?: {[key: <span class="hljs-built_in">string</span>]: <span class="hljs-built_in">any</span>}
-  access_filters: {[key: <span class="hljs-built_in">string</span>]: <span class="hljs-built_in">any</span>}
+  <span class="hljs-attr">access_filters</span>: {[key: <span class="hljs-built_in">string</span>]: <span class="hljs-built_in">any</span>}
 }</code></pre>
 				<a href="#demo" id="demo" style="color: inherit; text-decoration: none;">
 					<h2>Demo</h2>
@@ -402,6 +413,9 @@ app.get(<span class="hljs-string">&#x27;/looker_auth&#x27;</span>, <span class="
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/lookeventdetail.html" class="tsd-kind-icon">Look<wbr>Event<wbr>Detail</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/lookerauthconfig.html" class="tsd-kind-icon">Looker<wbr>Auth<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/lookerdashboardoptions.html" class="tsd-kind-icon">Looker<wbr>Dashboard<wbr>Options</a>
