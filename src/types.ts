@@ -315,6 +315,8 @@ export interface LookerEmbedEventMap {
   'dashboard:run:start': (this: LookerEmbedDashboard, event: DashboardEvent) => void
   'dashboard:run:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
   'dashboard:filters:changed': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  'dashboard:save:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  'dashboard:delete:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
   'dashboard:tile:start': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
   'dashboard:tile:complete': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
   'dashboard:tile:download': (this: LookerEmbedDashboard, event: DashboardTileDownloadEvent) => void
@@ -331,6 +333,8 @@ export interface LookerEmbedEventMap {
 
   'look:run:start': (this: LookerEmbedLook, event: LookEvent) => void
   'look:run:complete': (this: LookerEmbedLook, event: LookEvent) => void
+  'look:save:complete': (this: LookerEmbedLook, event: LookEvent) => void
+  'look:delete:complete': (this: LookerEmbedLook, event: LookEvent) => void
   'look:ready': (this: LookerEmbedLook, event: LookEvent) => void
   'look:state:changed': (this: LookerEmbedLook, event: LookEvent) => void
 
