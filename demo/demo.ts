@@ -113,6 +113,9 @@ document.addEventListener('DOMContentLoaded', function () {
       .on('dashboard:loaded', () => updateState('#dashboard-state', 'Loaded'))
       .on('dashboard:run:start', () => updateState('#dashboard-state', 'Running'))
       .on('dashboard:run:complete', () => updateState('#dashboard-state', 'Done'))
+      // Listen to messages that change dashboard
+      .on('dashboard:save:complete', () => updateState('#dashboard-state', 'Saved'))
+      .on('dashboard:delete:complete', () => updateState('#dashboard-state', 'Deleted'))
       // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', canceller)
       .on('drillmodal:explore', canceller)
@@ -147,6 +150,9 @@ document.addEventListener('DOMContentLoaded', function () {
       .on('look:ready', () => updateState('#look-state', 'Loaded'))
       .on('look:run:start', () => updateState('#look-state', 'Running'))
       .on('look:run:complete', () => updateState('#look-state', 'Done'))
+      // Listen to messages that change Look
+      .on('look:save:complete', () => updateState('#look-state', 'Saved'))
+      .on('look:delete:complete', () => updateState('#look-state', 'Deleted'))
       // Give the embedded content a class for styling purposes
       .withClassName('looker-embed')
       // Set the initial filters

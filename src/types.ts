@@ -257,6 +257,27 @@ export interface LookEvent extends LookerEmbedEvent {
 }
 
 /**
+ * Look save event details
+ * Looker version 21.6
+ */
+
+export interface LookSaveEventDetail extends LookEventDetail {
+  /**
+   * Folder Look is associated with
+   * Looker version 21.8
+   */
+  spaceId: number
+}
+
+/**
+ * Look save event
+ * Looker version 21.6
+ */
+export interface LookSaveEvent extends LookerEmbedEvent {
+  look: LookSaveEventDetail
+}
+
+/**
  * Explore page event details
  */
 
@@ -308,13 +329,23 @@ export interface CancellableEventResponse {
 }
 
 /**
- * Current Looker embed events as of version 6.20
+ * Current Looker embed events as of version 6.20 (except where stated)
  */
 
 export interface LookerEmbedEventMap {
   'dashboard:run:start': (this: LookerEmbedDashboard, event: DashboardEvent) => void
   'dashboard:run:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
   'dashboard:filters:changed': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  /**
+   * Dashboard saved event
+   * Looker 21.6
+   */
+  'dashboard:save:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  /**
+   * Dashboard deleted event
+   * Looker 21.6
+   */
+  'dashboard:delete:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
   'dashboard:tile:start': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
   'dashboard:tile:complete': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
   'dashboard:tile:download': (this: LookerEmbedDashboard, event: DashboardTileDownloadEvent) => void
@@ -331,6 +362,16 @@ export interface LookerEmbedEventMap {
 
   'look:run:start': (this: LookerEmbedLook, event: LookEvent) => void
   'look:run:complete': (this: LookerEmbedLook, event: LookEvent) => void
+  /**
+   * Look saved event
+   * Looker 21.6
+   */
+  'look:save:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
+  /**
+   * Look deleted event
+   * Looker 21.6
+   */
+  'look:delete:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
   'look:ready': (this: LookerEmbedLook, event: LookEvent) => void
   'look:state:changed': (this: LookerEmbedLook, event: LookEvent) => void
 
