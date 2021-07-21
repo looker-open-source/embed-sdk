@@ -59,7 +59,9 @@ const setupDashboard = (dashboard: LookerEmbedDashboard) => {
   const stateFilter = document.querySelector('#state')
   if (stateFilter) {
     stateFilter.addEventListener('change', (event) => {
-      dashboard.updateFilters({ 'State / Region': (event.target as HTMLSelectElement).value })
+      dashboard.updateFilters({
+        'State / Region': (event.target as HTMLSelectElement).value,
+      })
     })
   }
 }
@@ -77,7 +79,9 @@ const setupLookOrExplore = (look: LookerEmbedLook) => {
   const stateFilter = document.querySelector('#state')
   if (stateFilter) {
     stateFilter.addEventListener('change', (event) => {
-      look.updateFilters({ 'users.state': (event.target as HTMLSelectElement).value })
+      look.updateFilters({
+        'users.state': (event.target as HTMLSelectElement).value,
+      })
     })
   }
 }
@@ -103,7 +107,6 @@ const canceller = (event: any) => {
 // all the parent elements are present.
 
 document.addEventListener('DOMContentLoaded', function () {
-
   // Create an embedded dashboard
   if (dashboardId) {
     LookerEmbedSDK.createDashboardWithId(dashboardId)
@@ -123,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .on('dashboard:tile:view', canceller)
       // Give the embedded content a class for styling purposes
       .withClassName('looker-embed')
-       // Enable Dashboards Beta
+      // Enable Dashboards Next
       .withNext()
       // Set the initial filters
       .withFilters({ 'State / Region': 'California' })
@@ -198,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector<HTMLDivElement>('#demo-explore')!.style.display = 'none'
   }
 
-  // Create an embedded extension (Requires Looker 7.12 and extensions beta)
+  // Create an embedded extension (Requires Looker 7.12 and extensions framework)
   if (extensionId) {
     LookerEmbedSDK.createExtensionWithId(extensionId)
       // Append to the #extension element

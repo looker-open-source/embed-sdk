@@ -31,8 +31,8 @@ import { LookerEmbedLook } from './look_client'
  */
 export interface LookerAuthConfig {
   url: string
-  headers?: Array<{name: string, value: string}>
-  params?: Array<{name: string, value: string}>
+  headers?: Array<{ name: string; value: string }>
+  params?: Array<{ name: string; value: string }>
   withCredentials?: boolean
 }
 
@@ -151,7 +151,21 @@ export interface DashboardEventDetail extends EventDetail {
 export interface DashboardTileEventDetail extends EventDetail {
   id: string | number
   title: string
-  listen: string
+  listen: Record<string, string | null>
+}
+
+/**
+ * Dashboard tile status
+ *
+ * Available on Dashboards Next
+ *
+ * Requires Looker 21.14
+ */
+
+export interface TileStatus {
+  tileId: string
+  status: 'error' | 'complete'
+  errors?: Array<QueryError>
 }
 
 /**
@@ -160,8 +174,29 @@ export interface DashboardTileEventDetail extends EventDetail {
 
 export interface DashboardEvent extends LookerEmbedEvent {
   dashboard: DashboardEventDetail
-  /// Available on Dashboards Beta
+  /// Available on Dashboards Next
   status?: 'complete' | 'error' | 'stopped'
+  /// Available on Dashboards Next
+  /// Requires Looker 21.14
+  tileStatuses: Array<TileStatus>
+}
+
+/**
+ * Query error detail
+ *
+ * Requires Looker 21.14
+ */
+
+export interface QueryError {
+  message: string | null
+  message_details: string | null
+  params: string | null
+  error_pos: string | null
+  level: string
+  fatal?: boolean
+  sql_error_loc: {
+    [key: string]: any
+  }
 }
 
 /**
@@ -171,10 +206,13 @@ export interface DashboardEvent extends LookerEmbedEvent {
 export interface DashboardTileEvent {
   dashboard: DashboardEventDetail
   tile: DashboardTileEventDetail
-  /// Available on Dashboards Beta
+  /// Available on Dashboards Next
   status?: 'complete' | 'error'
-  /// Available on Dashboards Beta
+  /// Available on Dashboards Next
   truncated?: boolean
+  /// Available on Dashboards Next
+  /// Requires Looker 21.14
+  errors?: Array<QueryError>
 }
 
 /**
@@ -349,8 +387,14 @@ export interface LookerEmbedEventMap {
   'dashboard:tile:start': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
   'dashboard:tile:complete': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
   'dashboard:tile:download': (this: LookerEmbedDashboard, event: DashboardTileDownloadEvent) => void
-  'dashboard:tile:explore': (this: LookerEmbedDashboard, event: DashboardTileExploreEvent) => CancellableEventResponse | undefined
-  'dashboard:tile:view': (this: LookerEmbedDashboard, event: DashboardTileViewEvent) => CancellableEventResponse | undefined
+  'dashboard:tile:explore': (
+    this: LookerEmbedDashboard,
+    event: DashboardTileExploreEvent
+  ) => CancellableEventResponse | undefined
+  'dashboard:tile:view': (
+    this: LookerEmbedDashboard,
+    event: DashboardTileViewEvent
+  ) => CancellableEventResponse | undefined
 
   'drillmenu:click': (this: LookerEmbedBase, event: DrillMenuEvent) => CancellableEventResponse | undefined
   'drillmodal:explore': (this: LookerEmbedBase, event: DrillModalExploreEvent) => CancellableEventResponse | undefined

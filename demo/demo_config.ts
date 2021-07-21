@@ -16,5 +16,5 @@ export const exploreId = 'thelook::orders'
 
 // An Extension that the user can see. Set to '' to disable extension demo.
 // export const extensionId = 'extension::my-great-extension'
-// Requires Looker 7.12 and extensions beta.
+// Requires Looker 7.12 and extensions framework.
 export const extensionId = ''
