@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Current Looker embed events as of version 6.20</p>
+						<p>Current Looker embed events as of version 6.20 (except where stated)</p>
 					</div>
 				</div>
 			</section>
@@ -86,7 +86,7 @@
 				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></div>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Current Looker embed events as of version 6.20</p>
+						<p>Current Looker embed events as of version 6.20 (except where stated)</p>
 					</div>
 				</div>
 			</section>
@@ -97,9 +97,11 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_delete_complete" class="tsd-kind-icon">dashboard:delete:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_filters_changed" class="tsd-kind-icon">dashboard:filters:changed</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_run_complete" class="tsd-kind-icon">dashboard:run:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_run_start" class="tsd-kind-icon">dashboard:run:start</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_save_complete" class="tsd-kind-icon">dashboard:save:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_tile_complete" class="tsd-kind-icon">dashboard:tile:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_tile_download" class="tsd-kind-icon">dashboard:tile:download</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#dashboard_tile_explore" class="tsd-kind-icon">dashboard:tile:explore</a></li>
@@ -111,9 +113,11 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#explore_run_complete" class="tsd-kind-icon">explore:run:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#explore_run_start" class="tsd-kind-icon">explore:run:start</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#explore_state_changed" class="tsd-kind-icon">explore:state:changed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#look_delete_complete" class="tsd-kind-icon">look:delete:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#look_ready" class="tsd-kind-icon">look:ready</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#look_run_complete" class="tsd-kind-icon">look:run:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#look_run_start" class="tsd-kind-icon">look:run:start</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#look_save_complete" class="tsd-kind-icon">look:save:complete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#look_state_changed" class="tsd-kind-icon">look:state:changed</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#page_changed" class="tsd-kind-icon">page:changed</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerembedeventmap.html#page_properties_changed" class="tsd-kind-icon">page:properties:changed</a></li>
@@ -125,12 +129,52 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="dashboard_delete_complete" class="tsd-anchor"></a>
+					<h3>dashboard:delete:complete</h3>
+					<div class="tsd-signature tsd-kind-icon">dashboard:delete:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L386">src/types.ts:386</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Dashboard deleted event
+							Looker 21.6</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>this: <a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a></h5>
+											</li>
+											<li>
+												<h5>event: <a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="dashboard_filters_changed" class="tsd-anchor"></a>
 					<h3>dashboard:filters:changed</h3>
 					<div class="tsd-signature tsd-kind-icon">dashboard:filters:changed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L317">src/types.ts:317</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L376">src/types.ts:376</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -164,7 +208,7 @@
 					<div class="tsd-signature tsd-kind-icon">dashboard:run:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L316">src/types.ts:316</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L375">src/types.ts:375</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -198,9 +242,49 @@
 					<div class="tsd-signature tsd-kind-icon">dashboard:run:start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L315">src/types.ts:315</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L374">src/types.ts:374</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>this: <a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a></h5>
+											</li>
+											<li>
+												<h5>event: <a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="dashboard_save_complete" class="tsd-anchor"></a>
+					<h3>dashboard:save:complete</h3>
+					<div class="tsd-signature tsd-kind-icon">dashboard:save:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardevent.html" class="tsd-signature-type">DashboardEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L381">src/types.ts:381</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Dashboard saved event
+							Looker 21.6</p>
+						</div>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -232,7 +316,7 @@
 					<div class="tsd-signature tsd-kind-icon">dashboard:tile:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardtileevent.html" class="tsd-signature-type">DashboardTileEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L319">src/types.ts:319</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L388">src/types.ts:388</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -266,7 +350,7 @@
 					<div class="tsd-signature tsd-kind-icon">dashboard:tile:download<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardtiledownloadevent.html" class="tsd-signature-type">DashboardTileDownloadEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L320">src/types.ts:320</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L389">src/types.ts:389</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -300,7 +384,7 @@
 					<div class="tsd-signature tsd-kind-icon">dashboard:tile:explore<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardtileexploreevent.html" class="tsd-signature-type">DashboardTileExploreEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="cancellableeventresponse.html" class="tsd-signature-type">CancellableEventResponse</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L321">src/types.ts:321</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L390">src/types.ts:390</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -334,7 +418,7 @@
 					<div class="tsd-signature tsd-kind-icon">dashboard:tile:start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardtileevent.html" class="tsd-signature-type">DashboardTileEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L318">src/types.ts:318</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L387">src/types.ts:387</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -368,7 +452,7 @@
 					<div class="tsd-signature tsd-kind-icon">dashboard:tile:view<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembeddashboard.html" class="tsd-signature-type">LookerEmbedDashboard</a>, event<span class="tsd-signature-symbol">: </span><a href="dashboardtileviewevent.html" class="tsd-signature-type">DashboardTileViewEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="cancellableeventresponse.html" class="tsd-signature-type">CancellableEventResponse</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L322">src/types.ts:322</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L394">src/types.ts:394</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -402,7 +486,7 @@
 					<div class="tsd-signature tsd-kind-icon">drillmenu:click<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedbase.html" class="tsd-signature-type">LookerEmbedBase</a>, event<span class="tsd-signature-symbol">: </span><a href="drillmenuevent.html" class="tsd-signature-type">DrillMenuEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="cancellableeventresponse.html" class="tsd-signature-type">CancellableEventResponse</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L324">src/types.ts:324</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L399">src/types.ts:399</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -436,7 +520,7 @@
 					<div class="tsd-signature tsd-kind-icon">drillmodal:explore<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedbase.html" class="tsd-signature-type">LookerEmbedBase</a>, event<span class="tsd-signature-symbol">: </span><a href="drillmodalexploreevent.html" class="tsd-signature-type">DrillModalExploreEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="cancellableeventresponse.html" class="tsd-signature-type">CancellableEventResponse</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L325">src/types.ts:325</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L400">src/types.ts:400</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -470,7 +554,7 @@
 					<div class="tsd-signature tsd-kind-icon">explore:ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="exploreevent.html" class="tsd-signature-type">ExploreEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L329">src/types.ts:329</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L404">src/types.ts:404</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -504,7 +588,7 @@
 					<div class="tsd-signature tsd-kind-icon">explore:run:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="exploreevent.html" class="tsd-signature-type">ExploreEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L328">src/types.ts:328</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L403">src/types.ts:403</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -538,7 +622,7 @@
 					<div class="tsd-signature tsd-kind-icon">explore:run:start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="exploreevent.html" class="tsd-signature-type">ExploreEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L327">src/types.ts:327</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L402">src/types.ts:402</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -572,7 +656,7 @@
 					<div class="tsd-signature tsd-kind-icon">explore:state:changed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="exploreevent.html" class="tsd-signature-type">ExploreEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L330">src/types.ts:330</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L405">src/types.ts:405</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -601,12 +685,52 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="look_delete_complete" class="tsd-anchor"></a>
+					<h3>look:delete:complete</h3>
+					<div class="tsd-signature tsd-kind-icon">look:delete:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="looksaveevent.html" class="tsd-signature-type">LookSaveEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L418">src/types.ts:418</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Look deleted event
+							Looker 21.6</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="looksaveevent.html" class="tsd-signature-type">LookSaveEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>this: <a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a></h5>
+											</li>
+											<li>
+												<h5>event: <a href="looksaveevent.html" class="tsd-signature-type">LookSaveEvent</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="look_ready" class="tsd-anchor"></a>
 					<h3>look:ready</h3>
 					<div class="tsd-signature tsd-kind-icon">look:ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="lookevent.html" class="tsd-signature-type">LookEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L334">src/types.ts:334</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L419">src/types.ts:419</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -640,7 +764,7 @@
 					<div class="tsd-signature tsd-kind-icon">look:run:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="lookevent.html" class="tsd-signature-type">LookEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L333">src/types.ts:333</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L408">src/types.ts:408</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -674,7 +798,7 @@
 					<div class="tsd-signature tsd-kind-icon">look:run:start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="lookevent.html" class="tsd-signature-type">LookEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L332">src/types.ts:332</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L407">src/types.ts:407</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -703,12 +827,52 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="look_save_complete" class="tsd-anchor"></a>
+					<h3>look:save:complete</h3>
+					<div class="tsd-signature tsd-kind-icon">look:save:complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="looksaveevent.html" class="tsd-signature-type">LookSaveEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L413">src/types.ts:413</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Look saved event
+							Looker 21.6</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="looksaveevent.html" class="tsd-signature-type">LookSaveEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>this: <a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a></h5>
+											</li>
+											<li>
+												<h5>event: <a href="looksaveevent.html" class="tsd-signature-type">LookSaveEvent</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="look_state_changed" class="tsd-anchor"></a>
 					<h3>look:state:changed</h3>
 					<div class="tsd-signature tsd-kind-icon">look:state:changed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedlook.html" class="tsd-signature-type">LookerEmbedLook</a>, event<span class="tsd-signature-symbol">: </span><a href="lookevent.html" class="tsd-signature-type">LookEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L335">src/types.ts:335</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L420">src/types.ts:420</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -742,7 +906,7 @@
 					<div class="tsd-signature tsd-kind-icon">page:changed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedbase.html" class="tsd-signature-type">LookerEmbedBase</a>, event<span class="tsd-signature-symbol">: </span><a href="pagechangedevent.html" class="tsd-signature-type">PageChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L337">src/types.ts:337</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L422">src/types.ts:422</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -776,7 +940,7 @@
 					<div class="tsd-signature tsd-kind-icon">page:properties:changed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../classes/lookerembedbase.html" class="tsd-signature-type">LookerEmbedBase</a>, event<span class="tsd-signature-symbol">: </span><a href="pagepropertieschangedevent.html" class="tsd-signature-type">PagePropertiesChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/2f63384/src/types.ts#L338">src/types.ts:338</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L423">src/types.ts:423</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -822,6 +986,9 @@
 						<a href="lookerembedeventmap.html" class="tsd-kind-icon">Looker<wbr>Embed<wbr>Event<wbr>Map</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="lookerembedeventmap.html#dashboard_delete_complete" class="tsd-kind-icon">dashboard:delete:complete</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="lookerembedeventmap.html#dashboard_filters_changed" class="tsd-kind-icon">dashboard:filters:changed</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -829,6 +996,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="lookerembedeventmap.html#dashboard_run_start" class="tsd-kind-icon">dashboard:run:start</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="lookerembedeventmap.html#dashboard_save_complete" class="tsd-kind-icon">dashboard:save:complete</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="lookerembedeventmap.html#dashboard_tile_complete" class="tsd-kind-icon">dashboard:tile:complete</a>
@@ -864,6 +1034,9 @@
 								<a href="lookerembedeventmap.html#explore_state_changed" class="tsd-kind-icon">explore:state:changed</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="lookerembedeventmap.html#look_delete_complete" class="tsd-kind-icon">look:delete:complete</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="lookerembedeventmap.html#look_ready" class="tsd-kind-icon">look:ready</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -871,6 +1044,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="lookerembedeventmap.html#look_run_start" class="tsd-kind-icon">look:run:start</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="lookerembedeventmap.html#look_save_complete" class="tsd-kind-icon">look:save:complete</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="lookerembedeventmap.html#look_state_changed" class="tsd-kind-icon">look:state:changed</a>

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ElementOptionItems | @looker/embed-sdk</title>
+	<title>LookSaveEvent | @looker/embed-sdk</title>
 	<meta name="description" content="Documentation for @looker/embed-sdk">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="elementoptionitems.html">ElementOptionItems</a>
+					<a href="looksaveevent.html">LookSaveEvent</a>
 				</li>
 			</ul>
-			<h1>Interface ElementOptionItems</h1>
+			<h1>Interface LookSaveEvent</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Element Options interface</p>
+						<p>Look save event
+						Looker version 21.6</p>
 					</div>
 				</div>
 			</section>
@@ -77,9 +78,24 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ElementOptionItems</span>
+						<a href="lookerembedevent.html" class="tsd-signature-type">LookerEmbedEvent</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">LookSaveEvent</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
+			</section>
+			<section class="tsd-panel tsd-kind-interface tsd-is-external">
+				<h3 class="tsd-before-signature">Indexable</h3>
+				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Look save event
+						Looker version 21.6</p>
+					</div>
+				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
@@ -88,9 +104,8 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="elementoptionitems.html#title" class="tsd-kind-icon">title</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="elementoptionitems.html#title_hidden" class="tsd-kind-icon">title_<wbr>hidden</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="elementoptionitems.html#vis_config" class="tsd-kind-icon">vis_<wbr>config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="looksaveevent.html#look" class="tsd-kind-icon">look</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="looksaveevent.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,32 +114,23 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="title" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> title</h3>
-					<div class="tsd-signature tsd-kind-icon">title<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
+					<a name="look" class="tsd-anchor"></a>
+					<h3>look</h3>
+					<div class="tsd-signature tsd-kind-icon">look<span class="tsd-signature-symbol">:</span> <a href="looksaveeventdetail.html" class="tsd-signature-type">LookSaveEventDetail</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L95">src/types.ts:95</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L315">src/types.ts:315</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="title_hidden" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> title_<wbr>hidden</h3>
-					<div class="tsd-signature tsd-kind-icon">title_<wbr>hidden<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="type" class="tsd-anchor"></a>
+					<h3>type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="lookerembedevent.html">LookerEmbedEvent</a>.<a href="lookerembedevent.html#type">type</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L96">src/types.ts:96</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="vis_config" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> vis_<wbr>config</h3>
-					<div class="tsd-signature tsd-kind-icon">vis_<wbr>config<span class="tsd-signature-symbol">:</span> <a href="visconfig.html" class="tsd-signature-type">VisConfig</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L97">src/types.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L121">src/types.ts:121</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -143,16 +149,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-is-external">
-						<a href="elementoptionitems.html" class="tsd-kind-icon">Element<wbr>Option<wbr>Items</a>
+						<a href="looksaveevent.html" class="tsd-kind-icon">Look<wbr>Save<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="elementoptionitems.html#title" class="tsd-kind-icon">title</a>
+								<a href="looksaveevent.html#look" class="tsd-kind-icon">look</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="elementoptionitems.html#title_hidden" class="tsd-kind-icon">title_<wbr>hidden</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="elementoptionitems.html#vis_config" class="tsd-kind-icon">vis_<wbr>config</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="looksaveevent.html#type" class="tsd-kind-icon">type</a>
 							</li>
 						</ul>
 					</li>

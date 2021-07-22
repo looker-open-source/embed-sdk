@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ElementOptionItems | @looker/embed-sdk</title>
+	<title>LookerAuthConfig | @looker/embed-sdk</title>
 	<meta name="description" content="Documentation for @looker/embed-sdk">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="elementoptionitems.html">ElementOptionItems</a>
+					<a href="lookerauthconfig.html">LookerAuthConfig</a>
 				</li>
 			</ul>
-			<h1>Interface ElementOptionItems</h1>
+			<h1>Interface LookerAuthConfig</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Element Options interface</p>
+						<p>Auth server configuration</p>
 					</div>
 				</div>
 			</section>
@@ -77,7 +77,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ElementOptionItems</span>
+						<span class="target">LookerAuthConfig</span>
 					</li>
 				</ul>
 			</section>
@@ -88,9 +88,10 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="elementoptionitems.html#title" class="tsd-kind-icon">title</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="elementoptionitems.html#title_hidden" class="tsd-kind-icon">title_<wbr>hidden</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="elementoptionitems.html#vis_config" class="tsd-kind-icon">vis_<wbr>config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerauthconfig.html#headers" class="tsd-kind-icon">headers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerauthconfig.html#params" class="tsd-kind-icon">params</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerauthconfig.html#url" class="tsd-kind-icon">url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="lookerauthconfig.html#withcredentials" class="tsd-kind-icon">with<wbr>Credentials</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,32 +100,42 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="title" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> title</h3>
-					<div class="tsd-signature tsd-kind-icon">title<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
+					<a name="headers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
+					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L95">src/types.ts:95</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L34">src/types.ts:34</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="title_hidden" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> title_<wbr>hidden</h3>
-					<div class="tsd-signature tsd-kind-icon">title_<wbr>hidden<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+					<a name="params" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> params</h3>
+					<div class="tsd-signature tsd-kind-icon">params<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L96">src/types.ts:96</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L35">src/types.ts:35</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="vis_config" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> vis_<wbr>config</h3>
-					<div class="tsd-signature tsd-kind-icon">vis_<wbr>config<span class="tsd-signature-symbol">:</span> <a href="visconfig.html" class="tsd-signature-type">VisConfig</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
+					<a name="url" class="tsd-anchor"></a>
+					<h3>url</h3>
+					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L97">src/types.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L33">src/types.ts:33</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="withcredentials" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> with<wbr>Credentials</h3>
+					<div class="tsd-signature tsd-kind-icon">with<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/looker-open-source/embed-sdk/blob/6d44c80/src/types.ts#L36">src/types.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -143,16 +154,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-is-external">
-						<a href="elementoptionitems.html" class="tsd-kind-icon">Element<wbr>Option<wbr>Items</a>
+						<a href="lookerauthconfig.html" class="tsd-kind-icon">Looker<wbr>Auth<wbr>Config</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="elementoptionitems.html#title" class="tsd-kind-icon">title</a>
+								<a href="lookerauthconfig.html#headers" class="tsd-kind-icon">headers</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="elementoptionitems.html#title_hidden" class="tsd-kind-icon">title_<wbr>hidden</a>
+								<a href="lookerauthconfig.html#params" class="tsd-kind-icon">params</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="elementoptionitems.html#vis_config" class="tsd-kind-icon">vis_<wbr>config</a>
+								<a href="lookerauthconfig.html#url" class="tsd-kind-icon">url</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="lookerauthconfig.html#withcredentials" class="tsd-kind-icon">with<wbr>Credentials</a>
 							</li>
 						</ul>
 					</li>
