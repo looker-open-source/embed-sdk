@@ -42,7 +42,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
   /**
    * Convenience method for sending a stop message to the embedded dashboard.
    *
-   * Requires Looker 7.14 and Dashboards (Beta) (see [[EmbedBuilder.withNext]]).
+   * Requires Looker 7.14 and Dashboards Next (see [[EmbedBuilder.withNext]]).
    */
 
   stop () {
@@ -72,7 +72,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
   /**
    * Convenience method for opening the dashboard schedule dialog.
    *
-   * Requires Looker 7.18 and Dashboards (Beta) (see [[EmbedBuilder.withNext]]).
+   * Requires Looker 7.18 and Dashboards Next (see [[EmbedBuilder.withNext]]).
    */
 
   async openScheduleDialog (): Promise<void> {
@@ -81,7 +81,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
 
   /**
    * Convenience method for loading a new dashboard.
-   * Requires Looker 7.12 and Dashboards (Beta) (see [[EmbedBuilder.withNext]]).
+   * Requires Looker 7.12 and Dashboards Next (see [[EmbedBuilder.withNext]]).
    * Throws an error if the dashboard load did not happen, which can happen if the
    * current dashboard is in edit mode.
    *
