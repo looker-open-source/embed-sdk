@@ -139,7 +139,7 @@ LookerEmbedSDK.init('looker.example.com',
 ### Node helper
 
 A signing helper method `createSignedUrl()` is provided in
-[server_utils/auth_utils.ts](blob/master/demo/demo_config.ts). Its usage is as follows:
+[server_utils/auth_utils.ts](blob/master/server_utils/auth_utils.ts). Its usage is as follows:
 
 ```javascript
 import { createSignedUrl } from './auth_utils'
