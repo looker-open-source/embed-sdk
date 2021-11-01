@@ -39,15 +39,15 @@ var webpackConfig = {
     ],
     host: config.demo_host,
     port: config.demo_port,
-    watchContentBase: true,
-    before: (app) => {
-      app.get('/auth', function(req, res) {
-        // Authenticate the request is from a valid user here
-        const src = req.query.src;
-        const url = createSignedUrl(src, user, config.host, config.secret);
-        res.json({ url });
-      });
-    }
+    watchContentBase: true//,
+    // before: (app) => {
+    //   app.get('/auth', function(req, res) {
+    //     // Authenticate the request is from a valid user here
+    //     const src = req.query.src;
+    //     const url = createSignedUrl(src, user, config.host, config.secret);
+    //     res.json({ url });
+    //   });
+    // }
   }
 }
 

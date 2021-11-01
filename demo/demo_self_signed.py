@@ -24,10 +24,9 @@
 
 import os
 import sys
-import json
-import looker_sdk
-import urllib
-import six.moves.urllib as urllib
+sys.path.append('./server_utils')
+from auth_utils import User, create_signed_url
+
 from six.moves.BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from six.moves.urllib.parse import urlparse, parse_qs
 
@@ -38,27 +37,9 @@ import json
 #
 
 with open("./demo/demo_user.json", 'r') as f:
-  user = json.load(f)
+  data = json.load(f)
 
-""" {
-  "external_user_id": "user1",
-  "first_name": "Pat",
-  "last_name": "Embed",
-  "session_length": 3600,
-  "force_logout_login": true,
-  "external_group_id": "group1",
-  "group_ids": [],
-  "permissions": [
-    "access_data",
-    "see_looks",
-    "see_user_dashboards",
-    "explore",
-    "save_content",
-    "embed_browse_spaces"
-  ],
-  "models": ["powered_by", "thelook", "extension"],
-  "user_attributes": { "locale": "en_US" }
-} """
+user = User(**data)
 
 #
 # Environment helper routines
@@ -87,49 +68,14 @@ SECRET = get_env("LOOKER_EMBED_SECRET")
 DEMO_HOST = get_env("LOOKER_DEMO_HOST", 'localhost')
 DEMO_PORT = int(get_env("LOOKER_DEMO_PORT", '8080'))
 
-# 
-# Initialize Looker API SDK 
-# 
-
-looker_api_sdk = looker_sdk.init40(config_file = "./demo/looker.ini") 
-
-#
-# Function to create a signed URL using the Looker API SDK
-#
-
-def api_create_signed_url(embed_url, user, HOST, looker_api_sdk):
-  target_url =  'https://' + HOST + urllib.parse.unquote_plus(embed_url)
-  # the current front end sends a query with embed included, which we remove here
-  target_url = target_url.replace("embed/", "")
-
-  print('Creating signed URL for target URL: '+target_url)
-
-  target_sso_url = looker_sdk.models.EmbedSsoParams(
-        target_url=target_url,
-        session_length=user['session_length'],
-        external_user_id=user['external_user_id'],
-        group_ids=user['group_ids'],
-        first_name=user['first_name'],
-        last_name=user['last_name'],
-        permissions=user['permissions'],
-        models=user['models'],
-        user_attributes=user['user_attributes']
-    )
-  
-
-  sso_url = looker_api_sdk.create_sso_embed_url(body = target_sso_url)
-
-  print('Returning Signed URL: '+sso_url.url)
-    
-  return sso_url.url
-
 #
 # Very simple demo web server
 #
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
-  # Helper to return the demo web site files
+  # Helper to return a the demo web site files
+
   def do_file(self, filename):
     if filename == "/":
       filename = "/index.html"
@@ -144,14 +90,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
       self.send_response(404)
       self.end_headers()
 
-  # Implement the backend auth service that uses the looker SDK to generate signed URLs
-  # relying on the availability of the user data
   def do_auth(self, src):
-
-    # src contains the target embed url
-    # api_create_signed_url returns a fully signed embed URL
-    url = api_create_signed_url(src, user, HOST, looker_api_sdk)
-    
+    # Combine 'src' from query with demo user configuration, host and secret to create signed url
+    # Any session validation should happen here.
+    url = create_signed_url(src, user, HOST, SECRET)
 
     # Return signed url as json blob {"url":"<signed_url>"}
     self.send_response(200)
@@ -161,13 +103,12 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     }).encode())
 
   # Override simple GET callback
+
   def do_GET(self):
-    
     parts = urlparse(self.path)
     query = parse_qs(parts.query)
 
     if parts.path == '/auth':
-      print("Invoking auth function with path: " + query['src'][0])
       self.do_auth(query['src'][0])
     else:
       self.do_file(parts.path)
