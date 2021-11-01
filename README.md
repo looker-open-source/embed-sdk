@@ -217,7 +217,7 @@ A simple demo is provided in the `/demo` directory that uses a basic JS frontend
   * Set it as `LOOKER_EMBED_SECRET` in your shell environment.
   * Create a file named `.env` in the root of the sdk directory. Add a line to that file: `LOOKER_EMBED_SECRET="YourLookerSecret"`
 
-* Provide your Looker instance host address to the server by either:
+* Provide your Looker instance host address to the server:
   * Create a `.env` file in the main embed-sdk directory and add `LOOKER_EMBED_HOST="yourinstance.looker.com:yourport"`
   * **The Looker embed host should not include the protocol!** 
 
