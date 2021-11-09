@@ -39,7 +39,7 @@ The Looker Embed SDK uses a fluent interface pattern. The construction of the em
 
 ### Building
 
-First initialize the SDK with address of your Looker server and the endpoint on your server that will perform authentication. (Note: Port must be included if it is required to reach the Looker server from browser clients, e.g. looker.example.com:443, but the protocol (http/https) should *not* be included.
+First initialize the SDK with address of your Looker server and the endpoint on your server that will perform authentication. (Note: Port must be included if it is required to reach the Looker server from browser clients, e.g. looker.example.com:1919, but the protocol (http/https) should *not* be included.)
 
 ```javascript
 LookerEmbedSDK.init('looker.example.com', '/auth')
@@ -52,9 +52,6 @@ After the SDK is initialized, begin by creating the builder with an `id`. For ex
 ```javascript
 LookerEmbedSDK.createDashboardWithId(id)
 ```
-
-The `createDashboardWithId` function will call your backend `/auth` endpoint and expect a signed embed URL in response. Subsequent embeds can be generated using `createDashboardWithUrl` which accepts a partial URL matching [this form](https://docs.looker.com/reference/embedding/sso-embed#building_the_embed_url), for example: `/embed/dashboards/`. The URL create functions will not call your backend `/auth` service. If you are embedding
-multiple items on a single page,  use ID create functions first and then URL create functions subsequently to avoid redundant calls to your auth backend.
 
 You can then add additional attributes to the builder to complete your setup:
 
@@ -79,6 +76,9 @@ You finish by building the embedded element:
   .build()
 ```
 
+The `createDashboardWithId` function will call your backend `/auth` endpoint when `build` is invoked and requires a signed embed URL in response. Subsequent embeds can be generated using `createDashboardWithUrl` which accepts a partial URL matching [this form](https://docs.looker.com/reference/embedding/sso-embed#building_the_embed_url), for example: `/embed/dashboards/`. The URL create functions will not call your backend `/auth` service. If you are embedding multiple items on a single page, use ID create functions first and then URL create functions subsequently to avoid redundant calls to your auth backend.
+
+
 If you want to send and receive messages to the embedded element you need to call `connect()` which returns a Promise that resolves to the communication interface of the given element:
 
 ```javascript
@@ -99,33 +99,36 @@ The SDK cannot add this parameter itself because it part of the signed SSO URL.
 
 ## The Auth Endpoint
 
-In order to use the embed SDK on the frontend you must supply a backend service that handles authentication. This service is called by the SDK to generate a signed iframe URL that is unique to the requesting user. The best practice is for your backend service to generate the URL by calling the Looker API. 
+In order to use the embed SDK on the frontend you must supply a backend service that handles authentication. This service is called by the SDK to generate a signed iframe URL that is unique to the requesting user. The backend process can either generate the signed embed URL itself using an embed secret or the backend process can generate the URL by calling the Looker API. Manual URL generation and signing avoids calling the Looker API resulting in decreased latency. Calling the Looker API requires less code and can be easier to maintain.
 
-The *backend* process entails hosting a service at an endpoint such as `/looker_auth` which does the following.
+### Backend Process
+The *backend* process entails hosting a service at an endpoint such as `/auth` which does the following:
 
-1. Your backend service initializes the [Looker API SDK](https://docs.looker.com/reference/api-and-integration/api-sdk) based on a client API key and secret typically stored in `Looker.ini` file.
+1. The backend service initializes the [Looker API SDK](https://docs.looker.com/reference/api-and-integration/api-sdk) based on a client API key and secret typically stored in `Looker.ini` file.
 
-2. Your backend service is called by the Embed SDK and provided with a query string in the URL containing the desired embedding.
+2. The Embed SDK calls the backend service and provides a query string containing the desired embedding.
 
-3. Your backend service takes the information from the Embed SDK *along with any information about the currently authenticated user* and calls the Looker API to create a signed URL:
+3. The backend service takes the information from the Embed SDK *along with any information about the currently authenticated user* and genereates the signed URL. For example, this Python code represents a partial example of a backend that generates the signed URL by calling the Looker API:
 
 ```python
 # receives a request path that includes /looker_auth 
 # as well as the target URL in a query string
 req_parts = urlparse(request_path) 
-req_query = parse_qs(parts.query)
+req_query = parse_qs(req_parts.query)
 embed_url = req_query['src'][0]
 target_url =  'https://' + LOOKER_HOST +  '/login/embed/' + urllib.parse.quote_plus(embed_url)
 target_sso_url = looker_sdk.models.EmbedSsoParams(target_url, ...) # ... corresponds to very important user attributes
 sso_url = looker_api_sdk.create_sso_embed_url(body = target_sso_url) # this is the signed embed URL that is returned 
 ```
 
+### Frontend Process
+
 The *frontend* process using the Embed SDK entails:
 
 1. The embed SDK is initialized with the Looker host and the backend service:
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com', '/looker_auth')
+LookerEmbedSDK.init('looker.example.com', '/auth')
 ```
 
 2. Anytime you invoke a builder with the ID create function the Embed SDK makes a request to the backend, `/looker_auth`, containing a query string with the desired content embed URL along with any provided parameters:
@@ -134,14 +137,10 @@ LookerEmbedSDK.init('looker.example.com', '/looker_auth')
 LookerEmbedSDK.createcreateDashboardWithId(11)
  .build()
 // results in a request that includes a query string with:
-// /embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com&...
+// /embed/dashboards/11?sdk=2&embed_deomain=https://yourhost.example.com&...
 ```
 
-3. The Embed SDK inserts an iframe using the signed URL returned from the backend as the src:
-
-```html
-src=https://looker.example.com/embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com&...
-```
+3. The Embed SDK inserts an iframe using the signed URL returned from the backend as the src.
 
 ### Advanced Auth Configuration
 
@@ -235,7 +234,7 @@ export const dashboardId = 1
 export const lookId = 1
 ```
 
-* Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application (e.g your customer portal) to inform Looker about important user properties that control data access grants.
+* Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application (e.g your customer portal) to inform Looker about important user properties that control data access controls.
 
 ```javascript
 {
