@@ -26,7 +26,7 @@
     "start": "npm run build_utils && webpack serve --config webpack-devserver.config.js --hot --inline --color --progress",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test-once",
-    "python": "webpack --config webpack-devserver.config.js && python demo/demo.py",
+    "python": "webpack --config webpack-devserver.config.js && pip install -r demo/requirements.txt && python demo/demo.py",
     "test": "npm run lint && karma start karma.conf.js",
     "test-once": "npm run lint && karma start karma.conf.js --single-run "
   },

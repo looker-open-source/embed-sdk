@@ -39,25 +39,18 @@ The Looker Embed SDK uses a fluent interface pattern. The construction of the em
 
 ### Building
 
-First initialize the SDK with address of your Looker server and, optionally, the endpoint on your server that will perform authentication.  (Note: Port must be included if it is required to reach the Looker server from browser clients, e.g. looker.example.com:443)
-These are used by all the embedded content.
+First initialize the SDK with address of your Looker server and the endpoint on your server that will perform authentication. (Note: Port must be included if it is required to reach the Looker server from browser clients, e.g. looker.example.com:1919, but the protocol (http/https) should *not* be included.)
 
 ```javascript
 LookerEmbedSDK.init('looker.example.com', '/auth')
 ```
 
-Then the embedded content is built using a series of steps to define its parameters. Some if these parameters are optional, and some are mandatory.
+In this example, `/auth` is a backend service that you must implement as described in the [Auth](#the-auth-endpoint) section.
 
-The process starts with creating the builder with an `id`, or a `url` created by the processed described [here](https://docs.looker.com/r/sdk/sso-embed):
+After the SDK is initialized, begin by creating the builder with an `id`. For example, to create a dashboard embed builder:
 
 ```javascript
 LookerEmbedSDK.createDashboardWithId(id)
-```
-
-or
-
-```javascript
-LookerEmbedSDK.createDashboardWithUrl(url)
 ```
 
 You can then add additional attributes to the builder to complete your setup:
@@ -83,6 +76,9 @@ You finish by building the embedded element:
   .build()
 ```
 
+The `createDashboardWithId` function will call your backend `/auth` endpoint when `build` is invoked and requires a signed embed URL in response. Subsequent embeds can be generated using `createDashboardWithUrl` which accepts a partial URL matching [this form](https://docs.looker.com/reference/embedding/sso-embed#building_the_embed_url), for example: `/embed/dashboards/`. The URL create functions will not call your backend `/auth` service. If you are embedding multiple items on a single page, use ID create functions first and then URL create functions subsequently to avoid redundant calls to your auth backend.
+
+
 If you want to send and receive messages to the embedded element you need to call `connect()` which returns a Promise that resolves to the communication interface of the given element:
 
 ```javascript
@@ -103,27 +99,51 @@ The SDK cannot add this parameter itself because it part of the signed SSO URL.
 
 ## The Auth Endpoint
 
-Because the embed secret needs to be carefully guarded, embed SSO URLs cannot be created in the browser. To make the process easier and secure, you can instead do the following:
+In order to use the embed SDK on the frontend you must supply a backend service that handles authentication. This service is called by the SDK to generate a signed iframe URL that is unique to the requesting user. The backend process can either generate the signed embed URL itself using an embed secret or the backend process can generate the URL by calling the Looker API. Manual URL generation and signing avoids calling the Looker API resulting in decreased latency. Calling the Looker API requires less code and can be easier to maintain.
 
-1. Implement a URL signing function in your web server. The server should return a signed URL using one of the processes documented in the [Looker Embed SSO Examples](https://github.com/looker/looker_embed_sso_examples) Github repository.
+### Backend Process
+The *backend* process entails hosting a service at an endpoint such as `/auth` which does the following:
 
-2. Pass the embed SSO URL to that signing endpoint in the embed SDK. The location of the endpoint is specified by the `authUrl` parameter in `LookerEmbedSDK.init()`.
+1. The backend service initializes the [Looker API SDK](https://docs.looker.com/reference/api-and-integration/api-sdk) based on a client API key and secret typically stored in `Looker.ini` file.
 
-If specified, whenever an embed element is created using just an ID, its embed URL is generated using the type of the element, the provided Looker host, and any provided parameters. For example:
+2. The Embed SDK calls the backend service and provides a query string containing the desired embedding.
+
+3. The backend service takes the information from the Embed SDK *along with any information about the currently authenticated user* and genereates the signed URL. For example, this Python code represents a partial example of a backend that generates the signed URL by calling the Looker API:
+
+```python
+# receives a request path that includes /looker_auth 
+# as well as the target URL in a query string
+req_parts = urlparse(request_path) 
+req_query = parse_qs(req_parts.query)
+embed_url = req_query['src'][0]
+target_url =  'https://' + LOOKER_HOST +  '/login/embed/' + urllib.parse.quote_plus(embed_url)
+target_sso_url = looker_sdk.models.EmbedSsoParams(target_url, ...) # ... corresponds to very important user attributes
+sso_url = looker_api_sdk.create_sso_embed_url(body = target_sso_url) # this is the signed embed URL that is returned 
+```
+
+### Frontend Process
+
+The *frontend* process using the Embed SDK entails:
+
+1. The embed SDK is initialized with the Looker host and the backend service:
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com', '/looker_auth')
+LookerEmbedSDK.init('looker.example.com', '/auth')
+```
+
+2. Anytime you invoke a builder with the ID create function the Embed SDK makes a request to the backend, `/looker_auth`, containing a query string with the desired content embed URL along with any provided parameters:
+
+```javascript
 LookerEmbedSDK.createcreateDashboardWithId(11)
  .build()
+// results in a request that includes a query string with:
+// /embed/dashboards/11?sdk=2&embed_deomain=https://yourhost.example.com&...
 ```
 
-This will call the /looker_auth endpoint and return a signed SSO URL that can be used to create the embedded content:
-
-```html
-src=https://looker.example.com/embed/dashboards/11?sdk=2&embed_host=https://yourhost.example.com
-```
+3. The Embed SDK inserts an iframe using the signed URL returned from the backend as the src.
 
 ### Advanced Auth Configuration
+
 The Auth endpoint can be configured further, allowing custom Request Headers, as well as CORS support by passing an options object to the `init` method 
 
 ```javascript
@@ -138,7 +158,9 @@ LookerEmbedSDK.init('looker.example.com',
 
 ### Node helper
 
-A signing helper method `createSignedUrl()` is provided in
+If you prefer, your backend service can [implement the signature function](https://github.com/looker/looker_embed_sso_examples) instead of calling the Looker API by using a [Looker Embed secret](https://docs.looker.com/r/sdk/sso-embed). Manually generating the signed URL avoids a call to the Looker API but is more error prone.
+
+One example of a helper method that generates a signed URL, `createSignedUrl()`, is provided in
 [server_utils/auth_utils.ts](blob/master/demo/demo_config.ts). Its usage is as follows:
 
 ```javascript
@@ -147,7 +169,7 @@ import { createSignedUrl } from './auth_utils'
 app.get('/looker_auth', function(req, res) {
   // Authenticate the request is from a valid user here
   const src = req.query.src;
-  const host = 'https://looker.example.com'
+  const host = 'looker.example.com'
   const secret = YOUR_EMBED_SECRET
   const user = authenticatedUser
   const url = createSignedUrl(src, user, host, secret);
@@ -175,13 +197,7 @@ interface LookerEmbedUser {
 
 ## Demo
 
-There is a simple demo provided, but because of Looker's attention to security, it requires a bit of setup. It also requires Looker's "Embed Secret". Because the embed secret can grant access to all of your data:
-
-* Do not share your secret with anyone you do not want to have complete access to your instance.
-
-* Do not reset your secret if you already are using it in another context.
-
-* Your code should never store the secret in the web browser.
+A simple demo is provided in the `/demo` directory that uses a basic JS frontend and a Python backend. The example backend `demo.py` uses the Looker API to create a signed URL. The example backend `demo_self_signed.py` uses the embed secret and a helper function to sign the URL. The instructions below are for the example using the Looker API.
 
 ### Step 1 - Enable Embedding in your Looker instance
 
@@ -190,22 +206,26 @@ There is a simple demo provided, but because of Looker's attention to security, 
 * Navigate to Admin > *Platform* Embed on your Looker instance. This requires Admin privileges.
 * The demo server runs by default at [http://localhost:8080](http://localhost:8080). By adding that address to "Embedded Domain Whitelist" you can enabled the demo to receive messages from Looker.
 * Turn on "Embed Authentication"
-* In order to view your "Embed Secret" you must reset it. Copy the secret to someplace secure.
+* In order to use embedding you must generate an "Embed Secret"
 
 ### Step 2 - Customize the Demo settings for your Looker instance
 
-* Provide your embed secret to the server. You can do this a couple ways.
+* If you are using the main `demo.py`, provide your API credentials to the server by updating `demo/looker.ini` following [these instructions](https://community.looker.com/technical-tips-tricks-1021/the-how-to-on-initializing-the-sdk-with-different-profiles-in-your-ini-file-26846), with credentials obtained from [the Users page](https://docs.looker.com/reference/api-and-integration/api-auth).
+
+* Alternatively, if you are using `demo_self_signed.py`, provide your embed secret to the server. You can do this a couple ways.
   * Set it as `LOOKER_EMBED_SECRET` in your shell environment.
   * Create a file named `.env` in the root of the sdk directory. Add a line to that file: `LOOKER_EMBED_SECRET="YourLookerSecret"`
 
-* Provide your Looker instance host address to the server by either:
-  * Setting it as `LOOKER_EMBED_HOST` in your shell environment.
-  * Adding `LOOKER_EMBED_HOST="yourinstance.looker.com:yourport"` to the `.env` file.
+* Provide your Looker instance host address to the server:
+  * Create a `.env` file in the main embed-sdk directory and add `LOOKER_EMBED_HOST="yourinstance.looker.com:yourport"`
+  * **The Looker embed host should not include the protocol!** 
 
 * Edit the `demo/demo_config.ts` file to be appropriate for the pages you want to embed.
 
 ```javascript
-// The address of your Looker instance. Required.
+// The address of your Looker instance. Required. 
+// Include the port if it is necessary when accessing looker in a browser
+// Do NOT include the protocol
 export const lookerHost = 'self-signed.looker.com:9999'
 
 // A dashboard that the user can see. Set to 0 to disable dashboard.
@@ -214,7 +234,7 @@ export const dashboardId = 1
 export const lookId = 1
 ```
 
-* Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed.
+* Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application (e.g your customer portal) to inform Looker about important user properties that control data access controls.
 
 ```javascript
 {
@@ -269,19 +289,13 @@ export const lookId = 1
 
 ### Step 3 - Build and run the demo
 
-#### Node server
-
-* `npm install`
-* `npm start`
-* The server will print out what host and port it is running on. If it is different than `http://localhost:8080` then you will need to add that to your Embedded Domain Whitelist.
-
-#### Python server
+Run the following commands from the top-level embed-sdk directory.
 
 * `npm install`
 * `npm run python`
 * The server will print out what host and port it is running on.
 
-You may need to `pip install six` to install the Python 2/3 compatibility layer.
+If you want to use the `demo_self_signed.py` example you will need to update `packages.json` and replace `demo.py` with `demo_self_signed.py`.
 
 ## Troubleshooting
 
