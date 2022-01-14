@@ -238,14 +238,9 @@ describe('LookerEmbed', () => {
 
     beforeEach(() => {
       LookerEmbedSDK.init('host.looker.com:9999', '/auth')
-
       fakeDashboardClient = {}
       builder = LookerEmbedSDK.createDashboardWithUrl(testUrl)
       builder.appendTo('#the-element')
-      builder.on('dashboard:run:start', () => false)
-      builder.withSandboxAttr('allow-scripts')
-      builder.withClassName('classy')
-      client = builder.build()
       spyOn(window, 'fetch')
       spyOn(ChattyHost.prototype, 'connect').and.callFake(async function (this: any) {
         iframe = this.iframe
@@ -253,13 +248,36 @@ describe('LookerEmbed', () => {
       })
     })
 
-    it('it should create an iframe with the appropriate parameters', (done) => {
+    it('it should create an iframe with expected defaults', (done) => {
+      client = builder.build()
+      client.connect()
+        .then(() => {
+          // tslint:disable-next-line:deprecation
+          expect(iframe.frameBorder).toEqual('0')
+          expect(iframe.src).toMatch(testUrl)
+          done()
+        })
+        .catch(done.fail)
+    })
+
+    it('it should create an iframe with the requested class', (done) => {
+      builder.withClassName('classy')
+      client = builder.build()
+      client.connect()
+        .then(() => {
+          expect(iframe.classList.toString()).toEqual('classy')
+          expect(iframe.src).toMatch(testUrl)
+          done()
+        })
+        .catch(done.fail)
+    })
+
+    it('it should create an iframe with the requested sandbox', (done) => {
+      builder.withSandboxAttr('allow-scripts')
+      client = builder.build()
       client.connect()
         .then(() => {
           expect(iframe.sandbox.toString()).toEqual('allow-scripts')
-          expect(iframe.classList.toString()).toEqual('classy')
-          // tslint:disable-next-line:deprecation
-          expect(iframe.frameBorder).toEqual('0')
           expect(iframe.src).toMatch(testUrl)
           done()
         })
