@@ -37,6 +37,40 @@ export interface LookerAuthConfig {
 }
 
 /**
+ * Cookieless session data
+ */
+export interface LookerEmbedCookielessSessionData {
+  /**
+   * One time use token used to establish the cookieless embed session.
+   */
+  authentication_token?: string | null
+  /**
+   * Authentication token time to live in seconds.
+   */
+  authentication_token_ttl?: number | null
+  /**
+   * Token used to load and navigate between pages in the embedded session. This token is appended to the embed iframe url.
+   */
+  navigation_token?: string | null
+  /**
+   * Navigation token time to live in seconds.
+   */
+  navigation_token_ttl?: number | null
+  /**
+   * Token to used to call Looker APIs. The host application MUST send the api token to the embedded Looker application. Do not expose the token in the dom.
+   */
+  api_token?: string | null
+  /**
+   * api_token time to live in seconds.
+   */
+  api_token_ttl?: number | null
+  /**
+   * Session time to live in seconds.
+   */
+  session_ttl?: number | null
+}
+
+/**
  * Data structure for filters.
  */
 

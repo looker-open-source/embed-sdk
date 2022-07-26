@@ -27,7 +27,7 @@ import { LookerEmbedDashboard } from './dashboard_client'
 import { LookerEmbedExplore } from './explore_client'
 import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
-import { LookerAuthConfig } from './types'
+import { LookerAuthConfig, LookerEmbedCookielessSessionData } from './types'
 
 export type { LookerEmbedDashboard } from './dashboard_client'
 export type { LookerEmbedExplore } from './explore_client'
@@ -36,7 +36,6 @@ export type { LookerEmbedLook } from './look_client'
 export * from './types'
 
 export class LookerEmbedSDK {
-
   /**
    * Initialize the Embed SDK.
    *
@@ -45,9 +44,34 @@ export class LookerEmbedSDK {
    * @param authUrl A server endpoint that will sign SSO embed URLs
    */
 
-  static init (apiHost: string, auth?: string | LookerAuthConfig) {
+  static init(apiHost: string, auth?: string | LookerAuthConfig) {
     this.apiHost = apiHost
     this.auth = typeof auth === 'string' ? { url: auth } : auth
+  }
+
+  /**
+   * Initialize the Embed SDK to use a cookieless session.
+   *
+   * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
+   *                This is required for verification of messages sent from the embedded content.
+   * @param sessionCreateCallback A callback that will create the cookieless session. The `embed_cookieless_session_create`
+   * api end point should ultimately be called. The recommended approach is via a proxy endpoint provided by the hosting
+   * application. Two tokens are returned. The navigation token is automatically appended to Looker URLs that result in
+   * navigation in the embedded IFRAME. The api token is sent to the Looker Application running in the embedded IFRAME
+   * once the underlying chatty connection has been established.
+   * @param refreshApiTokenCallback A callback that will refresh the api token. The `embed_cookieless_session_refresh_api_token`
+   * api end point should ultimately be called. The recommended approach is via a proxy endpoint provided by the hosting
+   * application. The Embed SDK will call this prior to api token expiring and will send the new api token to the embedded
+   * IFRAME.
+   */
+  static initCookieless(
+    apiHost: string,
+    sessionPrepareCallback: () => Promise<LookerEmbedCookielessSessionData>,
+    refreshApiTokenCallback: () => Promise<LookerEmbedCookielessSessionData>
+  ) {
+    this.apiHost = apiHost
+    this.sessionPrepareCallback = sessionPrepareCallback
+    this.refreshApiTokenCallback = refreshApiTokenCallback
   }
 
   /**
@@ -56,8 +80,10 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createDashboardWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withUrl(url)
+  static createDashboardWithUrl(url: string) {
+    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withUrl(
+      url
+    )
   }
 
   /**
@@ -66,8 +92,10 @@ export class LookerEmbedSDK {
    * @param id The numeric ID of a Looker User Defined Dashboard, or LookML Dashboard ID
    */
 
-  static createDashboardWithId (id: string | number) {
-    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withId(id)
+  static createDashboardWithId(id: string | number) {
+    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withId(
+      id
+    )
   }
 
   /**
@@ -76,7 +104,7 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createExploreWithUrl (url: string) {
+  static createExploreWithUrl(url: string) {
     return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withUrl(url)
   }
 
@@ -86,7 +114,7 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker explore
    */
 
-  static createExploreWithId (id: string) {
+  static createExploreWithId(id: string) {
     id = id.replace('::', '/') // Handle old format explore ids.
     return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withId(id)
   }
@@ -97,7 +125,7 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createLookWithUrl (url: string) {
+  static createLookWithUrl(url: string) {
     return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withUrl(url)
   }
 
@@ -107,7 +135,7 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker Look
    */
 
-  static createLookWithId (id: number) {
+  static createLookWithId(id: number) {
     return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withId(id)
   }
 
@@ -117,8 +145,10 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createExtensionWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withUrl(url)
+  static createExtensionWithUrl(url: string) {
+    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withUrl(
+      url
+    )
   }
 
   /**
@@ -127,8 +157,10 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker Look
    */
 
-  static createExtensionWithId (id: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withId(id)
+  static createExtensionWithId(id: string) {
+    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withId(
+      id
+    )
   }
 
   /**
@@ -142,4 +174,16 @@ export class LookerEmbedSDK {
    */
 
   static auth?: LookerAuthConfig
+
+  /**
+   * @hidden
+   */
+
+  static sessionPrepareCallback?: () => Promise<LookerEmbedCookielessSessionData>
+
+  /**
+   * @hidden
+   */
+
+  static refreshApiTokenCallback?: () => Promise<LookerEmbedCookielessSessionData>
 }

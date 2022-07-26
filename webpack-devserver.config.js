@@ -1,54 +1,71 @@
 var path = require('path')
-var config = require ('./config')
+var config = require('./config')
 
 var user = require('./demo/demo_user.json')
-var { createSignedUrl } = require('./server_utils/auth_utils')
+var { createSignedUrl, prepareCookielessSession, refreshApiToken } = require('./server_utils/auth_utils')
 
 var webpackConfig = {
   mode: 'development',
   entry: {
-    demo: './demo/demo.ts'
+    demo: './demo/demo.ts',
   },
   output: {
-    filename: "[name].js",
-    path: path.join(__dirname, "demo")
+    filename: '[name].js',
+    path: path.join(__dirname, 'demo'),
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: ['.ts', '.js'],
     alias: {
       config: path.join(__dirname, './config.js'),
-    }
+    },
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
-        loader: "ts-loader",
+        loader: 'ts-loader',
         options: {
           compilerOptions: {
-            declaration: false
-          }
-        }
-      }
-    ]
+            declaration: false,
+          },
+        },
+      },
+    ],
   },
   devServer: {
     compress: true,
-    contentBase: [
-      path.join(__dirname, "demo")
-    ],
+    contentBase: [path.join(__dirname, 'demo')],
     host: config.demo_host,
     port: config.demo_port,
     watchContentBase: true,
     before: (app) => {
-      app.get('/auth', function(req, res) {
+      app.get('/auth', function (req, res) {
         // Authenticate the request is from a valid user here
-        const src = req.query.src;
-        const url = createSignedUrl(src, user, config.host, config.secret);
-        res.json({ url });
-      });
-    }
-  }
+        const src = req.query.src
+        const url = createSignedUrl(src, user, config.host, config.secret)
+        res.json({ url })
+      })
+      app.get('/auth-cookieless', async function (req, res) {
+        const tokens = await prepareCookielessSession(
+          config.api_url,
+          config.client_id,
+          config.client_secret,
+          req.headers['user-agent'],
+          user
+        )
+        res.json(tokens)
+      })
+      app.get('/refresh-api-token', async function (req, res) {
+        const tokens = await refreshApiToken(
+          config.api_url,
+          config.client_id,
+          config.client_secret,
+          req.headers['user-agent']
+        )
+        res.json(tokens)
+      })
+    },
+  },
 }
 
 module.exports = webpackConfig

@@ -1,4 +1,4 @@
-import { LookerEmbedSDK, LookerEmbedLook, LookerEmbedDashboard } from '../src/index'
+import { LookerEmbedSDK, LookerEmbedLook, LookerEmbedDashboard, LookerEmbedCookielessSessionData } from '../src/index'
 
 /*
  * The MIT License (MIT)
@@ -26,13 +26,34 @@ import { LookerEmbedSDK, LookerEmbedLook, LookerEmbedDashboard } from '../src/in
 
 // IDs for content to demonstrate are configured in democonfig.ts
 
-import { lookerHost, dashboardId, lookId, exploreId, extensionId } from './demo_config'
+import { lookerHost, dashboardId, lookId, exploreId, extensionId, cookielessEmbedV2 } from './demo_config'
 
 // Initialize the SDK. lookerHost is the address of the Looker instance. It is configured in
 // democonfig.ts. lookerHost needs to be set for messages to be exchanged from the host
 // document to the embedded content. The auth endpoint is documented in README.md.
+if (cookielessEmbedV2) {
+  // Cookieless Auth
+  const sessionPrepareCallback = async (): Promise<LookerEmbedCookielessSessionData> => {
+    const resp = await fetch('/auth-cookieless')
+    if (!resp.ok) {
+      console.error('auth-cookieless failed', { resp })
+      throw new Error(`auth-cookieless failed: ${resp.status} ${resp.statusText}`)
+    }
+    return (await resp.json()) as LookerEmbedCookielessSessionData
+  }
 
-LookerEmbedSDK.init(lookerHost, '/auth')
+  const refreshApiTokenCallback = async (): Promise<LookerEmbedCookielessSessionData> => {
+    const resp = await fetch('/refresh-api-token')
+    if (!resp.ok) {
+      console.error('refresh-api-token failed', { resp })
+      throw new Error(`refresh-api-token failed: ${resp.status} ${resp.statusText}`)
+    }
+    return (await resp.json()) as LookerEmbedCookielessSessionData
+  }
+  LookerEmbedSDK.initCookieless(lookerHost, sessionPrepareCallback, refreshApiTokenCallback)
+} else {
+  LookerEmbedSDK.init(lookerHost, '/auth')
+}
 
 // Set up the dashboard after the SDK connects
 
@@ -49,7 +70,7 @@ const setupDashboard = (dashboard: LookerEmbedDashboard) => {
     runButton.addEventListener('click', () => dashboard.run())
   }
 
-  // Add a listener to the dashboard's "Stop" button and send a 'dashboard:stop' message when clicked
+  // Add a listener to the dashboard's "Send session token" button and send a 'session:token' message when clicked
   const stopButton = document.querySelector('#stop-dashboard')
   if (stopButton) {
     stopButton.addEventListener('click', () => dashboard.stop())
@@ -122,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', canceller)
       .on('drillmodal:explore', canceller)
-      .on('dashboard:tile:explore', canceller)
+      // .on('dashboard:tile:explore', canceller)
       .on('dashboard:tile:view', canceller)
       // Give the embedded content a class for styling purposes
       .withClassName('looker-embed')
