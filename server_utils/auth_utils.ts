@@ -25,7 +25,7 @@
 import * as createHmac from 'create-hmac'
 import fetch from 'node-fetch'
 
-function stringify(params: { [key: string]: string | undefined }) {
+function stringify (params: { [key: string]: string | undefined }) {
   const result = []
   for (const key in params) {
     const param = params[key]
@@ -36,11 +36,11 @@ function stringify(params: { [key: string]: string | undefined }) {
   return result.join('&')
 }
 
-function forceUnicodeEncoding(val: string) {
+function forceUnicodeEncoding (val: string) {
   return decodeURIComponent(encodeURIComponent(val))
 }
 
-function signEmbedUrl(data: { [key: string]: string }, secret: string) {
+function signEmbedUrl (data: { [key: string]: string }, secret: string) {
   const stringsToSign = [
     data.host,
     data.embed_path,
@@ -50,7 +50,7 @@ function signEmbedUrl(data: { [key: string]: string }, secret: string) {
     data.session_length,
     data.external_user_id,
     data.permissions,
-    data.models,
+    data.models
   ]
   if (data.group_ids) stringsToSign.push(data.group_ids)
   if (data.external_group_id) stringsToSign.push(data.external_group_id)
@@ -61,7 +61,7 @@ function signEmbedUrl(data: { [key: string]: string }, secret: string) {
   return createHmac('sha1', secret).update(forceUnicodeEncoding(stringToSign)).digest('base64').trim()
 }
 
-function createNonce(len: number) {
+function createNonce (len: number) {
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let text = ''
 
@@ -106,7 +106,7 @@ export interface LookerEmbedUser {
   access_filters?: { [key: string]: any }
 }
 
-export function createSignedUrl(src: string, user: LookerEmbedUser, host: string, secret: string, nonce?: string) {
+export function createSignedUrl (src: string, user: LookerEmbedUser, host: string, secret: string, nonce?: string) {
   const jsonTime = JSON.stringify(Math.floor(new Date().getTime() / 1000))
   const jsonNonce = JSON.stringify(nonce || createNonce(16))
   const params = {
@@ -125,7 +125,7 @@ export function createSignedUrl(src: string, user: LookerEmbedUser, host: string
     session_length: JSON.stringify(user.session_length),
 
     nonce: jsonNonce,
-    time: jsonTime,
+    time: jsonTime
   }
 
   const embedPath = '/login/embed/' + encodeURIComponent(src)
@@ -142,7 +142,7 @@ export function createSignedUrl(src: string, user: LookerEmbedUser, host: string
     group_ids: params.group_ids,
     external_group_id: params.external_group_id,
     user_attributes: params.user_attributes,
-    access_filters: params.access_filters,
+    access_filters: params.access_filters
   }
 
   const signature = signEmbedUrl(signingParams, secret)
@@ -161,9 +161,9 @@ const login = async (apiUrl: string, clientId: string, clientSecret: string) => 
       const resp = await fetch(`${apiUrl}/api/4.0/login`, {
         method: 'POST',
         headers: {
-          'content-type': 'application/x-www-form-urlencoded',
+          'content-type': 'application/x-www-form-urlencoded'
         },
-        body: `client_id=${clientId}&client_secret=${clientSecret}`,
+        body: `client_id=${clientId}&client_secret=${clientSecret}`
       })
       if (!resp.ok || (resp.status < 200 && resp.status > 299)) {
         console.error('login failed', { resp })
@@ -192,9 +192,9 @@ const prepareSession = async (apiUrl: string, userAgent: string, user: LookerEmb
       headers: {
         'content-type': 'application/json',
         'user-agent': userAgent,
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `Bearer ${authToken}`
       },
-      body: JSON.stringify(user),
+      body: JSON.stringify(user)
     })
     if (!resp.ok || (resp.status < 200 && resp.status > 299)) {
       console.error('session creation failed', { resp })
@@ -210,7 +210,7 @@ const prepareSession = async (apiUrl: string, userAgent: string, user: LookerEmb
       refresh_token_ttl,
       api_token,
       api_token_ttl,
-      session_ttl,
+      session_ttl
     } = body
     navigationToken = navigation_token
     apiToken = api_token
@@ -223,7 +223,7 @@ const prepareSession = async (apiUrl: string, userAgent: string, user: LookerEmb
       navigation_token_ttl,
       api_token,
       api_token_ttl,
-      session_ttl,
+      session_ttl
     }
   } catch (error) {
     console.error('session creation failed', { error })
@@ -231,7 +231,7 @@ const prepareSession = async (apiUrl: string, userAgent: string, user: LookerEmb
   }
 }
 
-export async function prepareCookielessSession(
+export async function prepareCookielessSession (
   apiUrl: string,
   clientId: string,
   clientSecret: string,
@@ -239,23 +239,23 @@ export async function prepareCookielessSession(
   user: LookerEmbedUser
 ) {
   await login(apiUrl, clientId, clientSecret)
-  return await prepareSession(apiUrl, userAgent, user)
+  return prepareSession(apiUrl, userAgent, user)
 }
 
-export async function refreshApiToken(apiUrl: string, clientId: string, clientSecret: string, userAgent: string) {
+export async function refreshApiToken (apiUrl: string, clientId: string, clientSecret: string, userAgent: string) {
   if (new Date().getTime() >= refreshTokenExpiresAt) {
     console.error('refresh token has expired. refresh api token will fail.')
   }
-  login(apiUrl, clientId, clientSecret)
+  await login(apiUrl, clientId, clientSecret)
   try {
     const resp = await fetch(`${apiUrl}/api/4.0/embed/cookieless/refresh_tokens`, {
       method: 'PUT',
       headers: {
         'content-type': 'application/json',
         'user-agent': userAgent,
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `Bearer ${authToken}`
       },
-      body: JSON.stringify({ refresh_token: refreshToken, api_token: apiToken, navigation_token: navigationToken }),
+      body: JSON.stringify({ refresh_token: refreshToken, api_token: apiToken, navigation_token: navigationToken })
     })
     if (!resp.ok || (resp.status < 200 && resp.status > 299)) {
       console.error('refresh api token failed', { resp })

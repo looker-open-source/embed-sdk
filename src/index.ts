@@ -44,7 +44,7 @@ export class LookerEmbedSDK {
    * @param authUrl A server endpoint that will sign SSO embed URLs
    */
 
-  static init(apiHost: string, auth?: string | LookerAuthConfig) {
+  static init (apiHost: string, auth?: string | LookerAuthConfig) {
     this.apiHost = apiHost
     this.auth = typeof auth === 'string' ? { url: auth } : auth
   }
@@ -64,7 +64,7 @@ export class LookerEmbedSDK {
    * application. The Embed SDK will call this prior to api token expiring and will send the new api token to the embedded
    * IFRAME.
    */
-  static initCookieless(
+  static initCookieless (
     apiHost: string,
     sessionPrepareCallback: () => Promise<LookerEmbedCookielessSessionData>,
     refreshApiTokenCallback: () => Promise<LookerEmbedCookielessSessionData>
@@ -80,7 +80,7 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createDashboardWithUrl(url: string) {
+  static createDashboardWithUrl (url: string) {
     return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withUrl(
       url
     )
@@ -92,7 +92,7 @@ export class LookerEmbedSDK {
    * @param id The numeric ID of a Looker User Defined Dashboard, or LookML Dashboard ID
    */
 
-  static createDashboardWithId(id: string | number) {
+  static createDashboardWithId (id: string | number) {
     return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withId(
       id
     )
@@ -104,7 +104,7 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createExploreWithUrl(url: string) {
+  static createExploreWithUrl (url: string) {
     return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withUrl(url)
   }
 
@@ -114,7 +114,7 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker explore
    */
 
-  static createExploreWithId(id: string) {
+  static createExploreWithId (id: string) {
     id = id.replace('::', '/') // Handle old format explore ids.
     return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withId(id)
   }
@@ -125,7 +125,7 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createLookWithUrl(url: string) {
+  static createLookWithUrl (url: string) {
     return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withUrl(url)
   }
 
@@ -135,7 +135,7 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker Look
    */
 
-  static createLookWithId(id: number) {
+  static createLookWithId (id: number) {
     return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withId(id)
   }
 
@@ -145,7 +145,7 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createExtensionWithUrl(url: string) {
+  static createExtensionWithUrl (url: string) {
     return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withUrl(
       url
     )
@@ -157,7 +157,7 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker Look
    */
 
-  static createExtensionWithId(id: string) {
+  static createExtensionWithId (id: string) {
     return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withId(
       id
     )

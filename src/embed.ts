@@ -45,14 +45,14 @@ export class EmbedClient<T> {
    * @hidden
    */
 
-  constructor(private _builder: EmbedBuilder<T>) {}
+  constructor (private _builder: EmbedBuilder<T>) {}
 
   /**
    * Returns a promise that resolves to a client that can be used to send messages to the
    * embedded content.
    */
 
-  get connection() {
+  get connection () {
     return this._connection
   }
 
@@ -60,11 +60,11 @@ export class EmbedClient<T> {
    * Indicates whether two way communication has successfully been established with the embedded content.
    */
 
-  get isConnected() {
+  get isConnected () {
     return !!this._connection
   }
 
-  get targetOrigin() {
+  get targetOrigin () {
     if (this._builder.sandboxedHost) {
       return '*'
     }
@@ -72,7 +72,7 @@ export class EmbedClient<T> {
     return IS_URL.test(apiHost) ? apiHost : `https://${apiHost}`
   }
 
-  private async createIframe(url: string) {
+  private async createIframe (url: string) {
     this._hostBuilder = Chatty.createHost(url)
     if (this._builder.isCookielessEmbed) {
       this._builder.handlers['session:tokens:request'] = [
@@ -81,10 +81,10 @@ export class EmbedClient<T> {
             const client = this._client as unknown as LookerEmbedBase
             client.send('session:tokens', {
               api_token: this._cookielessApiToken,
-              navigation_token: this._cookielessNavigationToken,
+              navigation_token: this._cookielessNavigationToken
             })
           }
-        },
+        }
       ]
     }
     for (const eventType in this._builder.handlers) {
@@ -113,7 +113,7 @@ export class EmbedClient<T> {
     })
   }
 
-  private async createUrl() {
+  private async createUrl () {
     const src = this._builder.embedUrl
     const auth = this._builder.auth
     if (!auth?.url) return `${this._builder.apiHost}${src}`
@@ -150,7 +150,7 @@ export class EmbedClient<T> {
     })
   }
 
-  private async createCookielessEmbedSession(): Promise<string> {
+  private async createCookielessEmbedSession (): Promise<string> {
     const { cookielessSessionPrepareCallback, cookielessRefreshApiTokenCallback } = this._builder
     if (!cookielessSessionPrepareCallback) {
       throw new Error('invalid state: cookielessSessionPrepareCallback not defined')
@@ -172,7 +172,7 @@ export class EmbedClient<T> {
         const client = this._client as unknown as LookerEmbedBase
         client.send('session:tokens', {
           api_token: this._cookielessApiToken,
-          navigation_token: this._cookielessNavigationToken,
+          navigation_token: this._cookielessNavigationToken
         })
       }
     }, 8 * 60 * 1000)
@@ -186,7 +186,7 @@ export class EmbedClient<T> {
    * client that can be used to send messages to the embedded content.
    */
 
-  async connect(): Promise<T> {
+  async connect (): Promise<T> {
     if (this._connection) return this._connection
 
     if (this._builder.url) {
