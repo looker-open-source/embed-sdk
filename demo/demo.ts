@@ -141,14 +141,12 @@ document.addEventListener('DOMContentLoaded', function () {
       .on('dashboard:save:complete', () => updateState('#dashboard-state', 'Saved'))
       .on('dashboard:delete:complete', () => updateState('#dashboard-state', 'Deleted'))
       // Listen to messages to prevent the user from navigating away
-      .on('drillmenu:click', canceller)
-      .on('drillmodal:explore', canceller)
+      // .on('drillmenu:click', canceller)
+      // .on('drillmodal:explore', canceller)
       // .on('dashboard:tile:explore', canceller)
-      .on('dashboard:tile:view', canceller)
+      // .on('dashboard:tile:view', canceller)
       // Give the embedded content a class for styling purposes
       .withClassName('looker-embed')
-      // Enable Dashboards Next
-      .withNext()
       // Set the initial filters
       .withFilters({ 'State / Region': 'California' })
       // Finalize the build
