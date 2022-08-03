@@ -46,23 +46,31 @@ var webpackConfig = {
         res.json({ url })
       })
       app.get('/auth-cookieless', async function (req, res) {
-        const tokens = await prepareCookielessSession(
-          config.api_url,
-          config.client_id,
-          config.client_secret,
-          req.headers['user-agent'],
-          user
-        )
-        res.json(tokens)
+        try {
+          const tokens = await prepareCookielessSession(
+            config.api_url,
+            config.client_id,
+            config.client_secret,
+            req.headers['user-agent'],
+            user
+          )
+          res.json(tokens)
+        } catch (err) {
+          res.status(400).send({ message: err.message })
+        }
       })
       app.get('/refresh-api-token', async function (req, res) {
-        const tokens = await refreshApiToken(
-          config.api_url,
-          config.client_id,
-          config.client_secret,
-          req.headers['user-agent']
-        )
-        res.json(tokens)
+        try {
+          const tokens = await refreshApiToken(
+            config.api_url,
+            config.client_id,
+            config.client_secret,
+            req.headers['user-agent']
+          )
+          res.json(tokens)
+        } catch (err) {
+          res.status(400).send({ message: err.message })
+        }
       })
     },
   },

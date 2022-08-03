@@ -38,8 +38,11 @@ export class EmbedClient<T> {
   _host: ChattyHost | null = null
   _connection: Promise<T> | null = null
   _client: T | null = null
+  _cookielessInitialized = false
   _cookielessApiToken?: string | null
+  _cookielessApiTokenTtl?: number | null
   _cookielessNavigationToken?: string | null
+  _cookielessNavigationTokenTtl?: number | null
 
   /**
    * @hidden
@@ -76,12 +79,24 @@ export class EmbedClient<T> {
     this._hostBuilder = Chatty.createHost(url)
     if (this._builder.isCookielessEmbed) {
       this._builder.handlers['session:tokens:request'] = [
-        () => {
-          if (this._client && this._cookielessApiToken) {
+        async () => {
+          if (this._client && this._cookielessApiToken && this._builder.cookielessRefreshApiTokenCallback) {
+            if (this._cookielessInitialized) {
+              const { api_token, api_token_ttl, navigation_token, navigation_token_ttl } =
+                await this._builder.cookielessRefreshApiTokenCallback()
+              this._cookielessApiToken = api_token
+              this._cookielessApiTokenTtl = api_token_ttl
+              this._cookielessNavigationToken = navigation_token
+              this._cookielessNavigationTokenTtl = navigation_token_ttl
+            } else {
+              this._cookielessInitialized = true
+            }
             const client = this._client as unknown as LookerEmbedBase
             client.send('session:tokens', {
               api_token: this._cookielessApiToken,
-              navigation_token: this._cookielessNavigationToken
+              api_token_ttl: this._cookielessApiTokenTtl,
+              navigation_token: this._cookielessNavigationToken,
+              navigation_token_ttl: this._cookielessNavigationTokenTtl
             })
           }
         }
@@ -158,24 +173,15 @@ export class EmbedClient<T> {
     if (!this._builder.cookielessRefreshApiTokenCallback) {
       throw new Error('invalid state: cookielessRefreshApiTokenCallback not defined')
     }
-    const { authentication_token, api_token, navigation_token } = await cookielessSessionPrepareCallback()
+    const { authentication_token, api_token, api_token_ttl, navigation_token, navigation_token_ttl } =
+      await cookielessSessionPrepareCallback()
     if (!authentication_token || !navigation_token || !api_token) {
       throw new Error('failed to prepare cookieless embed session')
     }
     this._cookielessApiToken = api_token
+    this._cookielessApiTokenTtl = api_token_ttl
     this._cookielessNavigationToken = navigation_token
-    setInterval(async () => {
-      const { api_token, navigation_token } = await cookielessRefreshApiTokenCallback!()
-      this._cookielessApiToken = api_token
-      this._cookielessNavigationToken = navigation_token
-      if (this._client && this._cookielessApiToken && this._cookielessNavigationToken) {
-        const client = this._client as unknown as LookerEmbedBase
-        client.send('session:tokens', {
-          api_token: this._cookielessApiToken,
-          navigation_token: this._cookielessNavigationToken
-        })
-      }
-    }, 8 * 60 * 1000)
+    this._cookielessNavigationTokenTtl = navigation_token_ttl
     const src = `${this._builder.embedUrl}?embed_navigation_token=${navigation_token}`
     const embedPath = '/login/embed2/' + encodeURIComponent(src) + `?embed_authentication_token=${authentication_token}`
     return `https://${this._builder.apiHost}${embedPath}`
