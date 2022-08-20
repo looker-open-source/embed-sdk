@@ -44,12 +44,10 @@ interface UrlParams {
   [key: string]: string
 }
 
-function stringify(params: { [key: string]: string, }) {
+function stringify(params: { [key: string]: string }) {
   const result = []
   for (const key in params) {
-    result.push(
-      `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
-    )
+    result.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
   }
   return result.join('&')
 }

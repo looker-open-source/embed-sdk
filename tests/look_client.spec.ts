@@ -38,7 +38,7 @@ describe('LookerEmbedLook', () => {
     sendAndReceiveSpy = jasmine.createSpy()
     host = {
       send: sendSpy,
-      sendAndReceive: sendAndReceiveSpy
+      sendAndReceive: sendAndReceiveSpy,
     }
     client = new LookerEmbedLook(host)
   })
@@ -54,7 +54,9 @@ describe('LookerEmbedLook', () => {
   })
 
   it('it sets filters', () => {
-    client.updateFilters({ 'alpha': 'beta' })
-    expect(sendSpy).toHaveBeenCalledWith('look:filters:update', { filters: { 'alpha': 'beta' } })
+    client.updateFilters({ alpha: 'beta' })
+    expect(sendSpy).toHaveBeenCalledWith('look:filters:update', {
+      filters: { alpha: 'beta' },
+    })
   })
 })

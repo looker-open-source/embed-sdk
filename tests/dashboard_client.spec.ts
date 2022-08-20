@@ -38,7 +38,7 @@ describe('LookerEmbedDashboard', () => {
     sendAndReceiveSpy = jasmine.createSpy()
     host = {
       send: sendSpy,
-      sendAndReceive: sendAndReceiveSpy
+      sendAndReceive: sendAndReceiveSpy,
     }
     client = new LookerEmbedDashboard(host)
   })
@@ -54,31 +54,45 @@ describe('LookerEmbedDashboard', () => {
   })
 
   it('it sets filters', () => {
-    client.updateFilters({ 'alpha': 'beta' })
-    expect(sendSpy).toHaveBeenCalledWith('dashboard:filters:update', { filters: { 'alpha': 'beta' } })
+    client.updateFilters({ alpha: 'beta' })
+    expect(sendSpy).toHaveBeenCalledWith('dashboard:filters:update', {
+      filters: { alpha: 'beta' },
+    })
   })
 
   it('it sets options', () => {
     client.setOptions({
       elements: {},
-      layouts: []
+      layouts: [],
     })
-    expect(sendSpy).toHaveBeenCalledWith('dashboard:options:set', { elements: {}, layouts: [] })
+    expect(sendSpy).toHaveBeenCalledWith('dashboard:options:set', {
+      elements: {},
+      layouts: [],
+    })
   })
 
   it('opens shedule dialog', async () => {
     await client.openScheduleDialog()
-    expect(sendAndReceiveSpy).toHaveBeenCalledWith('dashboard:schedule_modal:open', undefined)
+    expect(sendAndReceiveSpy).toHaveBeenCalledWith(
+      'dashboard:schedule_modal:open',
+      undefined
+    )
   })
 
   it('loads', async () => {
     await client.loadDashboard('1')
-    expect(sendAndReceiveSpy).toHaveBeenCalledWith('dashboard:load', { id: '1', pushHistory: false })
+    expect(sendAndReceiveSpy).toHaveBeenCalledWith('dashboard:load', {
+      id: '1',
+      pushHistory: false,
+    })
   })
 
   it('loads and pushes history', async () => {
     await client.loadDashboard('1', true)
-    expect(sendAndReceiveSpy).toHaveBeenCalledWith('dashboard:load', { id: '1', pushHistory: true })
+    expect(sendAndReceiveSpy).toHaveBeenCalledWith('dashboard:load', {
+      id: '1',
+      pushHistory: true,
+    })
   })
 
   it('stops', () => {

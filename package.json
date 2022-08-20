@@ -95,15 +95,7 @@
           ]
         }
       ],
-      "no-useless-constructor": "off",
-      "semi": [
-        "error",
-        "never"
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ]
+      "no-useless-constructor": "off"
     }
   },
   "overrides": {

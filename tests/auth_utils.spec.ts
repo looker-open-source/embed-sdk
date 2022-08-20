@@ -28,22 +28,22 @@ import type { LookerUserPermission } from '../server_utils/auth_utils'
 import { createSignedUrl } from '../server_utils/auth_utils'
 
 const testUser = () => ({
-  'access_filters': { 'powered_by': { 'products.brand': 'Allegra K' } },
-  'external_group_id': 'group1',
-  'external_user_id': 'user1',
-  'first_name': 'Pat',
-  'force_logout_login': true,
-  'group_ids': [1, 2, 3],
-  'last_name': 'Embed',
-  'models': ['powered_by', 'thelook'],
-  'permissions': [
+  access_filters: { powered_by: { 'products.brand': 'Allegra K' } },
+  external_group_id: 'group1',
+  external_user_id: 'user1',
+  first_name: 'Pat',
+  force_logout_login: true,
+  group_ids: [1, 2, 3],
+  last_name: 'Embed',
+  models: ['powered_by', 'thelook'],
+  permissions: [
     'access_data',
     'see_looks',
-    'see_user_dashboards'
+    'see_user_dashboards',
   ] as LookerUserPermission[],
-  'session_length': 3600,
-  'user_attributes': { 'locale': 'en_US' },
-  'user_timezone': 'America/Los_Angeles'
+  session_length: 3600,
+  user_attributes: { locale: 'en_US' },
+  user_timezone: 'America/Los_Angeles',
 })
 
 const testUrl = '/embed/dashboards/1'
@@ -63,7 +63,13 @@ describe('createSignedUrl', () => {
 
   it('creates a signed URL with properly encoded parameters', () => {
     const user = testUser()
-    const signed = createSignedUrl(testUrl, user, testHost, testSecret, testNonce)
+    const signed = createSignedUrl(
+      testUrl,
+      user,
+      testHost,
+      testSecret,
+      testNonce
+    )
 
     expect(signed).toContain('external_user_id=%22user1%22')
     expect(signed).toContain('first_name=%22Pat%22')
@@ -72,10 +78,14 @@ describe('createSignedUrl', () => {
     expect(signed).toContain('force_logout_login=true')
     expect(signed).toContain('external_group_id=%22group1%22')
     expect(signed).toContain('group_ids=%5B1%2C2%2C3%5D')
-    expect(signed).toContain('permissions=%5B%22access_data%22%2C%22see_looks%22%2C%22see_user_dashboards%22%5D')
+    expect(signed).toContain(
+      'permissions=%5B%22access_data%22%2C%22see_looks%22%2C%22see_user_dashboards%22%5D'
+    )
     expect(signed).toContain('models=%5B%22powered_by%22%2C%22thelook%22%5D')
     expect(signed).toContain('user_attributes=%7B%22locale%22%3A%22en_US%22%7D')
-    expect(signed).toContain('access_filters=%7B%22powered_by%22%3A%7B%22products.brand%22%3A%22Allegra%20K%22%7D%7D')
+    expect(signed).toContain(
+      'access_filters=%7B%22powered_by%22%3A%7B%22products.brand%22%3A%22Allegra%20K%22%7D%7D'
+    )
     expect(signed).toContain('user_timezone=%22America%2FLos_Angeles%22')
     expect(signed).toContain('time=1561486800')
     expect(signed).toContain('nonce=%22abc123%22')
@@ -88,7 +98,13 @@ describe('createSignedUrl', () => {
     delete user.last_name
     delete user.user_timezone
 
-    const signed = createSignedUrl(testUrl, user, testHost, testSecret, testNonce)
+    const signed = createSignedUrl(
+      testUrl,
+      user,
+      testHost,
+      testSecret,
+      testNonce
+    )
     expect(signed).not.toContain('first_name=')
     expect(signed).not.toContain('last_name=')
     expect(signed).not.toContain('user_timezone=')
@@ -112,7 +128,13 @@ describe('createSignedUrl', () => {
     delete user.user_attributes
     delete user.access_filters
 
-    const signed = createSignedUrl(testUrl, user, testHost, testSecret, testNonce)
+    const signed = createSignedUrl(
+      testUrl,
+      user,
+      testHost,
+      testSecret,
+      testNonce
+    )
     expect(signed).not.toContain('group_ids=')
     expect(signed).not.toContain('external_group_id=')
     expect(signed).not.toContain('user_attributes=')
@@ -120,5 +142,4 @@ describe('createSignedUrl', () => {
     expect(signed).toContain('access_filters=%7B%7D')
     expect(signed).toContain('signature=RXMPyKsQerTI%2FfbPIwgoTqUsvio%3D')
   })
-
 })

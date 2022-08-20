@@ -52,7 +52,13 @@ import { LookerEmbedSDK } from '../src/index'
 
 // IDs for content to demonstrate are configured in democonfig.ts
 
-import { lookerHost, dashboardId, lookId, exploreId, extensionId } from './demo_config'
+import {
+  lookerHost,
+  dashboardId,
+  lookId,
+  exploreId,
+  extensionId,
+} from './demo_config'
 
 // Initialize the SDK. lookerHost is the address of the Looker instance. It is configured in
 // democonfig.ts. lookerHost needs to be set for messages to be exchanged from the host
@@ -140,11 +146,19 @@ document.addEventListener('DOMContentLoaded', function () {
       .appendTo('#dashboard')
       // Listen to messages to display progress
       .on('dashboard:loaded', () => updateState('#dashboard-state', 'Loaded'))
-      .on('dashboard:run:start', () => updateState('#dashboard-state', 'Running'))
-      .on('dashboard:run:complete', () => updateState('#dashboard-state', 'Done'))
+      .on('dashboard:run:start', () =>
+        updateState('#dashboard-state', 'Running')
+      )
+      .on('dashboard:run:complete', () =>
+        updateState('#dashboard-state', 'Done')
+      )
       // Listen to messages that change dashboard
-      .on('dashboard:save:complete', () => updateState('#dashboard-state', 'Saved'))
-      .on('dashboard:delete:complete', () => updateState('#dashboard-state', 'Deleted'))
+      .on('dashboard:save:complete', () =>
+        updateState('#dashboard-state', 'Saved')
+      )
+      .on('dashboard:delete:complete', () =>
+        updateState('#dashboard-state', 'Deleted')
+      )
       // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', canceller)
       .on('drillmodal:explore', canceller)
@@ -167,7 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Connection error', error)
       })
   } else {
-    document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display = 'none'
+    document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
+      'none'
   }
 
   // Create an embedded Look
@@ -224,7 +239,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Connection error', error)
       })
   } else {
-    document.querySelector<HTMLDivElement>('#demo-explore')!.style.display = 'none'
+    document.querySelector<HTMLDivElement>('#demo-explore')!.style.display =
+      'none'
   }
 
   // Create an embedded extension (Requires Looker 7.12 and extensions framework)
@@ -243,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Connection error', error)
       })
   } else {
-    document.querySelector<HTMLDivElement>('#demo-extension')!.style.display = 'none'
+    document.querySelector<HTMLDivElement>('#demo-extension')!.style.display =
+      'none'
   }
 })

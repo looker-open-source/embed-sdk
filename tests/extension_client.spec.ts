@@ -38,7 +38,7 @@ describe('LookerEmbedExtension', () => {
     sendAndReceiveSpy = jasmine.createSpy()
     host = {
       send: sendSpy,
-      sendAndReceive: sendAndReceiveSpy
+      sendAndReceive: sendAndReceiveSpy,
     }
     client = new LookerEmbedExtension(host)
   })
@@ -48,5 +48,4 @@ describe('LookerEmbedExtension', () => {
     // TODO write tests for extensions.
     expect(true).toEqual(true)
   })
-
 })

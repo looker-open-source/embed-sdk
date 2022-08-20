@@ -89,7 +89,9 @@ describe('LookerEmbedBuilder', () => {
 
   describe('dashboards with URL', () => {
     beforeEach(() => {
-      builder = LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+      builder = LookerEmbedSDK.createDashboardWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
 
     it('should create a dashboard instance', () => {
@@ -98,7 +100,9 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should return the URL', () => {
-      expect(builder.url).toEqual('https://host.looker.com:9999/login/embed/etc')
+      expect(builder.url).toEqual(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
   })
 
@@ -119,7 +123,9 @@ describe('LookerEmbedBuilder', () => {
 
   describe('looks with URL', () => {
     beforeEach(() => {
-      builder = LookerEmbedSDK.createLookWithUrl('https://host.looker.com:9999/login/embed/etc')
+      builder = LookerEmbedSDK.createLookWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
 
     it('should create a look instance', () => {
@@ -128,7 +134,9 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should generate a look URL', () => {
-      expect(builder.url).toEqual('https://host.looker.com:9999/login/embed/etc')
+      expect(builder.url).toEqual(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
   })
 
@@ -164,7 +172,9 @@ describe('LookerEmbedBuilder', () => {
 
   describe('explores with URL', () => {
     beforeEach(() => {
-      builder = LookerEmbedSDK.createExploreWithUrl('https://host.looker.com:9999/login/embed/etc')
+      builder = LookerEmbedSDK.createExploreWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
 
     it('should create an explore instance', () => {
@@ -173,7 +183,9 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should generate a explore URL', () => {
-      expect(builder.url).toEqual('https://host.looker.com:9999/login/embed/etc')
+      expect(builder.url).toEqual(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
   })
 
@@ -188,13 +200,17 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should generate an extension URL', () => {
-      expect(builder.embedUrl).toMatch('/embed/extensions/kitchensink::kitchensink')
+      expect(builder.embedUrl).toMatch(
+        '/embed/extensions/kitchensink::kitchensink'
+      )
     })
   })
 
   describe('extension with URL', () => {
     beforeEach(() => {
-      builder = LookerEmbedSDK.createExtensionWithUrl('https://host.looker.com:9999/login/embed/etc')
+      builder = LookerEmbedSDK.createExtensionWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
 
     it('should create an extension instance', () => {
@@ -203,7 +219,9 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('should generate a extension URL', () => {
-      expect(builder.url).toEqual('https://host.looker.com:9999/login/embed/etc')
+      expect(builder.url).toEqual(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
     })
   })
 
@@ -326,12 +344,12 @@ describe('LookerEmbedBuilder', () => {
     const authConfig = {
       headers: [{ name: 'X-Foo', value: 'bar' }],
       params: [{ name: 'baz', value: 'biff' }],
-      url: '/auth'
+      url: '/auth',
     }
     const authConfig2 = {
       headers: [{ name: 'X-Foo', value: 'bar' }],
       params: [{ name: 'baz', value: 'biff' }],
-      url: '/auth2'
+      url: '/auth2',
     }
     const embedSdk = LookerEmbedSDK
 
@@ -341,7 +359,9 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('builder allows api host and auth url to be set', () => {
-      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+      LookerEmbedSDK.createDashboardWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
         .withApiHost(host)
         .withAuthUrl(authUrl)
       expect(embedSdk.apiHost).toEqual(host)
@@ -350,7 +370,9 @@ describe('LookerEmbedBuilder', () => {
 
     it('allows api host and auth url to be specified again', () => {
       LookerEmbedSDK.init(host, authUrl)
-      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+      LookerEmbedSDK.createDashboardWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
         .withApiHost(host)
         .withAuthUrl(authUrl)
       expect(embedSdk.apiHost).toEqual(host)
@@ -360,15 +382,17 @@ describe('LookerEmbedBuilder', () => {
     it('prevents api host and auth url from being overridden', () => {
       LookerEmbedSDK.init(host, authUrl)
       try {
-        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
-          .withApiHost(host2)
+        LookerEmbedSDK.createDashboardWithUrl(
+          'https://host.looker.com:9999/login/embed/etc'
+        ).withApiHost(host2)
         fail()
       } catch (err) {
         expect(err.message).toEqual('not allowed to change api host')
       }
       try {
-        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
-          .withAuthUrl(authUrl2)
+        LookerEmbedSDK.createDashboardWithUrl(
+          'https://host.looker.com:9999/login/embed/etc'
+        ).withAuthUrl(authUrl2)
         fail()
       } catch (err) {
         expect(err.message).toEqual('not allowed to change auth url')
@@ -376,7 +400,9 @@ describe('LookerEmbedBuilder', () => {
     })
 
     it('builder allows api host and auth config to be set', () => {
-      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+      LookerEmbedSDK.createDashboardWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
         .withApiHost(host)
         .withAuth(authConfig)
       expect(embedSdk.apiHost).toEqual(host)
@@ -385,7 +411,9 @@ describe('LookerEmbedBuilder', () => {
 
     it('allows api host and auth config to be specified again', () => {
       LookerEmbedSDK.init(host, authConfig)
-      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
+      LookerEmbedSDK.createDashboardWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
         .withApiHost(host)
         .withAuth(authConfig)
       expect(embedSdk.apiHost).toEqual(host)
@@ -395,11 +423,13 @@ describe('LookerEmbedBuilder', () => {
     it('builder allows withCredentials auth config to be set', () => {
       const authWithCredentials = {
         ...authConfig,
-        withCredentials: true
+        withCredentials: true,
       }
-      LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
-          .withApiHost(host)
-          .withAuth(authWithCredentials)
+      LookerEmbedSDK.createDashboardWithUrl(
+        'https://host.looker.com:9999/login/embed/etc'
+      )
+        .withApiHost(host)
+        .withAuth(authWithCredentials)
       expect(embedSdk.apiHost).toEqual(host)
       expect(embedSdk.auth).toEqual(authWithCredentials)
     })
@@ -407,21 +437,21 @@ describe('LookerEmbedBuilder', () => {
     it('prevents api host and auth config from being overridden', () => {
       LookerEmbedSDK.init(host, authConfig)
       try {
-        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
-          .withApiHost(host2)
+        LookerEmbedSDK.createDashboardWithUrl(
+          'https://host.looker.com:9999/login/embed/etc'
+        ).withApiHost(host2)
         fail()
       } catch (err) {
         expect(err.message).toEqual('not allowed to change api host')
       }
       try {
-        LookerEmbedSDK.createDashboardWithUrl('https://host.looker.com:9999/login/embed/etc')
-          .withAuth(authConfig2)
+        LookerEmbedSDK.createDashboardWithUrl(
+          'https://host.looker.com:9999/login/embed/etc'
+        ).withAuth(authConfig2)
         fail()
       } catch (err) {
         expect(err.message).toEqual('not allowed to change auth')
       }
     })
-
   })
-
 })
