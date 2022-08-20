@@ -73,7 +73,7 @@
     "xhr-mock": "^2.5.1"
   },
   "dependencies": {
-    "@looker/chatty": "^2.3.1"
+    "@looker/chatty": "^2.3.2"
   },
   "pre-commit": [
     "test-once"

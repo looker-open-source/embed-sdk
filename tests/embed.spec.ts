@@ -360,10 +360,9 @@ describe('LookerEmbed', () => {
     const embedSdk = LookerEmbedSDK as any
 
     beforeEach(() => {
+      LookerEmbedSDK.init(undefined)
       spyOn(EmbedBuilder.prototype, 'sandboxedHost').and.returnValue(true)
-      spyOn(window, 'fetch').and.callFake(async function (this: any) {
-        return Promise.resolve({ status: 200 })
-      })
+      spyOn(window, 'fetch')
       spyOn(ChattyHost.prototype, 'connect').and.callFake(async function (
         this: any
       ) {
