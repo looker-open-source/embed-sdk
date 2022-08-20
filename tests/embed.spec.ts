@@ -1,30 +1,33 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { LookerEmbedSDK, LookerEmbedDashboard } from '../src/index'
 import { ChattyHost } from '@looker/chatty'
 import mock from 'xhr-mock'
+import type { LookerEmbedDashboard } from '../src/index'
+import { LookerEmbedSDK } from '../src/index'
 import { EmbedBuilder } from '../src/embed_builder'
 
 const testUrl = '/base/tests/test.html'
@@ -68,7 +71,7 @@ describe('LookerEmbed', () => {
       })
 
       client.connect()
-        .then(done)
+        .then(() => done())
         .catch(done.fail)
     })
 
@@ -81,12 +84,12 @@ describe('LookerEmbed', () => {
       })
 
       client.connect()
-        .then(done)
+        .then(() => done())
         .catch(done.fail)
     })
 
     it('should use the auth config headers', (done) => {
-      LookerEmbedSDK.init('host.looker.com:9999', { url: '/auth', headers: [{ name: 'X-Foo', value: 'bar' }] })
+      LookerEmbedSDK.init('host.looker.com:9999', { headers: [{ name: 'X-Foo', value: 'bar' }], url: '/auth' })
       mock.get(/\/auth\?src=/, (req, res) => {
         expect(req.url().toString()).toMatch(/^\/auth\?src=%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A\d+%26sdk%3D2$/)
         expect(req.header('Cache-Control')).toEqual('no-cache')
@@ -95,12 +98,12 @@ describe('LookerEmbed', () => {
       })
 
       client.connect()
-        .then(done)
+        .then(() => done())
         .catch(done.fail)
     })
 
     it('should use the auth config parameters', (done) => {
-      LookerEmbedSDK.init('host.looker.com:9999', { url: '/auth', params: [{ name: 'foo', value: 'bar' }] })
+      LookerEmbedSDK.init('host.looker.com:9999', { params: [{ name: 'foo', value: 'bar' }], url: '/auth' })
       mock.get(/\/auth\?src=/, (req, res) => {
         expect(req.url().toString()).toMatch(/^\/auth\?src=%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A\d+%26sdk%3D2&foo=bar$/)
         expect(req.header('Cache-Control')).toEqual('no-cache')
@@ -108,7 +111,7 @@ describe('LookerEmbed', () => {
       })
 
       client.connect()
-        .then(done)
+        .then(() => done())
         .catch(done.fail)
     })
   })
@@ -184,7 +187,7 @@ describe('LookerEmbed', () => {
       })
 
       client.connect()
-        .then(done.fail)
+        // .then(done.fail)
         .catch((error: any) => {
           expect(error).toEqual('foo')
           done()
@@ -308,7 +311,7 @@ describe('LookerEmbed', () => {
       client.connect()
         .then(() => {
           expect(client.targetOrigin).toEqual('*')
-          expect(iframe.src).toEqual('https://host.looker.com:9999/embed/dashboards/11?embed_domain=https%3A%2F%2Fhost.looker.com%3A9999&sdk=2&sandboxed_host=true')
+          expect(iframe.src).toEqual('https://host.looker.com:9999/embed/dashboards/11?embed_domain=https%3A%2F%2Fhost.looker.com%3A9999&sandboxed_host=true&sdk=2')
           done()
         })
         .catch(done.fail)
@@ -322,7 +325,9 @@ describe('LookerEmbed', () => {
 
     beforeEach(() => {
       spyOn(EmbedBuilder.prototype, 'sandboxedHost').and.returnValue(true)
-      spyOn(window, 'fetch')
+      spyOn(window, 'fetch').and.callFake(async function (this: any) {
+        return Promise.resolve({status: 200})
+      })
       spyOn(ChattyHost.prototype, 'connect').and.callFake(async function (this: any) {
         iframe = this.iframe
         return Promise.resolve({})
@@ -341,7 +346,7 @@ describe('LookerEmbed', () => {
     it('sets embed domain to the api host', (done) => {
       client.connect()
         .then(() => {
-          expect(iframe.src).toEqual('https://host.looker.com:9999/embed/dashboards/11?embed_domain=https%3A%2F%2Fhost.looker.com%3A9999&sdk=2&sandboxed_host=true')
+          expect(iframe.src).toEqual('https://host.looker.com:9999/embed/dashboards/11?embed_domain=https%3A%2F%2Fhost.looker.com%3A9999&sandboxed_host=true&sdk=2')
           done()
         })
         .catch(done.fail)
