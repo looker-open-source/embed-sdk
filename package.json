@@ -1,6 +1,6 @@
 {
   "name": "@looker/embed-sdk",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "A toolkit for embedding Looker",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
