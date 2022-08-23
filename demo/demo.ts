@@ -1,4 +1,30 @@
-import { LookerEmbedSDK, LookerEmbedLook, LookerEmbedDashboard } from '../src/index'
+/*
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+ */
+import type { LookerEmbedLook, LookerEmbedDashboard } from '../src/index'
+import { LookerEmbedSDK } from '../src/index'
 
 /*
  * The MIT License (MIT)
@@ -26,7 +52,13 @@ import { LookerEmbedSDK, LookerEmbedLook, LookerEmbedDashboard } from '../src/in
 
 // IDs for content to demonstrate are configured in democonfig.ts
 
-import { lookerHost, dashboardId, lookId, exploreId, extensionId } from './demo_config'
+import {
+  lookerHost,
+  dashboardId,
+  lookId,
+  exploreId,
+  extensionId,
+} from './demo_config'
 
 // Initialize the SDK. lookerHost is the address of the Looker instance. It is configured in
 // democonfig.ts. lookerHost needs to be set for messages to be exchanged from the host
@@ -114,11 +146,19 @@ document.addEventListener('DOMContentLoaded', function () {
       .appendTo('#dashboard')
       // Listen to messages to display progress
       .on('dashboard:loaded', () => updateState('#dashboard-state', 'Loaded'))
-      .on('dashboard:run:start', () => updateState('#dashboard-state', 'Running'))
-      .on('dashboard:run:complete', () => updateState('#dashboard-state', 'Done'))
+      .on('dashboard:run:start', () =>
+        updateState('#dashboard-state', 'Running')
+      )
+      .on('dashboard:run:complete', () =>
+        updateState('#dashboard-state', 'Done')
+      )
       // Listen to messages that change dashboard
-      .on('dashboard:save:complete', () => updateState('#dashboard-state', 'Saved'))
-      .on('dashboard:delete:complete', () => updateState('#dashboard-state', 'Deleted'))
+      .on('dashboard:save:complete', () =>
+        updateState('#dashboard-state', 'Saved')
+      )
+      .on('dashboard:delete:complete', () =>
+        updateState('#dashboard-state', 'Deleted')
+      )
       // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', canceller)
       .on('drillmodal:explore', canceller)
@@ -141,7 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Connection error', error)
       })
   } else {
-    document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display = 'none'
+    document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
+      'none'
   }
 
   // Create an embedded Look
@@ -198,7 +239,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Connection error', error)
       })
   } else {
-    document.querySelector<HTMLDivElement>('#demo-explore')!.style.display = 'none'
+    document.querySelector<HTMLDivElement>('#demo-explore')!.style.display =
+      'none'
   }
 
   // Create an embedded extension (Requires Looker 7.12 and extensions framework)
@@ -217,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Connection error', error)
       })
   } else {
-    document.querySelector<HTMLDivElement>('#demo-extension')!.style.display = 'none'
+    document.querySelector<HTMLDivElement>('#demo-extension')!.style.display =
+      'none'
   }
 })

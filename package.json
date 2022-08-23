@@ -1,6 +1,6 @@
 {
   "name": "@looker/embed-sdk",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "A toolkit for embedding Looker",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -8,8 +8,8 @@
     "test": "tests"
   },
   "engines": {
-    "node": ">=8.6.0",
-    "npm": ">=5.5.1"
+    "node": ">=14.0.0",
+    "npm": ">=8.0.0"
   },
   "files": [
     "dist/**/*",
@@ -21,8 +21,8 @@
     "build_utils": "tsc --build tsconfig-server.json",
     "clean": "rm -rf lib dist",
     "docs": "typedoc --mode file --out docs",
-    "lint": "tslint --project tsconfig-lint.json --format stylish",
-    "lint-fix": "tslint --fix --project tsconfig-lint.json  --format stylish",
+    "lint": "eslint --format stylish '**/*.ts'",
+    "lint-fix": "eslint --format stylish --fix '**/*.ts'",
     "start": "npm run build_utils && webpack serve --config webpack-devserver.config.js --hot --inline --color --progress",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test-once",
@@ -41,36 +41,66 @@
   },
   "homepage": "https://github.com/looker-open-source/embed-sdk",
   "devDependencies": {
-    "@babel/core": "^7.3.3",
+    "@babel/core": "^7.16.7",
+    "@looker/eslint-config-oss": "^1.7.21",
+    "@looker/eslint-plugin": "^1.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/typescript-estree": "^5.9.1",
+    "babel-loader": "^8.2.3",
+    "eslint": "^8.13.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-testing-library": "^5.0.3",
     "@types/create-hmac": "^1.1.0",
     "@types/jasmine": "^2.8.2",
     "@types/node": "^11.12.1",
-    "babel-loader": "^8.0.5",
     "create-hmac": "^1.1.7",
     "dotenv": "^6.2.0",
-    "jasmine-core": "^2.8.0",
-    "karma": "^6.3.4",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-jasmine": "^1.1.1",
-    "karma-typescript": "^5.0.3",
-    "karma-typescript-es6-transform": "^4.0.0",
+    "jasmine-core": "^4.0.0",
+    "karma": "^6.3.11",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^4.0.1",
+    "karma-typescript": "^5.5.3",
+    "karma-typescript-es6-transform": "^5.5.3",
     "pre-commit": "^1.2.2",
-    "ts-loader": "^5.3.3",
-    "tslint": "^6.1.3",
-    "tslint-config-standard": "^9.0.0",
-    "tslint-defocus": "^2.0.6",
-    "tslint-eslint-rules": "^5.4.0",
-    "typedoc": "^0.17.8",
-    "typescript": "^3.9.7",
-    "webpack": "^5.45.1",
-    "webpack-cli": "^4.7.2",
+    "prettier": "^2.4.1",
+    "ts-loader": "^9.2.6",
+    "typedoc": "^0.22.10",
+    "typescript": "^4.5.4",
+    "typescript-tslint-plugin": "^1.0.1",
+    "webpack": "^5.66.0",
+    "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^3.11.2",
     "xhr-mock": "^2.5.1"
   },
   "dependencies": {
-    "@looker/chatty": "^2.3.0"
+    "@looker/chatty": "^2.3.2"
   },
   "pre-commit": [
     "test-once"
-  ]
+  ],
+  "eslintConfig": {
+    "extends": [
+      "@looker/eslint-config-oss"
+    ],
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "no-console": [
+        "error",
+        {
+          "allow": [
+            "info",
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "no-useless-constructor": "off"
+    }
+  },
+  "overrides": {
+    "remark-parse": "9.0.0",
+    "glob-parent": "5.1.2",
+    "node-forge": "1.3.1"
+  }
 }

@@ -1,30 +1,32 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { LookerEmbedBase } from './embed_base'
-import { LookerEmbedDashboard } from './dashboard_client'
-import { LookerEmbedLook } from './look_client'
+import type { LookerEmbedBase } from './embed_base'
+import type { LookerEmbedDashboard } from './dashboard_client'
+import type { LookerEmbedLook } from './look_client'
 
 /**
  * Auth server configuration
@@ -371,22 +373,46 @@ export interface CancellableEventResponse {
  */
 
 export interface LookerEmbedEventMap {
-  'dashboard:run:start': (this: LookerEmbedDashboard, event: DashboardEvent) => void
-  'dashboard:run:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
-  'dashboard:filters:changed': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  'dashboard:run:start': (
+    this: LookerEmbedDashboard,
+    event: DashboardEvent
+  ) => void
+  'dashboard:run:complete': (
+    this: LookerEmbedDashboard,
+    event: DashboardEvent
+  ) => void
+  'dashboard:filters:changed': (
+    this: LookerEmbedDashboard,
+    event: DashboardEvent
+  ) => void
   /**
    * Dashboard saved event
    * Looker 21.6
    */
-  'dashboard:save:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
+  'dashboard:save:complete': (
+    this: LookerEmbedDashboard,
+    event: DashboardEvent
+  ) => void
   /**
    * Dashboard deleted event
    * Looker 21.6
    */
-  'dashboard:delete:complete': (this: LookerEmbedDashboard, event: DashboardEvent) => void
-  'dashboard:tile:start': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
-  'dashboard:tile:complete': (this: LookerEmbedDashboard, event: DashboardTileEvent) => void
-  'dashboard:tile:download': (this: LookerEmbedDashboard, event: DashboardTileDownloadEvent) => void
+  'dashboard:delete:complete': (
+    this: LookerEmbedDashboard,
+    event: DashboardEvent
+  ) => void
+  'dashboard:tile:start': (
+    this: LookerEmbedDashboard,
+    event: DashboardTileEvent
+  ) => void
+  'dashboard:tile:complete': (
+    this: LookerEmbedDashboard,
+    event: DashboardTileEvent
+  ) => void
+  'dashboard:tile:download': (
+    this: LookerEmbedDashboard,
+    event: DashboardTileDownloadEvent
+  ) => void
   'dashboard:tile:explore': (
     this: LookerEmbedDashboard,
     event: DashboardTileExploreEvent
@@ -396,8 +422,14 @@ export interface LookerEmbedEventMap {
     event: DashboardTileViewEvent
   ) => CancellableEventResponse | undefined
 
-  'drillmenu:click': (this: LookerEmbedBase, event: DrillMenuEvent) => CancellableEventResponse | undefined
-  'drillmodal:explore': (this: LookerEmbedBase, event: DrillModalExploreEvent) => CancellableEventResponse | undefined
+  'drillmenu:click': (
+    this: LookerEmbedBase,
+    event: DrillMenuEvent
+  ) => CancellableEventResponse | undefined
+  'drillmodal:explore': (
+    this: LookerEmbedBase,
+    event: DrillModalExploreEvent
+  ) => CancellableEventResponse | undefined
 
   'explore:run:start': (this: LookerEmbedLook, event: ExploreEvent) => void
   'explore:run:complete': (this: LookerEmbedLook, event: ExploreEvent) => void
@@ -420,7 +452,10 @@ export interface LookerEmbedEventMap {
   'look:state:changed': (this: LookerEmbedLook, event: LookEvent) => void
 
   'page:changed': (this: LookerEmbedBase, event: PageChangedEvent) => void
-  'page:properties:changed': (this: LookerEmbedBase, event: PagePropertiesChangedEvent) => void
+  'page:properties:changed': (
+    this: LookerEmbedBase,
+    event: PagePropertiesChangedEvent
+  ) => void
 
   [key: string]: any
 }

@@ -1,33 +1,39 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { ChattyHostConnection, CallbackStore } from '@looker/chatty'
 import { deprecate } from 'util'
+import type { ChattyHostConnection, CallbackStore } from '@looker/chatty'
 import { EmbedClient } from './embed'
-import { LookerAuthConfig, LookerEmbedEventMap, LookerEmbedFilterParams } from './types'
+import type {
+  LookerAuthConfig,
+  LookerEmbedEventMap,
+  LookerEmbedFilterParams,
+} from './types'
 
-type EmbedClientConstructor<T> = { new(host: ChattyHostConnection): T ;}
+type EmbedClientConstructor<T> = { new (host: ChattyHostConnection): T }
 
 interface LookerEmbedHostSettings {
   apiHost: string
@@ -38,7 +44,7 @@ interface UrlParams {
   [key: string]: string
 }
 
-function stringify (params: {[key: string]: string}) {
+function stringify(params: { [key: string]: string }) {
   const result = []
   for (const key in params) {
     result.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
@@ -46,7 +52,7 @@ function stringify (params: {[key: string]: string}) {
   return result.join('&')
 }
 
-function escapeFilterParam (param: string) {
+function escapeFilterParam(param: string) {
   return param.replace(/,/g, '^,')
 }
 
@@ -71,7 +77,7 @@ export class EmbedBuilder<T> {
    * @hidden
    */
 
-  constructor (
+  constructor(
     private _hostSettings: LookerEmbedHostSettings,
     private _type: string,
     private _endpoint: string,
@@ -80,14 +86,14 @@ export class EmbedBuilder<T> {
     if (this.sandboxedHost) {
       this._params = {
         embed_domain: this._hostSettings.apiHost,
+        sandboxed_host: 'true',
         sdk: '2',
-        sandboxed_host: 'true'
       }
     } else {
       const embedDomain = window.location.origin
       this._params = {
         embed_domain: embedDomain,
-        sdk: '2'
+        sdk: '2',
       }
     }
   }
@@ -96,7 +102,7 @@ export class EmbedBuilder<T> {
    * Value for the `frame-border` attribute of an embedded iframe
    */
 
-  withFrameBorder (attr: string) {
+  withFrameBorder(attr: string) {
     this._frameBorder = attr
     return this
   }
@@ -107,7 +113,7 @@ export class EmbedBuilder<T> {
    * @param id
    */
 
-  withId (id: number | string) {
+  withId(id: number | string) {
     this._id = id
     return this
   }
@@ -119,7 +125,7 @@ export class EmbedBuilder<T> {
    * created by ID.
    */
 
-  withParams (params: UrlParams) {
+  withParams(params: UrlParams) {
     for (const key in params) {
       this._params[key] = params[key]
     }
@@ -132,14 +138,18 @@ export class EmbedBuilder<T> {
    * @filters Filters to apply
    */
 
-  withFilters (filters: LookerEmbedFilterParams, escape: boolean = false) {
+  withFilters(filters: LookerEmbedFilterParams, escape = false) {
     if (this.type === 'dashboard') {
       for (const key in filters) {
-        this._params[key] = escape ? escapeFilterParam(filters[key]) : filters[key]
+        this._params[key] = escape
+          ? escapeFilterParam(filters[key])
+          : filters[key]
       }
     } else {
       for (const key in filters) {
-        this._params[`f[${key}]`] = escape ? escapeFilterParam(filters[key]) : filters[key]
+        this._params[`f[${key}]`] = escape
+          ? escapeFilterParam(filters[key])
+          : filters[key]
       }
     }
     return this
@@ -151,7 +161,7 @@ export class EmbedBuilder<T> {
    * @param attr one or more sandbox attributes for an embedded content iframe.
    */
 
-  withSandboxAttr (...attr: string[]) {
+  withSandboxAttr(...attr: string[]) {
     this._sandboxAttrs = this._sandboxAttrs.concat(attr)
     return this
   }
@@ -161,7 +171,7 @@ export class EmbedBuilder<T> {
    * @param className one or more sandbox attributes for an embedded content.
    */
 
-  withClassName (...className: string[]) {
+  withClassName(...className: string[]) {
     this._classNames = this._classNames.concat(className)
     return this
   }
@@ -172,7 +182,7 @@ export class EmbedBuilder<T> {
    * @param suffix Next generation suffix. Defaults to '-next'.
    */
 
-  withNext (suffix: string = '-next') {
+  withNext(suffix = '-next') {
     this._suffix = suffix
     this._endpoint += this._suffix
     return this
@@ -184,7 +194,7 @@ export class EmbedBuilder<T> {
    * @param theme Theme name
    */
 
-  withTheme (theme: string) {
+  withTheme(theme: string) {
     this._params.theme = theme
     return this
   }
@@ -195,7 +205,7 @@ export class EmbedBuilder<T> {
    * @param apiHost
    */
 
-  withApiHost (apiHost: string) {
+  withApiHost(apiHost: string) {
     if (!this._hostSettings.apiHost) {
       this._hostSettings.apiHost = apiHost
       if (this.sandboxedHost) {
@@ -214,7 +224,7 @@ export class EmbedBuilder<T> {
    * @param authUrl URL to endpoint that can sign Looker SSO URLs
    */
 
-  withAuthUrl (authUrl: string) {
+  withAuthUrl(authUrl: string) {
     if (!this._hostSettings.auth?.url) {
       this._hostSettings.auth = { url: authUrl }
     } else if (this._hostSettings.auth.url !== authUrl) {
@@ -229,7 +239,7 @@ export class EmbedBuilder<T> {
    * @param auth
    */
 
-  withAuth (auth: LookerAuthConfig) {
+  withAuth(auth: LookerAuthConfig) {
     if (!this._hostSettings.auth) {
       this._hostSettings.auth = auth
     } else if (this._hostSettings.auth !== auth) {
@@ -244,7 +254,7 @@ export class EmbedBuilder<T> {
    * @param url
    */
 
-  withUrl (url: string) {
+  withUrl(url: string) {
     this._url = url
     return this
   }
@@ -253,7 +263,7 @@ export class EmbedBuilder<T> {
    * @hidden
    */
 
-  set sandboxedHost (sandboxedHost: boolean) {
+  set sandboxedHost(sandboxedHost: boolean) {
     this._sandboxedHost = sandboxedHost
   }
 
@@ -261,7 +271,7 @@ export class EmbedBuilder<T> {
    * @hidden
    */
 
-  get sandboxedHost () {
+  get sandboxedHost() {
     if (this._sandboxedHost === undefined) {
       const embedHostDomain = window.location.origin
       this._sandboxedHost = embedHostDomain === 'null' || !embedHostDomain
@@ -273,7 +283,7 @@ export class EmbedBuilder<T> {
    * The element to append the embedded content to.
    */
 
-  get el () {
+  get el() {
     return this._appendTo || document.body
   }
 
@@ -281,7 +291,7 @@ export class EmbedBuilder<T> {
    * the frame-border attribute to apply to the iframe
    */
 
-  get frameBorder () {
+  get frameBorder() {
     return this._frameBorder
   }
 
@@ -289,7 +299,7 @@ export class EmbedBuilder<T> {
    * The endpoint used to load content
    */
 
-  get endpoint () {
+  get endpoint() {
     return this._endpoint
   }
 
@@ -297,7 +307,7 @@ export class EmbedBuilder<T> {
    * The type of embedded content, dashboard, look, and explore
    */
 
-  get type () {
+  get type() {
     return this._type
   }
 
@@ -305,7 +315,7 @@ export class EmbedBuilder<T> {
    * The address of the Looker instance being used
    */
 
-  get apiHost () {
+  get apiHost() {
     return this._hostSettings.apiHost
   }
 
@@ -313,7 +323,7 @@ export class EmbedBuilder<T> {
    * The content URL of this embedded content, if provided
    */
 
-  get url () {
+  get url() {
     return this._url
   }
 
@@ -322,7 +332,7 @@ export class EmbedBuilder<T> {
    * @deprecated
    */
 
-  get authUrl () {
+  get authUrl() {
     return this._hostSettings.auth?.url
   }
 
@@ -330,7 +340,7 @@ export class EmbedBuilder<T> {
    * The auth config of this embedded content, if provided
    */
 
-  get auth () {
+  get auth() {
     return this._hostSettings.auth
   }
 
@@ -338,7 +348,7 @@ export class EmbedBuilder<T> {
    * @hidden
    */
 
-  get embedUrl () {
+  get embedUrl() {
     const params = stringify(this._params)
     return `${this.endpoint}/${this.id}?${params}`
   }
@@ -347,7 +357,7 @@ export class EmbedBuilder<T> {
    * @hidden
    */
 
-  get handlers () {
+  get handlers() {
     return this._handlers
   }
 
@@ -355,7 +365,7 @@ export class EmbedBuilder<T> {
    * The sandbox attributes of an embedded content iframe, if provided
    */
 
-  get sandboxAttrs () {
+  get sandboxAttrs() {
     return this._sandboxAttrs
   }
 
@@ -363,7 +373,7 @@ export class EmbedBuilder<T> {
    * The classnames to apply to the embedded content
    */
 
-  get classNames () {
+  get classNames() {
     return this._classNames
   }
 
@@ -371,7 +381,7 @@ export class EmbedBuilder<T> {
    * The the suffix to append to the content type portion of the url
    */
 
-  get suffix () {
+  get suffix() {
     return this._suffix
   }
 
@@ -379,7 +389,7 @@ export class EmbedBuilder<T> {
    * The ID of this embedded content, if provided
    */
 
-  get id () {
+  get id() {
     return this._id
   }
 
@@ -387,7 +397,7 @@ export class EmbedBuilder<T> {
    * @hidden
    */
 
-  get clientConstructor () {
+  get clientConstructor() {
     return this._clientConstructor
   }
 
@@ -398,7 +408,7 @@ export class EmbedBuilder<T> {
    * @param el
    */
 
-  appendTo (el: HTMLElement | string) {
+  appendTo(el: HTMLElement | string) {
     if (typeof el === 'string') {
       this._appendTo = document.querySelector(el)
     } else {
@@ -415,7 +425,10 @@ export class EmbedBuilder<T> {
    * @param handler: Callback A callback method to be invoked when the message is received.
    */
 
-  on<K extends keyof LookerEmbedEventMap> (name: K, handler: LookerEmbedEventMap[K]) {
+  on<K extends keyof LookerEmbedEventMap>(
+    name: K,
+    handler: LookerEmbedEventMap[K]
+  ) {
     this._handlers[name] = this._handlers[name] ? this._handlers[name] : []
     this._handlers[name].push(handler)
     return this
@@ -425,7 +438,7 @@ export class EmbedBuilder<T> {
    * Constructs the embedded content, including creating the DOM element that contains the content.
    */
 
-  build (): EmbedClient<T> {
+  build(): EmbedClient<T> {
     return new EmbedClient<T>(this)
   }
 }
