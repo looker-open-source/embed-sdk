@@ -1,0 +1,40 @@
+name: Auto Doc Gen
+on:
+  push:
+    branches:
+      - master
+
+env:
+  NODE_VERSION: 14.x
+
+jobs:
+  docgen:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Use Node.js ${{ NODE_VERSION }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ NODE_VERSION }}
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Generate docs
+      run: npm run docs
+
+    - name: Check for modified files
+      id: git-check
+      run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+
+    - name: Commit and push changes
+      if: steps.git-check.outputs.modified == 'true'
+      run: |
+        git config --global user.name 'Automated Embed SDK Docs Publisher'
+        git config --global user.email 'actions@users.noreply.github.com'
+        git commit --no-verify -am "Auto update Embed SDK documentation \n\n Github worklow @ .github/workflow/docs.yml"
+
+        git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+
+        git push
