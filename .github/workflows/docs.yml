@@ -5,7 +5,7 @@ on:
       - master
 
 env:
-  NODE_VERSION: 14.x
+  NODE_VERSION: 16.x
 
 jobs:
   docgen:
@@ -33,7 +33,7 @@ jobs:
       run: |
         git config --global user.name 'Automated Embed SDK Docs Publisher'
         git config --global user.email 'actions@users.noreply.github.com'
-        git commit --no-verify -am "Auto update Embed SDK documentation \n\n Github worklow @ .github/workflow/docs.yml"
+        git commit --no-verify -am "Auto update Embed SDK documentation \n\n Github workflow @ .github/workflow/docs.yml"
 
         git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
 
