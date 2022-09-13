@@ -1,28 +1,30 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { LookerDashboardOptions, LookerEmbedFilterParams } from './types'
+import type { LookerDashboardOptions, LookerEmbedFilterParams } from './types'
 import { LookerEmbedBase } from './embed_base'
 
 /**
@@ -35,7 +37,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    * Convenience method for sending a run message to the embedded dashboard.
    */
 
-  run () {
+  run() {
     this.send('dashboard:run')
   }
 
@@ -45,7 +47,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    * Requires Looker 7.14 and Dashboards Next (see [[EmbedBuilder.withNext]]).
    */
 
-  stop () {
+  stop() {
     this.send('dashboard:stop')
   }
 
@@ -55,7 +57,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    * @param filters A set of filter parameters to update
    */
 
-  updateFilters (params: LookerEmbedFilterParams) {
+  updateFilters(params: LookerEmbedFilterParams) {
     this.send('dashboard:filters:update', { filters: params })
   }
 
@@ -65,7 +67,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    * @param options An options object to be applied
    */
 
-  setOptions (options: LookerDashboardOptions) {
+  setOptions(options: LookerDashboardOptions) {
     this.send('dashboard:options:set', options)
   }
 
@@ -75,7 +77,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    * Requires Looker 7.18 and Dashboards Next (see [[EmbedBuilder.withNext]]).
    */
 
-  async openScheduleDialog (): Promise<void> {
+  async openScheduleDialog(): Promise<void> {
     return this.sendAndReceive('dashboard:schedule_modal:open')
   }
 
@@ -89,7 +91,7 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
    * @param pushHistory Whether to push the new page onto history. Default is false.
    */
 
-  async loadDashboard (id: string, pushHistory: boolean = false): Promise<void> {
+  async loadDashboard(id: string, pushHistory = false): Promise<void> {
     return this.sendAndReceive('dashboard:load', { id, pushHistory })
   }
 }

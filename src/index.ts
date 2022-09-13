@@ -1,25 +1,27 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
 import { EmbedBuilder } from './embed_builder'
@@ -27,7 +29,10 @@ import { LookerEmbedDashboard } from './dashboard_client'
 import { LookerEmbedExplore } from './explore_client'
 import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
-import { LookerAuthConfig, LookerEmbedCookielessSessionData } from './types'
+import type {
+  LookerAuthConfig,
+  LookerEmbedCookielessSessionData,
+} from './types'
 
 export type { LookerEmbedDashboard } from './dashboard_client'
 export type { LookerEmbedExplore } from './explore_client'
@@ -44,7 +49,7 @@ export class LookerEmbedSDK {
    * @param authUrl A server endpoint that will sign SSO embed URLs
    */
 
-  static init (apiHost: string, auth?: string | LookerAuthConfig) {
+  static init(apiHost: string, auth?: string | LookerAuthConfig) {
     this.apiHost = apiHost
     this.auth = typeof auth === 'string' ? { url: auth } : auth
   }
@@ -54,24 +59,24 @@ export class LookerEmbedSDK {
    *
    * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
    *                This is required for verification of messages sent from the embedded content.
-   * @param sessionCreateCallback A callback that will create the cookieless session. The `embed_cookieless_session_create`
+   * @param acquireSessionCallback A callback that will acquire a cookieless session. The `acquire_embed_cookieless_session`
    * api end point should ultimately be called. The recommended approach is via a proxy endpoint provided by the hosting
    * application. Two tokens are returned. The navigation token is automatically appended to Looker URLs that result in
    * navigation in the embedded IFRAME. The api token is sent to the Looker Application running in the embedded IFRAME
    * once the underlying chatty connection has been established.
-   * @param refreshApiTokenCallback A callback that will refresh the api token. The `embed_cookieless_session_refresh_api_token`
+   * @param generateTokensCallback A callback that will generate new navigation and api tokens. The `generate_tokens_for_cookieless_session`
    * api end point should ultimately be called. The recommended approach is via a proxy endpoint provided by the hosting
-   * application. The Embed SDK will call this prior to api token expiring and will send the new api token to the embedded
-   * IFRAME.
+   * application. The Embed SDK will call this prior to the api and navigation tokens expiring and will send the new api
+   * token to the embedded IFRAME.
    */
-  static initCookieless (
+  static initCookieless(
     apiHost: string,
-    sessionPrepareCallback: () => Promise<LookerEmbedCookielessSessionData>,
-    refreshApiTokenCallback: () => Promise<LookerEmbedCookielessSessionData>
+    acquireSessionCallback: () => Promise<LookerEmbedCookielessSessionData>,
+    generateTokensCallback: () => Promise<LookerEmbedCookielessSessionData>
   ) {
     this.apiHost = apiHost
-    this.sessionPrepareCallback = sessionPrepareCallback
-    this.refreshApiTokenCallback = refreshApiTokenCallback
+    this.acquireSessionCallback = acquireSessionCallback
+    this.generateTokensCallback = generateTokensCallback
   }
 
   /**
@@ -80,10 +85,13 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createDashboardWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withUrl(
-      url
-    )
+  static createDashboardWithUrl(url: string) {
+    return new EmbedBuilder<LookerEmbedDashboard>(
+      this,
+      'dashboard',
+      '/embed/dashboards',
+      LookerEmbedDashboard
+    ).withUrl(url)
   }
 
   /**
@@ -92,10 +100,13 @@ export class LookerEmbedSDK {
    * @param id The numeric ID of a Looker User Defined Dashboard, or LookML Dashboard ID
    */
 
-  static createDashboardWithId (id: string | number) {
-    return new EmbedBuilder<LookerEmbedDashboard>(this, 'dashboard', '/embed/dashboards', LookerEmbedDashboard).withId(
-      id
-    )
+  static createDashboardWithId(id: string | number) {
+    return new EmbedBuilder<LookerEmbedDashboard>(
+      this,
+      'dashboard',
+      '/embed/dashboards',
+      LookerEmbedDashboard
+    ).withId(id)
   }
 
   /**
@@ -104,8 +115,13 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createExploreWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withUrl(url)
+  static createExploreWithUrl(url: string) {
+    return new EmbedBuilder<LookerEmbedExplore>(
+      this,
+      'explore',
+      '/embed/explore',
+      LookerEmbedExplore
+    ).withUrl(url)
   }
 
   /**
@@ -114,9 +130,14 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker explore
    */
 
-  static createExploreWithId (id: string) {
+  static createExploreWithId(id: string) {
     id = id.replace('::', '/') // Handle old format explore ids.
-    return new EmbedBuilder<LookerEmbedExplore>(this, 'explore', '/embed/explore', LookerEmbedExplore).withId(id)
+    return new EmbedBuilder<LookerEmbedExplore>(
+      this,
+      'explore',
+      '/embed/explore',
+      LookerEmbedExplore
+    ).withId(id)
   }
 
   /**
@@ -125,8 +146,13 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createLookWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withUrl(url)
+  static createLookWithUrl(url: string) {
+    return new EmbedBuilder<LookerEmbedLook>(
+      this,
+      'look',
+      '/embed/looks',
+      LookerEmbedLook
+    ).withUrl(url)
   }
 
   /**
@@ -135,8 +161,13 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker Look
    */
 
-  static createLookWithId (id: number) {
-    return new EmbedBuilder<LookerEmbedLook>(this, 'look', '/embed/looks', LookerEmbedLook).withId(id)
+  static createLookWithId(id: number) {
+    return new EmbedBuilder<LookerEmbedLook>(
+      this,
+      'look',
+      '/embed/looks',
+      LookerEmbedLook
+    ).withId(id)
   }
 
   /**
@@ -145,10 +176,13 @@ export class LookerEmbedSDK {
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
 
-  static createExtensionWithUrl (url: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withUrl(
-      url
-    )
+  static createExtensionWithUrl(url: string) {
+    return new EmbedBuilder<LookerEmbedExtension>(
+      this,
+      'extension',
+      '/embed/extensions',
+      LookerEmbedExtension
+    ).withUrl(url)
   }
 
   /**
@@ -157,10 +191,13 @@ export class LookerEmbedSDK {
    * @param id The ID of a Looker Look
    */
 
-  static createExtensionWithId (id: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(this, 'extension', '/embed/extensions', LookerEmbedExtension).withId(
-      id
-    )
+  static createExtensionWithId(id: string) {
+    return new EmbedBuilder<LookerEmbedExtension>(
+      this,
+      'extension',
+      '/embed/extensions',
+      LookerEmbedExtension
+    ).withId(id)
   }
 
   /**
@@ -179,11 +216,11 @@ export class LookerEmbedSDK {
    * @hidden
    */
 
-  static sessionPrepareCallback?: () => Promise<LookerEmbedCookielessSessionData>
+  static acquireSessionCallback?: () => Promise<LookerEmbedCookielessSessionData>
 
   /**
    * @hidden
    */
 
-  static refreshApiTokenCallback?: () => Promise<LookerEmbedCookielessSessionData>
+  static generateTokensCallback?: () => Promise<LookerEmbedCookielessSessionData>
 }

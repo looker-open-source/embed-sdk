@@ -11,4 +11,4 @@ dist
 lib
 node_modules
 server_utils/auth_utils.js
-*.direnv
+.direnv

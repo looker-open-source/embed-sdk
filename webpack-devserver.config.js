@@ -2,7 +2,11 @@ var path = require('path')
 var config = require('./config')
 
 var user = require('./demo/demo_user.json')
-var { createSignedUrl, prepareCookielessSession, refreshApiToken } = require('./server_utils/auth_utils')
+var {
+  createSignedUrl,
+  acquireSession,
+  generateTokens,
+} = require('./server_utils/auth_utils')
 
 var webpackConfig = {
   mode: 'development',
@@ -47,7 +51,7 @@ var webpackConfig = {
       })
       app.get('/auth-cookieless', async function (req, res) {
         try {
-          const tokens = await prepareCookielessSession(
+          const tokens = await acquireSession(
             config.api_url,
             config.client_id,
             config.client_secret,
@@ -61,7 +65,7 @@ var webpackConfig = {
       })
       app.get('/refresh-api-token', async function (req, res) {
         try {
-          const tokens = await refreshApiToken(
+          const tokens = await generateTokens(
             config.api_url,
             config.client_id,
             config.client_secret,

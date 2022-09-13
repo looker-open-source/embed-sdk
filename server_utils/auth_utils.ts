@@ -1,32 +1,34 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
 import * as createHmac from 'create-hmac'
 import fetch from 'node-fetch'
 
-function stringify (params: { [key: string]: string | undefined }) {
-  const result = []
+function stringify(params: { [key: string]: string | undefined }) {
+  const result: string[] = []
   for (const key in params) {
     const param = params[key]
     if (typeof param === 'string') {
@@ -36,11 +38,11 @@ function stringify (params: { [key: string]: string | undefined }) {
   return result.join('&')
 }
 
-function forceUnicodeEncoding (val: string) {
+function forceUnicodeEncoding(val: string) {
   return decodeURIComponent(encodeURIComponent(val))
 }
 
-function signEmbedUrl (data: { [key: string]: string }, secret: string) {
+function signEmbedUrl(data: { [key: string]: string }, secret: string) {
   const stringsToSign = [
     data.host,
     data.embed_path,
@@ -50,7 +52,7 @@ function signEmbedUrl (data: { [key: string]: string }, secret: string) {
     data.session_length,
     data.external_user_id,
     data.permissions,
-    data.models
+    data.models,
   ]
   if (data.group_ids) stringsToSign.push(data.group_ids)
   if (data.external_group_id) stringsToSign.push(data.external_group_id)
@@ -58,11 +60,15 @@ function signEmbedUrl (data: { [key: string]: string }, secret: string) {
   stringsToSign.push(data.access_filters)
 
   const stringToSign = stringsToSign.join('\n')
-  return createHmac('sha1', secret).update(forceUnicodeEncoding(stringToSign)).digest('base64').trim()
+  return createHmac('sha1', secret)
+    .update(forceUnicodeEncoding(stringToSign))
+    .digest('base64')
+    .trim()
 }
 
-function createNonce (len: number) {
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+function createNonce(len: number) {
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let text = ''
 
   for (let i = 0; i < len; i++) {
@@ -106,43 +112,49 @@ export interface LookerEmbedUser {
   access_filters?: { [key: string]: any }
 }
 
-export function createSignedUrl (src: string, user: LookerEmbedUser, host: string, secret: string, nonce?: string) {
+export function createSignedUrl(
+  src: string,
+  user: LookerEmbedUser,
+  host: string,
+  secret: string,
+  nonce?: string
+) {
   const jsonTime = JSON.stringify(Math.floor(new Date().getTime() / 1000))
   const jsonNonce = JSON.stringify(nonce || createNonce(16))
   const params = {
+    access_filters: JSON.stringify(user.access_filters || {}),
+    external_group_id: JSON.stringify(user.external_group_id),
     external_user_id: JSON.stringify(user.external_user_id),
     first_name: JSON.stringify(user.first_name),
-    last_name: JSON.stringify(user.last_name),
-    permissions: JSON.stringify(user.permissions),
-    models: JSON.stringify(user.models),
-    group_ids: JSON.stringify(user.group_ids),
-    user_attributes: JSON.stringify(user.user_attributes),
-    external_group_id: JSON.stringify(user.external_group_id),
-    access_filters: JSON.stringify(user.access_filters || {}),
-    user_timezone: JSON.stringify(user.user_timezone),
-
     force_logout_login: JSON.stringify(user.force_logout_login),
-    session_length: JSON.stringify(user.session_length),
-
+    group_ids: JSON.stringify(user.group_ids),
+    last_name: JSON.stringify(user.last_name),
+    models: JSON.stringify(user.models),
     nonce: jsonNonce,
-    time: jsonTime
+    permissions: JSON.stringify(user.permissions),
+
+    session_length: JSON.stringify(user.session_length),
+    time: jsonTime,
+
+    user_attributes: JSON.stringify(user.user_attributes),
+    user_timezone: JSON.stringify(user.user_timezone),
   }
 
   const embedPath = '/login/embed/' + encodeURIComponent(src)
 
   const signingParams = {
-    host,
+    access_filters: params.access_filters,
     embed_path: embedPath,
-    nonce: jsonNonce,
-    time: jsonTime,
-    session_length: params.session_length,
-    external_user_id: params.external_user_id,
-    permissions: params.permissions,
-    models: params.models,
-    group_ids: params.group_ids,
     external_group_id: params.external_group_id,
+    external_user_id: params.external_user_id,
+    group_ids: params.group_ids,
+    host,
+    models: params.models,
+    nonce: jsonNonce,
+    permissions: params.permissions,
+    session_length: params.session_length,
+    time: jsonTime,
     user_attributes: params.user_attributes,
-    access_filters: params.access_filters
   }
 
   const signature = signEmbedUrl(signingParams, secret)
@@ -155,21 +167,28 @@ export function createSignedUrl (src: string, user: LookerEmbedUser, host: strin
 let authToken: string
 let authTokenExpiresAt = 0
 
-const login = async (apiUrl: string, clientId: string, clientSecret: string) => {
+const login = async (
+  apiUrl: string,
+  clientId: string,
+  clientSecret: string
+) => {
   if (new Date().getTime() > authTokenExpiresAt) {
     try {
       const resp = await fetch(`${apiUrl}/api/4.0/login`, {
-        method: 'POST',
+        body: `client_id=${clientId}&client_secret=${clientSecret}`,
         headers: {
-          'content-type': 'application/x-www-form-urlencoded'
+          'content-type': 'application/x-www-form-urlencoded',
         },
-        body: `client_id=${clientId}&client_secret=${clientSecret}`
+        method: 'POST',
       })
       if (!resp.ok || (resp.status < 200 && resp.status > 299)) {
         console.error('login failed', { resp })
         throw new Error(`login failed: ${resp.status} ${resp.statusText}`)
       }
-      const body = (await resp.json()) as { access_token: string; expires_in: number }
+      const body = (await resp.json()) as {
+        access_token: string
+        expires_in: number
+      }
       const { access_token, expires_in } = body
       authTokenExpiresAt = new Date().getTime() - 120000 + expires_in * 1000
       authToken = access_token
@@ -180,25 +199,38 @@ const login = async (apiUrl: string, clientId: string, clientSecret: string) => 
   }
 }
 
-let refreshTokenExpiresAt: number
-let refreshToken: string
+let sessionReferenceTokenExpiresAt: number
+let sessionReferenceToken: string
 let apiToken: string
 let navigationToken: string
 
-const prepareSession = async (apiUrl: string, userAgent: string, user: LookerEmbedUser) => {
+const acquireSessionInternal = async (
+  apiUrl: string,
+  userAgent: string,
+  user: LookerEmbedUser
+) => {
   try {
-    const resp = await fetch(`${apiUrl}/api/4.0/embed/cookieless/session_prepare`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'user-agent': userAgent,
-        Authorization: `Bearer ${authToken}`
-      },
-      body: JSON.stringify(user)
-    })
+    const request = {
+      ...user,
+      session_reference_token: sessionReferenceToken,
+    }
+    const resp = await fetch(
+      `${apiUrl}/api/4.0/embed/cookieless_session/acquire`,
+      {
+        body: JSON.stringify(request),
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'content-type': 'application/json',
+          'user-agent': userAgent,
+        },
+        method: 'POST',
+      }
+    )
     if (!resp.ok || (resp.status < 200 && resp.status > 299)) {
-      console.error('session creation failed', { resp })
-      throw new Error(`session creation failed: ${resp.status} ${resp.statusText}`)
+      console.error('session acquisition failed', { resp })
+      throw new Error(
+        `session acquisition failed: ${resp.status} ${resp.statusText}`
+      )
     }
     const body = (await resp.json()) as any
     const {
@@ -206,24 +238,24 @@ const prepareSession = async (apiUrl: string, userAgent: string, user: LookerEmb
       authentication_token_ttl,
       navigation_token,
       navigation_token_ttl,
-      refresh_token,
-      refresh_token_ttl,
+      session_reference_token,
+      session_reference_token_ttl,
       api_token,
       api_token_ttl,
-      session_ttl
     } = body
     navigationToken = navigation_token
     apiToken = api_token
-    refreshToken = refresh_token
-    refreshTokenExpiresAt = new Date().getTime() + refresh_token_ttl * 1000
+    sessionReferenceToken = session_reference_token
+    sessionReferenceTokenExpiresAt =
+      new Date().getTime() + session_reference_token_ttl * 1000
     return {
+      api_token,
+      api_token_ttl,
       authentication_token,
       authentication_token_ttl,
       navigation_token,
       navigation_token_ttl,
-      api_token,
-      api_token_ttl,
-      session_ttl
+      session_reference_token_ttl,
     }
   } catch (error) {
     console.error('session creation failed', { error })
@@ -231,7 +263,7 @@ const prepareSession = async (apiUrl: string, userAgent: string, user: LookerEmb
   }
 }
 
-export async function prepareCookielessSession (
+export async function acquireSession(
   apiUrl: string,
   clientId: string,
   clientSecret: string,
@@ -239,35 +271,52 @@ export async function prepareCookielessSession (
   user: LookerEmbedUser
 ) {
   await login(apiUrl, clientId, clientSecret)
-  return prepareSession(apiUrl, userAgent, user)
+  return acquireSessionInternal(apiUrl, userAgent, user)
 }
 
-export async function refreshApiToken (apiUrl: string, clientId: string, clientSecret: string, userAgent: string) {
-  if (new Date().getTime() >= refreshTokenExpiresAt) {
-    console.error('refresh token has expired. refresh api token will fail.')
+export async function generateTokens(
+  apiUrl: string,
+  clientId: string,
+  clientSecret: string,
+  userAgent: string
+) {
+  if (new Date().getTime() >= sessionReferenceTokenExpiresAt) {
+    console.error(
+      'session reference token has expired. generate tokens will fail.'
+    )
   }
   await login(apiUrl, clientId, clientSecret)
   try {
-    const resp = await fetch(`${apiUrl}/api/4.0/embed/cookieless/refresh_tokens`, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'application/json',
-        'user-agent': userAgent,
-        Authorization: `Bearer ${authToken}`
-      },
-      body: JSON.stringify({ refresh_token: refreshToken, api_token: apiToken, navigation_token: navigationToken })
-    })
+    const resp = await fetch(
+      `${apiUrl}/api/4.0/embed/cookieless_session/generate_tokens`,
+      {
+        body: JSON.stringify({
+          api_token: apiToken,
+          navigation_token: navigationToken,
+          session_reference_token: sessionReferenceToken,
+        }),
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'content-type': 'application/json',
+          'user-agent': userAgent,
+        },
+        method: 'PUT',
+      }
+    )
     if (!resp.ok || (resp.status < 200 && resp.status > 299)) {
-      console.error('refresh api token failed', { resp })
-      throw new Error(`refresh api token failed: ${resp.status} ${resp.statusText}`)
+      console.error('generate tokens failed', { resp })
+      throw new Error(
+        `generate tokens failed: ${resp.status} ${resp.statusText}`
+      )
     }
     const body = (await resp.json()) as any
-    const { api_token, api_token_ttl, navigation_token, navigation_token_ttl } = body
-    apiToken = apiToken
+    const { api_token, api_token_ttl, navigation_token, navigation_token_ttl } =
+      body
+    apiToken = api_token
     navigationToken = navigation_token
     return { api_token, api_token_ttl, navigation_token, navigation_token_ttl }
   } catch (error) {
-    console.error('refresh api token failed', { error })
+    console.error('generate tokens failed', { error })
     throw error
   }
 }
