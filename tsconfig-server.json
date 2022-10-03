@@ -7,11 +7,12 @@
     "strict": true,
     "target": "ES5",
     "lib": ["es6", "es2017.object"],
+    "esModuleInterop": true
   },
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "files": [
-    "server_utils/auth_utils.ts"
+    "server_utils/auth_utils.ts",
+    "server_utils/cookieless_utils.ts",
+    "server_utils/types.ts"
   ]
 }

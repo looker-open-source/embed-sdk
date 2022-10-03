@@ -10,5 +10,5 @@ demo/demo.js
 dist
 lib
 node_modules
-server_utils/auth_utils.js
+server_utils/*.js
 .direnv

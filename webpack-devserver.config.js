@@ -2,11 +2,11 @@ var path = require('path')
 var config = require('./config')
 
 var user = require('./demo/demo_user.json')
+var { createSignedUrl } = require('./server_utils/auth_utils')
 var {
-  createSignedUrl,
-  acquireSession,
-  generateTokens,
-} = require('./server_utils/auth_utils')
+  acquireEmbedSession,
+  generateEmbedTokens,
+} = require('./server_utils/cookieless_utils')
 
 var webpackConfig = {
   mode: 'development',
@@ -49,9 +49,9 @@ var webpackConfig = {
         const url = createSignedUrl(src, user, config.host, config.secret)
         res.json({ url })
       })
-      app.get('/auth-cookieless', async function (req, res) {
+      app.get('/acquire-embed-session', async function (req, res) {
         try {
-          const tokens = await acquireSession(
+          const tokens = await acquireEmbedSession(
             config.api_url,
             config.client_id,
             config.client_secret,
@@ -63,9 +63,9 @@ var webpackConfig = {
           res.status(400).send({ message: err.message })
         }
       })
-      app.get('/refresh-api-token', async function (req, res) {
+      app.get('/generate-embed-tokens', async function (req, res) {
         try {
-          const tokens = await generateTokens(
+          const tokens = await generateEmbedTokens(
             config.api_url,
             config.client_id,
             config.client_secret,

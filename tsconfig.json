@@ -11,12 +11,8 @@
     "baseUrl": "./",
     "paths": {
       "config": ["config"]
-    },
+    }
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "files": [
-    "src/index.ts"
-  ]
+  "exclude": ["node_modules"],
+  "files": ["src/index.ts"]
 }

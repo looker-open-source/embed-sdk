@@ -46,33 +46,33 @@ import {
 // document to the embedded content. The auth endpoint is documented in README.md.
 if (cookielessEmbedV2) {
   // Cookieless Auth
-  const acquireSessionCallback =
+  const acquireEmbedSessionCallback =
     async (): Promise<LookerEmbedCookielessSessionData> => {
-      const resp = await fetch('/auth-cookieless')
+      const resp = await fetch('/acquire-embed-session')
       if (!resp.ok) {
-        console.error('auth-cookieless failed', { resp })
+        console.error('acquire-embed-session failed', { resp })
         throw new Error(
-          `auth-cookieless failed: ${resp.status} ${resp.statusText}`
+          `acquire-embed-session failed: ${resp.status} ${resp.statusText}`
         )
       }
       return (await resp.json()) as LookerEmbedCookielessSessionData
     }
 
-  const generateTokensCallback =
+  const generateEmbedTokensCallback =
     async (): Promise<LookerEmbedCookielessSessionData> => {
-      const resp = await fetch('/refresh-api-token')
+      const resp = await fetch('/generate-embed-tokens')
       if (!resp.ok) {
-        console.error('refresh-api-token failed', { resp })
+        console.error('generate-embed-tokens failed', { resp })
         throw new Error(
-          `refresh-api-token failed: ${resp.status} ${resp.statusText}`
+          `generate-embed-tokens failed: ${resp.status} ${resp.statusText}`
         )
       }
       return (await resp.json()) as LookerEmbedCookielessSessionData
     }
   LookerEmbedSDK.initCookieless(
     lookerHost,
-    acquireSessionCallback,
-    generateTokensCallback
+    acquireEmbedSessionCallback,
+    generateEmbedTokensCallback
   )
 } else {
   LookerEmbedSDK.init(lookerHost, '/auth')
