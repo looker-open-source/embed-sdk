@@ -7,29 +7,17 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Looker Embed SDK Demo</title>
+    <title>Looker Embed Simple JavaScript Demo</title>
     <link href="demo.css" rel="stylesheet" type="text/css" />
-    <script src="demo.js"></script>
+    <script src="simple_js.js"></script>
   </head>
   <body>
-    <h1>Looker Embed SDK Demo Page</h1>
+    <h1>Looker Embed Simple JavaScript Demo</h1>
     <div id="controls" class="embeds-header">
       <div class="embeds-controls">
         <div class="embed-control">
           <input type="checkbox" id="showDashboard" checked />
           <label>Show dashboard</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showLook" checked />
-          <label>Show look</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showExplore" checked />
-          <label>Show explore</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showExtension" checked />
-          <label>Show extension</label>
         </div>
         <div class="embed-control">
           <input type="checkbox" id="useCookieless" checked />
@@ -56,7 +44,7 @@
         <button id="reset-config">Reset</button>
       </div>
       <div class="demo-link">
-        <a href="simple_js.html">Simple JavaScript Demo</a>
+        <a href="index.html">Embed SDK Demo</a>
       </div>
     </div>
     <div class="embed-container">
@@ -67,24 +55,6 @@
           <div id="dashboard-state" class="loading-message">Loading...</div>
         </div>
         <div id="dashboard"></div>
-      </div>
-      <div id="demo-look">
-        <div class="embed-header">
-          <button id="run-look">Run</button>
-          <div id="look-state" class="loading-message">Loading...</div>
-        </div>
-        <div id="look"></div>
-      </div>
-      <div id="demo-explore">
-        <div class="embed-header">
-          <button id="run-explore">Run</button>
-          <div id="explore-state" class="loading-message">Loading...</div>
-        </div>
-        <div id="explore"></div>
-      </div>
-      <div id="demo-extension">
-        <div class="embed-header"></div>
-        <div id="extension"></div>
       </div>
     </div>
   </body>

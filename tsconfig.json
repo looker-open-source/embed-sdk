@@ -9,6 +9,7 @@
     "target": "ES5",
     "lib": ["es6", "dom", "es2015.promise"],
     "baseUrl": "./",
+    "sourceMap": true,
     "paths": {
       "config": ["config"]
     }

@@ -116,60 +116,6 @@ const setupDashboard = (dashboard: LookerEmbedDashboard) => {
 }
 
 /**
- * Set up the look after the SDK connects.
- */
-const setupLook = (look: LookerEmbedLook) => {
-  // Add a listener to the "Run All" button and send a 'look:run' message when clicked
-  const runAllButton = document.querySelector('#run-all')
-  if (runAllButton) {
-    runAllButton.addEventListener('click', () => look.run())
-  }
-
-  // Add a listener to the look's "Run" button and send a 'look:run' message when clicked
-  const runButton = document.querySelector('#run-look')
-  if (runButton) {
-    runButton.addEventListener('click', () => look.run())
-  }
-
-  // Add a listener to the state selector and update the look filters when changed
-  const stateFilter = document.querySelector('#state')
-  if (stateFilter) {
-    stateFilter.addEventListener('change', (event) => {
-      look.updateFilters({
-        'users.state': (event.target as HTMLSelectElement).value,
-      })
-    })
-  }
-}
-
-/**
- * Set up the explore after the SDK connects.
- */
-const setupExplore = (explore: LookerEmbedExplore) => {
-  // Add a listener to the "Run All" button and send a 'look:run' message when clicked
-  const runAllButton = document.querySelector('#run-all')
-  if (runAllButton) {
-    runAllButton.addEventListener('click', () => explore.run())
-  }
-
-  // Add a listener to the explore's "Run" button and send a 'explore:run' message when clicked
-  const runButton = document.querySelector('#run-explore')
-  if (runButton) {
-    runButton.addEventListener('click', () => explore.run())
-  }
-
-  // Add a listener to the state selector and update the look filters when changed
-  const stateFilter = document.querySelector('#state')
-  if (stateFilter) {
-    stateFilter.addEventListener('change', (event) => {
-      explore.updateFilters({
-        'users.state': (event.target as HTMLSelectElement).value,
-      })
-    })
-  }
-}
-
-/**
  * Update the status for each embedded element
  */
 const updateStatus = (selector: string, state: string) => {
@@ -229,69 +175,6 @@ const initializeShowDashboardCheckbox = () => {
         runtimeConfig.showDashboard = event.target.checked
         updateConfiguration(runtimeConfig)
         renderDashboard(runtimeConfig)
-      })
-    } else {
-      cb.style.display = 'none'
-    }
-  }
-}
-
-/**
- * Initialize the show look configuration checkbox.
- */
-const initializeShowLookCheckbox = () => {
-  const cb = document.getElementById('showLook') as HTMLInputElement
-  if (cb) {
-    const { lookId, showLook } = getConfiguration()
-    if (lookId) {
-      cb.checked = showLook
-      cb.addEventListener('change', (event: any) => {
-        const runtimeConfig = getConfiguration()
-        runtimeConfig.showLook = event.target.checked
-        updateConfiguration(runtimeConfig)
-        renderLook(runtimeConfig)
-      })
-    } else {
-      cb.style.display = 'none'
-    }
-  }
-}
-
-/**
- * Initialize the show explore configuration checkbox.
- */
-const initializeShowExploreCheckbox = () => {
-  const cb = document.getElementById('showExplore') as HTMLInputElement
-  if (cb) {
-    const { exploreId, showExplore } = getConfiguration()
-    if (exploreId) {
-      cb.checked = showExplore
-      cb.addEventListener('change', (event: any) => {
-        const runtimeConfig = getConfiguration()
-        runtimeConfig.showExplore = event.target.checked
-        updateConfiguration(runtimeConfig)
-        renderExplore(runtimeConfig)
-      })
-    } else {
-      cb.style.display = 'none'
-    }
-  }
-}
-
-/**
- * Initialize the show extension configuration checkbox.
- */
-const initializeShowExtensionCheckbox = () => {
-  const cb = document.getElementById('showExtension') as HTMLInputElement
-  if (cb) {
-    const { extensionId, showExtension } = getConfiguration()
-    if (extensionId) {
-      cb.checked = showExtension
-      cb.addEventListener('change', (event: any) => {
-        const runtimeConfig = getConfiguration()
-        runtimeConfig.showExtension = event.target.checked
-        updateConfiguration(runtimeConfig)
-        renderExtension(runtimeConfig)
       })
     } else {
       cb.style.display = 'none'
@@ -367,9 +250,6 @@ const initializeResetConfigButton = () => {
  */
 const initializeConfigurationControls = () => {
   initializeShowDashboardCheckbox()
-  initializeShowLookCheckbox()
-  initializeShowExploreCheckbox()
-  initializeShowExtensionCheckbox()
   initializePreventNavigationCheckbox()
   initializeUseCookielessCheckbox()
   initializeUseDynamicHeightsCheckbox()
@@ -433,112 +313,6 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
 }
 
 /**
- * Render a look using the Embed SDK. When active this sets up listeners
- * for events that can be sent by the Looker embedded UI.
- */
-const renderLook = (runtimeConfig: RuntimeConfig) => {
-  // Create an embedded Look
-  if (runtimeConfig.showLook) {
-    document.querySelector<HTMLDivElement>('#demo-look')!.style.display = ''
-    LookerEmbedSDK.createLookWithId(runtimeConfig.lookId)
-      // Append to the #look element
-      .appendTo('#look')
-      // Listen to messages to display progress
-      .on('look:ready', () => updateStatus('#look-state', 'Loaded'))
-      .on('look:run:start', () => updateStatus('#look-state', 'Running'))
-      .on('look:run:complete', () => updateStatus('#look-state', 'Done'))
-      // Listen to messages that change Look
-      .on('look:save:complete', () => updateStatus('#look-state', 'Saved'))
-      .on('look:delete:complete', () => updateStatus('#look-state', 'Deleted'))
-      // Give the embedded content a class for styling purposes
-      .withClassName('looker-embed')
-      // Set the initial filters
-      .withFilters({ 'users.state': 'California' })
-      // Finalize the build
-      .build()
-      // Connect to Looker
-      .connect()
-      // Finish up setup
-      .then(setupLook)
-      // Log if something went wrong
-      .catch((error: Error) => {
-        updateStatus('#look-state', 'Connection error')
-        console.error('Connection error', error)
-      })
-  } else {
-    document.querySelector<HTMLDivElement>('#look')!.innerHTML = ''
-    document.querySelector<HTMLDivElement>('#demo-look')!.style.display = 'none'
-  }
-}
-
-/**
- * Render an explore using the Embed SDK. When active this sets up listeners
- * for events that can be sent by the Looker embedded UI.
- */
-const renderExplore = (runtimeConfig: RuntimeConfig) => {
-  // Create an embedded Explore
-  if (runtimeConfig.showExplore) {
-    document.querySelector<HTMLDivElement>('#demo-explore')!.style.display = ''
-    LookerEmbedSDK.createExploreWithId(runtimeConfig.exploreId)
-      // Append to the #explore element
-      .appendTo('#explore')
-      // Listen to messages to display progress
-      .on('explore:ready', () => updateStatus('#explore-state', 'Loaded'))
-      .on('explore:run:start', () => updateStatus('#explore-state', 'Running'))
-      .on('explore:run:complete', () => updateStatus('#explore-state', 'Done'))
-      // Give the embedded content a class for styling purposes
-      .withClassName('looker-embed')
-      // Set the initial filters
-      .withFilters({ 'users.state': 'California' })
-      // Finalize the build
-      .build()
-      // Connect to Looker
-      .connect()
-      // Finish up setup
-      .then(setupExplore)
-      // Log if something went wrong
-      .catch((error: Error) => {
-        updateStatus('#explore-state', 'Connection error')
-        console.error('Connection error', error)
-      })
-  } else {
-    document.querySelector<HTMLDivElement>('#explore')!.innerHTML = ''
-    document.querySelector<HTMLDivElement>('#demo-explore')!.style.display =
-      'none'
-  }
-}
-
-/**
- * Render an extension using the Embed SDK. When active this sets up listeners
- * for events that can be sent by the Looker embedded UI.
- */
-const renderExtension = (runtimeConfig: RuntimeConfig) => {
-  // Create an embedded extension (Requires Looker 7.12 and extension framework)
-  if (runtimeConfig.showExtension) {
-    document.querySelector<HTMLDivElement>('#demo-extension')!.style.display =
-      ''
-    LookerEmbedSDK.createExtensionWithId(runtimeConfig.extensionId)
-      // Append to the #extension element
-      .appendTo('#extension')
-      // Give the embedded content a class for styling purposes
-      .withClassName('looker-embed')
-      // Finalize the build
-      .build()
-      // Connect to Looker
-      .connect()
-      // Log if something went wrong
-      .catch((error: Error) => {
-        updateStatus('#extension-state', 'Connection error')
-        console.error('Connection error', error)
-      })
-  } else {
-    document.querySelector<HTMLDivElement>('#extension')!.innerHTML = ''
-    document.querySelector<HTMLDivElement>('#demo-extension')!.style.display =
-      'none'
-  }
-}
-
-/**
  * Initialize the SDK. lookerHost is the address of the Looker instance. It is configured in
  * democonfig.ts. lookerHost needs to be set for messages to be exchanged from the host
  * document to the embedded content. The auth endpoint is documented in README.md.
@@ -567,7 +341,4 @@ document.addEventListener('DOMContentLoaded', function () {
   const runtimeConfig = getConfiguration()
   initializeEmbedSdk(runtimeConfig)
   renderDashboard(runtimeConfig)
-  renderLook(runtimeConfig)
-  renderExplore(runtimeConfig)
-  renderExtension(runtimeConfig)
 })

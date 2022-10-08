@@ -257,6 +257,9 @@ export class EmbedBuilder<T> {
    */
 
   withUrl(url: string) {
+    if (this.isCookielessEmbed) {
+      throw new Error('withUrl not supported by cookieless embed')
+    }
     this._url = url
     return this
   }

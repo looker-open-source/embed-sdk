@@ -52,6 +52,8 @@ export class LookerEmbedSDK {
   static init(apiHost: string, auth?: string | LookerAuthConfig) {
     this.apiHost = apiHost
     this.auth = typeof auth === 'string' ? { url: auth } : auth
+    this.acquireSessionCallback = undefined
+    this.generateTokensCallback = undefined
   }
 
   /**
@@ -77,6 +79,7 @@ export class LookerEmbedSDK {
     this.apiHost = apiHost
     this.acquireSessionCallback = acquireSessionCallback
     this.generateTokensCallback = generateTokensCallback
+    this.auth = undefined
   }
 
   /**

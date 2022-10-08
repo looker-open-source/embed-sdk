@@ -16,6 +16,13 @@
     "download_without_limit",
     "create_alerts"
   ],
-  "models": ["powered_by", "thelook", "extension", "system__activity"],
+  "models": [
+    "powered_by",
+    "thelook",
+    "extension",
+    "system__activity",
+    "app-lookml-diagram",
+    "hello_world"
+  ],
   "user_attributes": { "locale": "en_US", "embed_encrypted": "abcd" }
 }

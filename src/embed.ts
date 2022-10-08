@@ -242,6 +242,9 @@ export class EmbedClient<T> {
     if (this._connection) return this._connection
 
     if (this._builder.url) {
+      if (this._builder.isCookielessEmbed) {
+        throw new Error('withUrl not supported by cookieless embed')
+      }
       this._connection = this.createIframe(this._builder.url)
     } else {
       if (this._builder.isCookielessEmbed) {

@@ -11,4 +11,5 @@ dist
 lib
 node_modules
 server_utils/*.js
+server_utils/*.js.map
 .direnv

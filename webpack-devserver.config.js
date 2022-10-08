@@ -1,17 +1,23 @@
 var path = require('path')
 var config = require('./config')
+const webpack = require('webpack')
 
 var user = require('./demo/demo_user.json')
 var { createSignedUrl } = require('./server_utils/auth_utils')
 var {
   acquireEmbedSession,
   generateEmbedTokens,
+  setConfig,
 } = require('./server_utils/cookieless_utils')
+
+setConfig(config)
 
 var webpackConfig = {
   mode: 'development',
+  devtool: 'source-map',
   entry: {
     demo: './demo/demo.ts',
+    simple_js: './demo/simple_js.ts',
   },
   output: {
     filename: '[name].js',
@@ -36,6 +42,15 @@ var webpackConfig = {
       },
     ],
   },
+  plugins: [
+    new webpack.EnvironmentPlugin([
+      'LOOKER_EMBED_HOST',
+      'LOOKER_DASHBOARD_ID',
+      'LOOKER_LOOK_ID',
+      'LOOKER_EXPLORE_ID',
+      'LOOKER_EXTENSION_ID',
+    ]),
+  ],
   devServer: {
     compress: true,
     contentBase: [path.join(__dirname, 'demo')],
@@ -52,9 +67,6 @@ var webpackConfig = {
       app.get('/acquire-embed-session', async function (req, res) {
         try {
           const tokens = await acquireEmbedSession(
-            config.api_url,
-            config.client_id,
-            config.client_secret,
             req.headers['user-agent'],
             user
           )
@@ -66,10 +78,8 @@ var webpackConfig = {
       app.get('/generate-embed-tokens', async function (req, res) {
         try {
           const tokens = await generateEmbedTokens(
-            config.api_url,
-            config.client_id,
-            config.client_secret,
-            req.headers['user-agent']
+            req.headers['user-agent'],
+            user
           )
           res.json(tokens)
         } catch (err) {

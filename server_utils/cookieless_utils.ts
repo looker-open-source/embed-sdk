@@ -29,7 +29,7 @@ import { Looker40SDK } from '@looker/sdk'
 import { NodeSession } from '@looker/sdk-node'
 import type { IApiSection } from '@looker/sdk-rtl'
 import { DefaultSettings } from '@looker/sdk-rtl'
-import type { LookerEmbedUser } from './types'
+import type { ApplicationConfig, LookerEmbedUser } from './types'
 
 /**
  * The functions in this file demonstrate how to call server
@@ -37,6 +37,12 @@ import type { LookerEmbedUser } from './types'
  * implementation is exceedingly simplistic and only works for
  * a single user in a development environment.
  */
+
+// Application configuration
+let config: ApplicationConfig
+
+// Set the configuration
+export const setConfig = (conf: ApplicationConfig) => (config = conf)
 
 // The Looker session
 let lookerSession: NodeSession
@@ -60,20 +66,19 @@ const embedSessions: Record<string, IEmbedCookielessSessionAcquireResponse> = {}
  * await auth.login(embedUser.id!)
  * <pre>
  */
-const acquireLookerSession = async (
-  apiUrl: string,
-  clientId: string,
-  clientSecret: string,
-  verifySsl = false
-) => {
+const acquireLookerSession = async () => {
   if (!lookerSession || !lookerSession.activeToken.isActive()) {
+    const { api_url, client_id, client_secret, verify_ssl } = config
     try {
       const lookerSettings = DefaultSettings()
       lookerSettings.readConfig = (): IApiSection => {
-        return { client_id: clientId, client_secret: clientSecret }
+        return {
+          client_id,
+          client_secret,
+        }
       }
-      lookerSettings.base_url = apiUrl
-      lookerSettings.verify_ssl = verifySsl
+      lookerSettings.base_url = api_url
+      lookerSettings.verify_ssl = verify_ssl
       lookerSession = new NodeSession(lookerSettings)
       lookerSession.login()
     } catch (error) {
@@ -93,7 +98,8 @@ const acquireEmbedSessionInternal = async (
   user: LookerEmbedUser
 ) => {
   try {
-    const embedSession = embedSessions[userAgent]
+    const cacheKey = `${user.external_user_id}/${userAgent}`
+    const embedSession = embedSessions[cacheKey]
     const request = {
       ...user,
       session_reference_token: embedSession?.session_reference_token,
@@ -106,7 +112,7 @@ const acquireEmbedSessionInternal = async (
         },
       })
     )
-    embedSessions[userAgent] = response
+    embedSessions[cacheKey] = response
     const {
       authentication_token,
       authentication_token_ttl,
@@ -140,13 +146,10 @@ const acquireEmbedSessionInternal = async (
  * require that something similar to the following be called.
  */
 export async function acquireEmbedSession(
-  apiUrl: string,
-  clientId: string,
-  clientSecret: string,
   userAgent: string,
   user: LookerEmbedUser
 ) {
-  await acquireLookerSession(apiUrl, clientId, clientSecret)
+  await acquireLookerSession()
   return acquireEmbedSessionInternal(userAgent, user)
 }
 
@@ -157,12 +160,11 @@ export async function acquireEmbedSession(
  * require that something similar to the following be called.
  */
 export async function generateEmbedTokens(
-  apiUrl: string,
-  clientId: string,
-  clientSecret: string,
-  userAgent: string
+  userAgent: string,
+  user: LookerEmbedUser
 ) {
-  const embedSession = embedSessions[userAgent]
+  const cacheKey = `${user.external_user_id}/${userAgent}`
+  const embedSession = embedSessions[cacheKey]
   if (!embedSession) {
     console.error(
       'embed session generate tokens failed, session not yet acquired'
@@ -171,7 +173,7 @@ export async function generateEmbedTokens(
       'embed session generate tokens failed, session not yet acquired'
     )
   }
-  await acquireLookerSession(apiUrl, clientId, clientSecret)
+  await acquireLookerSession()
   try {
     const { api_token, navigation_token, session_reference_token } =
       embedSession
@@ -190,7 +192,8 @@ export async function generateEmbedTokens(
         }
       )
     )
-    embedSessions[userAgent] = response
+    const cacheKey = `${user.external_user_id}/${userAgent}`
+    embedSessions[cacheKey] = response
     return {
       api_token: response.api_token,
       api_token_ttl: response.api_token_ttl,
