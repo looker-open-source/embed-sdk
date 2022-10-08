@@ -429,7 +429,6 @@ describe('LookerEmbed', () => {
           done()
         })
         .catch(done.fail)
-<<<<<<< HEAD
     })
   })
 
@@ -495,8 +494,5 @@ describe('LookerEmbed', () => {
         done()
       }
     })
-=======
-    })
->>>>>>> master
   })
 })

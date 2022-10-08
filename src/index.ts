@@ -29,14 +29,10 @@ import { LookerEmbedDashboard } from './dashboard_client'
 import { LookerEmbedExplore } from './explore_client'
 import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
-<<<<<<< HEAD
 import type {
   LookerAuthConfig,
   LookerEmbedCookielessSessionData,
 } from './types'
-=======
-import type { LookerAuthConfig } from './types'
->>>>>>> master
 
 export type { LookerEmbedDashboard } from './dashboard_client'
 export type { LookerEmbedExplore } from './explore_client'

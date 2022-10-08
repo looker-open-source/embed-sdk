@@ -24,7 +24,6 @@
 
  */
 
-<<<<<<< HEAD
 import type {
   LookerEmbedUser,
   LookerUserPermission,
@@ -50,29 +49,6 @@ const testUser = () =>
     user_attributes: { locale: 'en_US' },
     user_timezone: 'America/Los_Angeles',
   } as unknown as LookerEmbedUser)
-=======
-import type { LookerUserPermission } from '../server_utils/auth_utils'
-import { createSignedUrl } from '../server_utils/auth_utils'
-
-const testUser = () => ({
-  access_filters: { powered_by: { 'products.brand': 'Allegra K' } },
-  external_group_id: 'group1',
-  external_user_id: 'user1',
-  first_name: 'Pat',
-  force_logout_login: true,
-  group_ids: [1, 2, 3],
-  last_name: 'Embed',
-  models: ['powered_by', 'thelook'],
-  permissions: [
-    'access_data',
-    'see_looks',
-    'see_user_dashboards',
-  ] as LookerUserPermission[],
-  session_length: 3600,
-  user_attributes: { locale: 'en_US' },
-  user_timezone: 'America/Los_Angeles',
-})
->>>>>>> master
 
 const testUrl = '/embed/dashboards/1'
 const testHost = 'test.looker.com'

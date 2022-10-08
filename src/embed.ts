@@ -26,10 +26,7 @@
 
 import type { ChattyHost, ChattyHostBuilder } from '@looker/chatty'
 import { Chatty } from '@looker/chatty'
-<<<<<<< HEAD
 import type { LookerEmbedBase } from './embed_base'
-=======
->>>>>>> master
 import type { EmbedBuilder } from './embed_builder'
 
 const IS_URL = /^https?:\/\//
@@ -250,7 +247,6 @@ export class EmbedClient<T> {
       }
       this._connection = this.createIframe(this._builder.url)
     } else {
-<<<<<<< HEAD
       if (this._builder.isCookielessEmbed) {
         this._connection = this.acquireCookielessEmbedSession().then(
           async (url) => this.createIframe(url)
@@ -260,11 +256,6 @@ export class EmbedClient<T> {
           this.createIframe(url)
         )
       }
-=======
-      this._connection = this.createUrl().then(async (url) =>
-        this.createIframe(url)
-      )
->>>>>>> master
     }
     return this._connection
   }

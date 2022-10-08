@@ -1,10 +1,6 @@
 {
   "name": "@looker/embed-sdk",
-<<<<<<< HEAD
   "version": "1.7.1-beta",
-=======
-  "version": "1.6.2",
->>>>>>> master
   "description": "A toolkit for embedding Looker",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -48,7 +44,6 @@
     "@babel/core": "^7.16.7",
     "@looker/eslint-config-oss": "^1.7.21",
     "@looker/eslint-plugin": "^1.0.0",
-<<<<<<< HEAD
     "@types/create-hmac": "^1.1.0",
     "@types/jasmine": "^2.8.2",
     "@types/node": "^11.12.1",
@@ -63,19 +58,6 @@
     "eslint": "^8.13.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-testing-library": "^5.0.3",
-=======
-    "@typescript-eslint/eslint-plugin": "^5.9.1",
-    "@typescript-eslint/typescript-estree": "^5.9.1",
-    "babel-loader": "^8.2.3",
-    "eslint": "^8.13.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-testing-library": "^5.0.3",
-    "@types/create-hmac": "^1.1.0",
-    "@types/jasmine": "^2.8.2",
-    "@types/node": "^11.12.1",
-    "create-hmac": "^1.1.7",
-    "dotenv": "^6.2.0",
->>>>>>> master
     "jasmine-core": "^4.0.0",
     "karma": "^6.3.11",
     "karma-chrome-launcher": "^3.1.0",
@@ -94,14 +76,10 @@
     "xhr-mock": "^2.5.1"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@looker/chatty": "^2.3.2",
     "@looker/sdk": "^22.16.0",
     "@looker/sdk-node": "^22.16.0",
     "@looker/sdk-rtl": "^21.4.0"
-=======
-    "@looker/chatty": "^2.3.2"
->>>>>>> master
   },
   "pre-commit": [
     "test-once"
@@ -111,10 +89,7 @@
       "@looker/eslint-config-oss"
     ],
     "rules": {
-<<<<<<< HEAD
       "camelcase": "off",
-=======
->>>>>>> master
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "no-console": [

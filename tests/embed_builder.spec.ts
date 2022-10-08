@@ -457,7 +457,6 @@ describe('LookerEmbedBuilder', () => {
       }
     })
   })
-<<<<<<< HEAD
 
   describe('cookieless embed setup', () => {
     const embedSdk = LookerEmbedSDK
@@ -487,6 +486,4 @@ describe('LookerEmbedBuilder', () => {
       expect(embedSdk.apiHost).toEqual(host)
     })
   })
-=======
->>>>>>> master
 })
