@@ -10,6 +10,10 @@ demo/demo.js
 dist
 lib
 node_modules
+<<<<<<< HEAD
 server_utils/*.js
 server_utils/*.js.map
+=======
+server_utils/auth_utils.js
+>>>>>>> master
 .direnv

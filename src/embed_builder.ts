@@ -24,13 +24,20 @@
 
  */
 
+<<<<<<< HEAD
+=======
+import { deprecate } from 'util'
+>>>>>>> master
 import type { ChattyHostConnection, CallbackStore } from '@looker/chatty'
 import { EmbedClient } from './embed'
 import type {
   LookerAuthConfig,
   LookerEmbedEventMap,
   LookerEmbedFilterParams,
+<<<<<<< HEAD
   LookerEmbedCookielessSessionData,
+=======
+>>>>>>> master
 } from './types'
 
 type EmbedClientConstructor<T> = { new (host: ChattyHostConnection): T }
@@ -257,9 +264,12 @@ export class EmbedBuilder<T> {
    */
 
   withUrl(url: string) {
+<<<<<<< HEAD
     if (this.isCookielessEmbed) {
       throw new Error('withUrl not supported by cookieless embed')
     }
+=======
+>>>>>>> master
     this._url = url
     return this
   }

@@ -1,3 +1,34 @@
+<<<<<<< HEAD
+=======
+/*
+
+ MIT License
+
+ Copyright (c) 2019 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+ */
+import type { LookerEmbedLook, LookerEmbedDashboard } from '../src/index'
+import { LookerEmbedSDK } from '../src/index'
+
+>>>>>>> master
 /*
 
  MIT License
@@ -26,6 +57,7 @@
 
 // IDs for content to demonstrate are configured in demo_config.ts
 
+<<<<<<< HEAD
 import type {
   LookerEmbedLook,
   LookerEmbedDashboard,
@@ -40,6 +72,14 @@ import {
   updateConfiguration,
   loadConfiguration,
   resetConfiguration,
+=======
+import {
+  lookerHost,
+  dashboardId,
+  lookId,
+  exploreId,
+  extensionId,
+>>>>>>> master
 } from './demo_config'
 
 /**
@@ -388,6 +428,7 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
       // Append to the #dashboard element
       .appendTo('#dashboard')
       // Listen to messages to display progress
+<<<<<<< HEAD
       .on('dashboard:loaded', () => updateStatus('#dashboard-state', 'Loaded'))
       .on('dashboard:run:start', () =>
         updateStatus('#dashboard-state', 'Running')
@@ -405,6 +446,22 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
       .on('page:properties:changed', (event: PagePropertiesChangedEvent) => {
         pagePropertiesChangedHandler(event, 'dashboard')
       })
+=======
+      .on('dashboard:loaded', () => updateState('#dashboard-state', 'Loaded'))
+      .on('dashboard:run:start', () =>
+        updateState('#dashboard-state', 'Running')
+      )
+      .on('dashboard:run:complete', () =>
+        updateState('#dashboard-state', 'Done')
+      )
+      // Listen to messages that change dashboard
+      .on('dashboard:save:complete', () =>
+        updateState('#dashboard-state', 'Saved')
+      )
+      .on('dashboard:delete:complete', () =>
+        updateState('#dashboard-state', 'Deleted')
+      )
+>>>>>>> master
       // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', preventNavigation)
       .on('drillmodal:explore', preventNavigation)
@@ -426,7 +483,10 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
         console.error('Connection error', error)
       })
   } else {
+<<<<<<< HEAD
     document.querySelector<HTMLDivElement>('#dashboard')!.innerHTML = ''
+=======
+>>>>>>> master
     document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
       'none'
   }
@@ -502,7 +562,10 @@ const renderExplore = (runtimeConfig: RuntimeConfig) => {
         console.error('Connection error', error)
       })
   } else {
+<<<<<<< HEAD
     document.querySelector<HTMLDivElement>('#explore')!.innerHTML = ''
+=======
+>>>>>>> master
     document.querySelector<HTMLDivElement>('#demo-explore')!.style.display =
       'none'
   }
@@ -532,7 +595,10 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
         console.error('Connection error', error)
       })
   } else {
+<<<<<<< HEAD
     document.querySelector<HTMLDivElement>('#extension')!.innerHTML = ''
+=======
+>>>>>>> master
     document.querySelector<HTMLDivElement>('#demo-extension')!.style.display =
       'none'
   }
