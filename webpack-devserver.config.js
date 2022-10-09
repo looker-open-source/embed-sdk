@@ -17,7 +17,7 @@ var webpackConfig = {
   devtool: 'source-map',
   entry: {
     demo: './demo/demo.ts',
-    simple_js: './demo/simple_js.ts',
+    message_example: './demo/message_example.ts',
   },
   output: {
     filename: '[name].js',

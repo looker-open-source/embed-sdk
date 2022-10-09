@@ -474,6 +474,13 @@ Enabling cookieless embedding is documented in more detail [here](https://cloud.
 - Turn on "Embed Authentication"
 - In order to use embedding you must generate an "Embed Secret" for SSO embedding and/or a JWT secret for cookieless embedding. Note that a Looker instance can support both types of embedding at the same time.
 
+Additional steps for cookieless embed:
+
+- Navigate to Admin > _Platform_ Embed on your Looker instance. This requires Admin privileges.
+- Generate an Embed JWT secret. This is used internally and the hosting application does not need to know what it is.
+- Navigate to Admin > _Labs_ Experimental on your Looker instance. This requires Admin privileges.
+- Toggle "Cookieless Embed" on. Note that a Looker instance can support SSO and Cookieless embed clients.
+
 ### Step 2 - Customize the Demo settings for your Looker instance
 
 Note that `demo.py` and `demo_self_signed.py` have NOT been updated to support cookieless embedding. This section ONLY applies to SSO embedding. The cookieless embed demo currently requires the use of the development server.
@@ -607,3 +614,7 @@ LOOKER_LOOK_ID=1
 LOOKER_EXPLORE_ID=thelook::orders
 LOOKER_EXTENSION_ID=extension::my-great-extension
 ```
+
+## Embedded Javascript Events
+
+Prior to the release of the Embed SDK, Looker exposed an API that utilized JavaScript `postMessage` events. This API is still available for customers who cannot or do not want to use the Embed SDK (note that using the Embed SDK is highly recommended as it provides additional functionality and is simpler to use). An example application has been created to ensure that cookieless embed also works with JavaScript `postMessage` events. This example can be found [here](demo/message_example.ts).

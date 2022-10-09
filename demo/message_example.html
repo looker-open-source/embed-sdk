@@ -7,17 +7,21 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Looker Embed Simple JavaScript Demo</title>
+    <title>Looker Embed Window Message Example</title>
     <link href="demo.css" rel="stylesheet" type="text/css" />
-    <script src="simple_js.js"></script>
+    <script src="message_example.js"></script>
   </head>
   <body>
-    <h1>Looker Embed Simple JavaScript Demo</h1>
+    <h1>Looker Embed Window Message Example</h1>
     <div id="controls" class="embeds-header">
       <div class="embeds-controls">
         <div class="embed-control">
           <input type="checkbox" id="showDashboard" checked />
           <label>Show dashboard</label>
+        </div>
+        <div class="embed-control">
+          <input type="checkbox" id="showLook" checked />
+          <label>Show look</label>
         </div>
         <div class="embed-control">
           <input type="checkbox" id="useCookieless" checked />
@@ -26,10 +30,6 @@
         <div class="embed-control">
           <input type="checkbox" id="useDynamicHeights" />
           <label>Use dynamic heights</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="preventNavigation" />
-          <label>Prevent navigation</label>
         </div>
       </div>
       <div>
@@ -55,6 +55,13 @@
           <div id="dashboard-state" class="loading-message">Loading...</div>
         </div>
         <div id="dashboard"></div>
+      </div>
+      <div id="demo-look">
+        <div class="embed-header">
+          <button id="run-look">Run</button>
+          <div id="look-state" class="loading-message">Loading...</div>
+        </div>
+        <div id="look"></div>
       </div>
     </div>
   </body>
