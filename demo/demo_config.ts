@@ -28,7 +28,7 @@ export const lookerHost = 'self-signed.looker.com:9999'
 // export const lookerHost = 'mycompany.looker.com'
 
 // A dashboard that the user can see. Set to 0 to disable dashboard demo.
-export const dashboardId = 1
+export const dashboardId = 22
 
 // A Look that the user can see. Set to 0 to disable look demo.
 export const lookId = 1
