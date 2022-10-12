@@ -403,10 +403,10 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
       )
       // Listen to messages that change dashboard
       .on('dashboard:edit:start', () =>
-        updateState('#dashboard-state', 'Editing')
+        updateStatus('#dashboard-state', 'Editing')
       )
       .on('dashboard:edit:cancel', () =>
-        updateState('#dashboard-state', 'Editing cancelled')
+        updateStatus('#dashboard-state', 'Editing cancelled')
       )
       .on('dashboard:save:complete', () =>
         updateStatus('#dashboard-state', 'Saved')
