@@ -471,7 +471,7 @@ Enabling cookieless embedding is documented in more detail [here](https://cloud.
 
 - Navigate to Admin > _Platform_ Embed on your Looker instance. This requires Admin privileges.
 - The demo server runs by default at [http://localhost:8080](http://localhost:8080). By adding that address to "Embedded Domain Whitelist" you can enabled the demo to receive messages from Looker.
-- Turn on "Embed Authentication"
+- Turn on "Embed SSO Authentication"
 - In order to use embedding you must generate an "Embed Secret" for SSO embedding and/or a JWT secret for cookieless embedding. Note that a Looker instance can support both types of embedding at the same time.
 
 Additional steps for cookieless embed:
