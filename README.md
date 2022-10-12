@@ -358,7 +358,7 @@ const acquireEmbedSessionCallback = async () => {
 
 ### Generate tokens backend process
 
-This process is called whenever tokens are about to expire and can be called after a token has expired (consider a user waking up computer that has gone to sleep). The generate tokens backend process requires that the Looker api endpoint `generate_tokens_for_cookieless_session` be called to generate new navigation and api tokens.
+This process is called whenever tokens are about to expire and can be called after a token has expired (for example, a user waking up computer that has gone to sleep). The generate tokens backend process requires that the Looker api endpoint `generate_tokens_for_cookieless_session` be called to generate new navigation and api tokens.
 
 Cookieless embed sessions are associated with the user's browser user agent. It is important that that user agent for the browser be set on the request.
 
