@@ -24,7 +24,6 @@
 
  */
 
-import { deprecate } from 'util'
 import type { ChattyHostConnection, CallbackStore } from '@looker/chatty'
 import { EmbedClient } from './embed'
 import type {
@@ -40,7 +39,7 @@ interface LookerEmbedHostSettings {
   auth?: LookerAuthConfig
 }
 
-interface UrlParams {
+export interface UrlParams {
   [key: string]: string
 }
 

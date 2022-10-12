@@ -52,6 +52,16 @@ export class LookerEmbedDashboard extends LookerEmbedBase {
   }
 
   /**
+   * Convenience method for sending an edit message to the embedded dashboard.
+   *
+   * Requires Looker 22.20 and Dashboards Next (see [[EmbedBuilder.withNext]]).
+   */
+
+  edit() {
+    this.send('dashboard:edit')
+  }
+
+  /**
    * Convenience method for updating the filters of the embedded dashboard.
    *
    * @param filters A set of filter parameters to update

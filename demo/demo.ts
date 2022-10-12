@@ -87,6 +87,12 @@ const setupDashboard = (dashboard: LookerEmbedDashboard) => {
     stopButton.addEventListener('click', () => dashboard.stop())
   }
 
+  // Add a listener to the dashboard's "Edit" button and send a 'dashboard:edit' message when clicked
+  const editButton = document.querySelector('#edit-dashboard')
+  if (editButton) {
+    editButton.addEventListener('click', () => dashboard.edit())
+  }
+
   // Add a listener to the state selector and update the dashboard filters when changed
   const stateFilter = document.querySelector('#state')
   if (stateFilter) {
@@ -153,6 +159,12 @@ document.addEventListener('DOMContentLoaded', function () {
         updateState('#dashboard-state', 'Done')
       )
       // Listen to messages that change dashboard
+      .on('dashboard:edit:start', () =>
+        updateState('#dashboard-state', 'Editing')
+      )
+      .on('dashboard:edit:cancel', () =>
+        updateState('#dashboard-state', 'Editing cancelled')
+      )
       .on('dashboard:save:complete', () =>
         updateState('#dashboard-state', 'Saved')
       )
