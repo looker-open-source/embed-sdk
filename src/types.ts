@@ -86,7 +86,7 @@ export interface LookerEmbedFilterParams {
  * Contains details of dashboard layout.
  */
 
-interface DashboardLayout {
+export interface DashboardLayout {
   id: string
   dashboard_id: string
   type: 'newspaper'
@@ -103,7 +103,7 @@ interface DashboardLayout {
  * Contains details of individual dashboard element layout.
  */
 
-interface DashboardLayoutComponent {
+export interface DashboardLayoutComponent {
   id: string
   dashboard_layout_id: string
   dashboard_element_id: string
@@ -174,6 +174,7 @@ export interface EventDetail {
 export interface DashboardEventDetail extends EventDetail {
   id: string | number
   title: string
+  canEdit: boolean
   dashboard_filters: LookerEmbedFilterParams
   absoluteUrl: string
   url: string
@@ -420,7 +421,27 @@ export interface LookerEmbedEventMap {
     event: DashboardEvent
   ) => void
   /**
-   * Dashboard saved event
+   * Dashboard editing started event.
+   * Not available to legacy dashboards.
+   * Looker 22.20
+   */
+  'dashboard:edit:start': (
+    this: LookerEmbedDashboard,
+    event: DashboardEvent
+  ) => void
+  /**
+   * Dashboard editing cancelled event.
+   * Not available to legacy dashboards.
+   * Looker 22.20
+   */
+  'dashboard:edit:cancel': (
+    this: LookerEmbedDashboard,
+    event: DashboardEvent
+  ) => void
+  /**
+   * Dashboard saved event. Fired when a dashboard
+   * being edited is saved. Use in conjunction with
+   * `dashboard:edit:start` and `dashboard:edit:save`.
    * Looker 21.6
    */
   'dashboard:save:complete': (

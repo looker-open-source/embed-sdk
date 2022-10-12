@@ -42,7 +42,7 @@ interface LookerEmbedHostSettings {
   generateTokensCallback?: () => Promise<LookerEmbedCookielessSessionData>
 }
 
-interface UrlParams {
+export interface UrlParams {
   [key: string]: string
 }
 

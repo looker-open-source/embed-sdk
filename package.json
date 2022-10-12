@@ -20,7 +20,7 @@
     "build": "npm run clean && npm run build_utils && tsc && webpack",
     "build_utils": "tsc --build tsconfig-server.json",
     "clean": "rm -rf lib dist",
-    "docs": "typedoc --mode file --out docs",
+    "docs": "typedoc --githubPages false --out docs src/index.ts",
     "lint": "eslint --format stylish '**/*.ts'",
     "lint-fix": "eslint --format stylish --fix '**/*.ts'",
     "start": "npm run build_utils && webpack serve --config webpack-devserver.config.js --hot --inline --color --progress",

@@ -99,4 +99,9 @@ describe('LookerEmbedDashboard', () => {
     client.stop()
     expect(sendSpy).toHaveBeenCalledWith('dashboard:stop', undefined)
   })
+
+  it('edits', () => {
+    client.edit()
+    expect(sendSpy).toHaveBeenCalledWith('dashboard:edit', undefined)
+  })
 })
