@@ -210,7 +210,7 @@ interface LookerEmbedUser {
 
 Note that cookieless embed does not yet support the use of `withUrl`. An attempt to do use this functionality will result in an error being thrown.
 
-Looker cookieless embed allows the Looker application to be embedded by an html page that is served from a different domain than the Looker host. With SSO embed, to avoid third party cookie blocking, the Looker application must be served from a sub domain of the hosting application OR the user must enable third party cookies in the browser. Enabling cookieless embedding is documented in more detail [here](https://cloud.google.com/looker/docs/r/sdk/cookieless-embed). Cookieless embed is available with Looker version 22.18 and above.
+Looker cookieless embed allows the Looker application to be embedded by an html page that is served from a different domain than the Looker host. With SSO embed, to avoid third party cookie blocking, the Looker application must be served from a sub domain of the hosting application OR the user must enable third party cookies in the browser. Enabling cookieless embedding is documented in more detail [here](https://cloud.google.com/looker/docs/r/sdk/cookieless-embed). Cookieless embed is available with Looker version 22.20 and above.
 
 Cookieless embed works by using short lived tokens that are kept in the browser that are used to reference the actual session in the Looker server. The Looker UI keeps track of the tokens and before they expire requests that the hosting application generate new ones. To this end, the host application is required to implement functionality in the client and in the server.
 
