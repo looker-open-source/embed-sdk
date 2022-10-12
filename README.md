@@ -227,7 +227,7 @@ Cookieless embed sessions are associated with the user's browser user agent. It 
 
 The `acquire_embed_cookieless_session` returns a number of tokens if successful:
 
-- `session_reference_token` - this token is used to generate new tokens. If it exists, it is used to attach to an existing session. It is important to secure this token and it should not be exposed to the browser. This token lives for the duration of the session. Note that a new cookieless embed session will be created if the `session_reference_token` has expired.
+- `session_reference_token` - this token is used to generate new tokens. If it exists, it is used to attach to an existing session. It is important to secure this token and it should not be exposed to the browser. This token lives for the duration of the session. Note that a new cookieless embed session will need to be created if the `session_reference_token` has expired.
 - `authentication_token` - this is one time token that has a lifespan of 30 seconds. It is used with the `/login/embed/{target}` endpoint.
 - `navigation_token` - this token is used to navigate to different Looker pages in the Looker application. This token lives for 10 minutes.
 - `api_token` - this token is used for api calls. This token lives for 10 minutes.
