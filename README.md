@@ -4,7 +4,7 @@
 
 The Looker JavaScript Embed SDK is designed to facilitate using Looker embedded content in your web application. The goal is to make communication between a host website and one or more embedded dashboards, looks, explores and extensions easier and more reliable.
 
-The Looker JavaScript Embed SDK typically uses embed SSO to sign an embed url in order to authenticate the user of the embed. This mechanism relies on Looker cookies being available to the embedded IFRAME in order for the application to work. Looker also provides a mechanism that allows embedded Looker IFRAMES to work without the need for cookies. Details can be found [here](#cookieless). Embed SDK functionality that will not work with cookieless embed are identified in this document.
+The Looker JavaScript Embed SDK typically uses embed SSO to sign an embed url in order to authenticate the user of the embed. This mechanism relies on Looker cookies being available to the embedded IFRAME in order for the application to work. Looker also provides a mechanism that allows embedded Looker IFRAMES to work without the need for cookies. Details can be found [here](#cookieless). Embed SDK functionality that will not work with cookieless embed is identified in this document.
 
 A typical setup might look like this. In this case, a dashboard with an id of `11` is created inside a DOM element with the id `dashboard`. The `dashboard:run:start` and `dashboard:run:complete` events are used to update the state of the embedding window's UI, and a button with an id of `run` is scripted to send a `dashboard:run` message to the dashboard.
 
