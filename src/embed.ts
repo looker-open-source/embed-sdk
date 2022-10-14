@@ -26,6 +26,7 @@
 
 import type { ChattyHost, ChattyHostBuilder } from '@looker/chatty'
 import { Chatty } from '@looker/chatty'
+import type { LookerEmbedBase } from './embed_base'
 import type { EmbedBuilder } from './embed_builder'
 
 const IS_URL = /^https?:\/\//
@@ -40,6 +41,11 @@ export class EmbedClient<T> {
   _host: ChattyHost | null = null
   _connection: Promise<T> | null = null
   _client: T | null = null
+  _cookielessInitialized = false
+  _cookielessApiToken?: string | null
+  _cookielessApiTokenTtl?: number | null
+  _cookielessNavigationToken?: string | null
+  _cookielessNavigationTokenTtl?: number | null
 
   /**
    * @hidden
@@ -74,6 +80,39 @@ export class EmbedClient<T> {
 
   private async createIframe(url: string) {
     this._hostBuilder = Chatty.createHost(url)
+    if (this._builder.isCookielessEmbed) {
+      this._builder.handlers['session:tokens:request'] = [
+        async () => {
+          if (
+            this._client &&
+            this._cookielessApiToken &&
+            this._builder.generateTokensCallback
+          ) {
+            if (this._cookielessInitialized) {
+              const {
+                api_token,
+                api_token_ttl,
+                navigation_token,
+                navigation_token_ttl,
+              } = await this._builder.generateTokensCallback()
+              this._cookielessApiToken = api_token
+              this._cookielessApiTokenTtl = api_token_ttl
+              this._cookielessNavigationToken = navigation_token
+              this._cookielessNavigationTokenTtl = navigation_token_ttl
+            } else {
+              this._cookielessInitialized = true
+            }
+            const client = this._client as unknown as LookerEmbedBase
+            client.send('session:tokens', {
+              api_token: this._cookielessApiToken,
+              api_token_ttl: this._cookielessApiTokenTtl,
+              navigation_token: this._cookielessNavigationToken,
+              navigation_token_ttl: this._cookielessNavigationTokenTtl,
+            })
+          }
+        },
+      ]
+    }
     for (const eventType in this._builder.handlers) {
       for (const handler of this._builder.handlers[eventType]) {
         this._hostBuilder.on(eventType, (...args) =>
@@ -143,6 +182,57 @@ export class EmbedClient<T> {
     })
   }
 
+  private sessionAcquired = false
+  private acquireSessionPromise?: Promise<string>
+
+  private async acquireCookielessEmbedSession(): Promise<string> {
+    if (this.sessionAcquired) {
+      return this.acquireCookielessEmbedSessionInternal()
+    }
+    if (this.acquireSessionPromise) {
+      await this.acquireSessionPromise
+      return this.acquireCookielessEmbedSessionInternal()
+    }
+    this.acquireSessionPromise = this.acquireCookielessEmbedSessionInternal()
+    return this.acquireSessionPromise.then((url) => {
+      this.sessionAcquired = true
+      return url
+    })
+  }
+
+  private async acquireCookielessEmbedSessionInternal(): Promise<string> {
+    const { acquireSessionCallback, generateTokensCallback } = this._builder
+    if (!acquireSessionCallback) {
+      throw new Error('invalid state: acquireSessionCallback not defined')
+    }
+    if (!generateTokensCallback) {
+      throw new Error('invalid state: generateTokensCallback not defined')
+    }
+    const {
+      authentication_token,
+      api_token,
+      api_token_ttl,
+      navigation_token,
+      navigation_token_ttl,
+    } = await acquireSessionCallback()
+    if (!authentication_token || !navigation_token || !api_token) {
+      throw new Error('failed to prepare cookieless embed session')
+    }
+    this._cookielessApiToken = api_token
+    this._cookielessApiTokenTtl = api_token_ttl
+    this._cookielessNavigationToken = navigation_token
+    this._cookielessNavigationTokenTtl = navigation_token_ttl
+    const apiHost = `https://${this._builder.apiHost}`
+    const sep =
+      new URL(this._builder.embedUrl, apiHost).search === '' ? '?' : '&'
+    const src = `${this._builder.embedUrl}${sep}embed_navigation_token=${navigation_token}`
+    const embedPath =
+      '/login/embed/' +
+      encodeURIComponent(src) +
+      `?embed_authentication_token=${authentication_token}`
+    return `${apiHost}${embedPath}`
+  }
+
   /**
    * Establish two way communication with embedded content. Returns a promise that resolves to a
    * client that can be used to send messages to the embedded content.
@@ -152,11 +242,20 @@ export class EmbedClient<T> {
     if (this._connection) return this._connection
 
     if (this._builder.url) {
+      if (this._builder.isCookielessEmbed) {
+        throw new Error('withUrl not supported by cookieless embed')
+      }
       this._connection = this.createIframe(this._builder.url)
     } else {
-      this._connection = this.createUrl().then(async (url) =>
-        this.createIframe(url)
-      )
+      if (this._builder.isCookielessEmbed) {
+        this._connection = this.acquireCookielessEmbedSession().then(
+          async (url) => this.createIframe(url)
+        )
+      } else {
+        this._connection = this.createUrl().then(async (url) =>
+          this.createIframe(url)
+        )
+      }
     }
     return this._connection
   }

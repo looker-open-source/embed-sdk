@@ -1,0 +1,58 @@
+body {
+  font-family: 'open sans', arial, sans-serif;
+  text-align: center;
+}
+.embeds-header {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.embed-container {
+  background-color: whitesmoke;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(auto-fill, 1fr);
+  grid-gap: 10px;
+  margin-top: 10px;
+}
+@media (max-width: 1500px) {
+  .embed-container {
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(auto-fill, 1fr);
+  }
+}
+select {
+  width: 150px;
+  height: 25px;
+}
+button {
+  width: 100px;
+  height: 25px;
+}
+.loading-message {
+  padding-top: 10px;
+}
+.embeds-controls {
+  text-align: left;
+}
+.embeds-controls input {
+  margin-right: 10px;
+}
+.embed-control {
+  display: inline-block;
+  width: 190px;
+}
+
+.demo-link {
+  text-align: right;
+}
+.embed-header {
+  height: 65px;
+  width: 100%;
+}
+.looker-embed {
+  width: 100%;
+  height: 1200px;
+  border: 0;
+}

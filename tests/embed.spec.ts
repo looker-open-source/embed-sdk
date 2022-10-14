@@ -31,6 +31,7 @@ import { LookerEmbedSDK } from '../src/index'
 import { EmbedBuilder } from '../src/embed_builder'
 
 const testUrl = '/base/tests/test.html'
+const undefinedHost = undefined
 
 describe('LookerEmbed', () => {
   let builder: EmbedBuilder<any>
@@ -38,6 +39,7 @@ describe('LookerEmbed', () => {
   let client: any
 
   beforeEach(() => {
+    LookerEmbedSDK.init(undefinedHost!)
     el = document.createElement('div')
     el.id = 'the-element'
     document.body.append(el)
@@ -427,6 +429,70 @@ describe('LookerEmbed', () => {
           done()
         })
         .catch(done.fail)
+    })
+  })
+
+  describe('cookieless embed', () => {
+    let fakeDashboardClient: any
+    const acquire = () =>
+      Promise.resolve({
+        api_token: 'abcdef-api',
+        authentication_token: 'abcdef-auth',
+        navigation_token: 'abcdef-nav',
+      })
+    // Not possible to test generate callback as it is tied to chatty
+    // which is overridden by the createIFrame spy.
+    const generate = () =>
+      Promise.resolve({
+        api_token: 'mnopqr-api',
+        navigation_token: 'mnopqr-nav',
+      })
+
+    beforeEach(() => {
+      mock.setup()
+      fakeDashboardClient = {}
+      builder = LookerEmbedSDK.createDashboardWithId(11)
+      client = builder.build()
+      spyOn<any>(client, 'createIframe').and.returnValue(
+        Promise.resolve(fakeDashboardClient)
+      )
+    })
+
+    afterEach(() => mock.teardown())
+
+    it('should acquire tokens', (done) => {
+      LookerEmbedSDK.initCookieless('host.looker.com:9999', acquire, generate)
+      client
+        .connect()
+        .then(() => {
+          expect(client.createIframe).toHaveBeenCalledWith(
+            'https://host.looker.com:9999/login/embed/%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+          )
+          done()
+        })
+        .catch(done.fail)
+    })
+
+    it('withUrl set before initCookieless should fail', (done) => {
+      builder = LookerEmbedSDK.createDashboardWithUrl(testUrl)
+      client = builder.build()
+      LookerEmbedSDK.initCookieless('host.looker.com:9999', acquire, generate)
+      client
+        .connect()
+        .then(() => {
+          done.fail('withUrl should not work')
+        })
+        .catch(() => done())
+    })
+
+    it('withUrl set after initCookieless should fail', (done) => {
+      LookerEmbedSDK.initCookieless('host.looker.com:9999', acquire, generate)
+      try {
+        builder = LookerEmbedSDK.createDashboardWithUrl(testUrl)
+        done.fail('withUrl should not work')
+      } catch (err) {
+        done()
+      }
     })
   })
 })
