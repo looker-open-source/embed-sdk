@@ -109,7 +109,7 @@ This section does not apply to cookieless embed but a backend process is still r
 
 The _backend_ process entails hosting a service at an endpoint such as `/auth` which does the following:
 
-1. The backend service initializes the [Looker API SDK](https://docs.looker.com/reference/api-and-integration/api-sdk) based on a client API key and secret typically stored in `Looker.ini` file.
+1. The backend service initializes the [Looker API SDK](https://cloud.google.com/looker/docs/api-sdk) based on a client API key and secret typically stored in `Looker.ini` file.
 
 2. The Embed SDK calls the backend service and provides a query string containing the desired embedding.
 
@@ -466,7 +466,7 @@ A simple demo is provided in the `/demo` directory that uses a basic JS frontend
 
 ### Step 1 - Enable Embedding in your Looker instance
 
-Enabling SSO embedding is documented in more detail [here](https://docs.looker.com/r/sdk/sso-embed).
+Enabling SSO embedding is documented in more detail [here](https://cloud.google.com/looker/docs/single-sign-on-embedding).
 Enabling cookieless embedding is documented in more detail [here](https://cloud.google.com/looker/docs/r/sdk/cookieless-embed).
 
 - Navigate to Admin > _Platform_ Embed on your Looker instance. This requires Admin privileges.
@@ -485,7 +485,7 @@ Additional steps for cookieless embed:
 
 Note that `demo.py` and `demo_self_signed.py` have NOT been updated to support cookieless embedding. This section ONLY applies to SSO embedding. The cookieless embed demo currently requires the use of the development server.
 
-- If you are using the main `demo.py`, provide your API credentials to the server by updating `demo/looker.ini` following [these instructions](https://community.looker.com/technical-tips-tricks-1021/the-how-to-on-initializing-the-sdk-with-different-profiles-in-your-ini-file-26846), with credentials obtained from [the Users page](https://docs.looker.com/reference/api-and-integration/api-auth).
+- If you are using the main `demo.py`, provide your API credentials to the server by updating `demo/looker.ini` following [these instructions](https://community.looker.com/technical-tips-tricks-1021/the-how-to-on-initializing-the-sdk-with-different-profiles-in-your-ini-file-26846), with credentials obtained from [the Users page](https://cloud.google.com/looker/docs/api-auth).
 
 - Alternatively, if you are using `demo_self_signed.py`, provide your embed secret to the server. You can do this a couple ways.
 

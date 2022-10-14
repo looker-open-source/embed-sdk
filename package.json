@@ -44,6 +44,9 @@
     "@babel/core": "^7.16.7",
     "@looker/eslint-config-oss": "^1.7.21",
     "@looker/eslint-plugin": "^1.0.0",
+    "@looker/sdk": "^22.16.0",
+    "@looker/sdk-node": "^22.16.0",
+    "@looker/sdk-rtl": "^21.4.0",
     "@types/create-hmac": "^1.1.0",
     "@types/jasmine": "^2.8.2",
     "@types/node": "^11.12.1",
@@ -76,10 +79,7 @@
     "xhr-mock": "^2.5.1"
   },
   "dependencies": {
-    "@looker/chatty": "^2.3.2",
-    "@looker/sdk": "^22.16.0",
-    "@looker/sdk-node": "^22.16.0",
-    "@looker/sdk-rtl": "^21.4.0"
+    "@looker/chatty": "^2.3.2"
   },
   "pre-commit": [
     "test-once"
