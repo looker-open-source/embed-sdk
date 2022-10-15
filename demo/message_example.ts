@@ -298,16 +298,21 @@ const initializeDashboardControls = (runtimeConfig: RuntimeConfig) => {
  * Render a dashboard. When active this sets up listeners
  * for events that can be sent by the embedded Looker UI.
  */
-const renderDashboard = (runtimeConfig: RuntimeConfig) => {
+const renderDashboard = (
+  runtimeConfig: RuntimeConfig,
+  qs = '',
+  recoverableError?: boolean
+) => {
   if (runtimeConfig.showDashboard) {
     const { dashboardId } = runtimeConfig
     document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
       ''
     addEmbedFrame(
       getDashboardFrameId(runtimeConfig),
-      `/dashboards/${dashboardId}`,
+      `/dashboards/${dashboardId}${qs}`,
       'dashboard',
-      'looker-embed'
+      'looker-embed',
+      recoverableError
     )
       .on('dashboard:loaded', () => updateStatus('#dashboard-state', 'Loaded'))
       .on('dashboard:run:start', () =>
@@ -430,6 +435,57 @@ const initializeLookerEmbed = (runtimeConfig: RuntimeConfig) => {
 }
 
 /**
+ * Do not use any of the following as an example. The following
+ * tests out edge cases for cookieless login,
+ */
+const initializeErrorControls = (runtimeConfig: RuntimeConfig) => {
+  if (runtimeConfig.showDashboard) {
+    const controls = document.querySelector('.error-controls') as HTMLDivElement
+    if (controls) {
+      if (runtimeConfig.useCookieless) {
+        // Test unrecoverable initial connection
+        const error1 = document.getElementById('error-1') as HTMLButtonElement
+        if (error1) {
+          error1.addEventListener('click', () => {
+            // Hide the dashboard
+            renderDashboard({ ...runtimeConfig, showDashboard: false })
+            // Need to wait a bit for current dashboard to unload
+            setTimeout(() => {
+              // sdk=2 is a deliberate mistake. It tells the embedded Looker
+              // application that the embed SDK is being used. In this case
+              // it is not. The Looker application is going to timeout because
+              // it fails to get a handshake. This is considered a coding error
+              // on the part of the embedding application (this) and is unrecoverable.
+              // Not that the Looker displays an explanatory message in the console.
+              renderDashboard({ ...runtimeConfig }, '?sdk=2')
+            }, 500)
+          })
+        }
+        // Test recoverable initial connection
+        const error2 = document.getElementById('error-2') as HTMLButtonElement
+        if (error2) {
+          error2.addEventListener('click', () => {
+            // Hide the dashboard
+            renderDashboard({ ...runtimeConfig, showDashboard: false })
+            // Need to wait a bit for current dashboard to unload
+            setTimeout(() => {
+              // Recoverable error ignores the first three requests for session
+              // tokens. The Looker UI tries three times. This causes the Looker
+              // UI to render a recoverable error display. The user can click a
+              // button to try again and this time the session reques will not
+              // be ignored.
+              renderDashboard({ ...runtimeConfig }, '', true)
+            }, 500)
+          })
+        }
+      } else {
+        controls.style.display = 'none'
+      }
+    }
+  }
+}
+
+/**
  * Event listener to create embedded content. Waits until DOM is loaded so that
  * all the parent elements are present.
  */
@@ -437,6 +493,7 @@ document.addEventListener('DOMContentLoaded', function () {
   loadConfiguration()
   initializeConfigurationControls()
   const runtimeConfig = getConfiguration()
+  initializeErrorControls(runtimeConfig)
   initializeDashboardControls(runtimeConfig)
   initializeLookControls(runtimeConfig)
   initializeLookerEmbed(runtimeConfig)

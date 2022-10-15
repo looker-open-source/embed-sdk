@@ -23,11 +23,11 @@ body {
   }
 }
 select {
-  width: 150px;
+  min-width: 150px;
   height: 25px;
 }
 button {
-  width: 100px;
+  min-width: 100px;
   height: 25px;
 }
 .loading-message {
@@ -49,6 +49,10 @@ button {
 }
 .embed-header {
   height: 65px;
+  width: 100%;
+}
+.error-controls {
+  height: 40px;
   width: 100%;
 }
 .looker-embed {
