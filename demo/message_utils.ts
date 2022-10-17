@@ -262,7 +262,9 @@ class EmbedFrameImpl implements EmbedFrame {
     public readonly iframeId: string,
     public readonly embedUrl: string,
     public readonly parentElementId?: string,
-    public readonly className?: string
+    public readonly className?: string,
+    // Demo code for testing error conditions. NOT REQUIRED for production applications.
+    private recoverableError?: boolean
   ) {
     const element = document.getElementById(iframeId)
     if (parentElementId) {
@@ -458,6 +460,8 @@ class EmbedFrameImpl implements EmbedFrame {
     return signedUrl
   }
 
+  private countTokenRequests = 0
+
   /**
    * Handler for token requests (cookieless embed only)
    */
@@ -465,6 +469,13 @@ class EmbedFrameImpl implements EmbedFrame {
     const contentWindow = this.getContentWindow()
     if (contentWindow) {
       if (!this.connected) {
+        // Demo code for testing error conditions. NOT REQUIRED for production applications.
+        if (this.recoverableError) {
+          this.countTokenRequests++
+          if (this.countTokenRequests < 4) {
+            return
+          }
+        }
         // When not connected the newly acquired tokens can be used.
         const sessionTokens = this.embedEnvironment.applicationTokens
         if (sessionTokens) {
@@ -560,7 +571,9 @@ export const addEmbedFrame = (
   iframeId: string,
   embedUrl: string,
   parentElementId?: string,
-  className?: string
+  className?: string,
+  // Demo code for testing error conditions. NOT REQUIRED for production applications.
+  recoverableError?: boolean
 ): EmbedFrame => {
   if (embedFrames.has(iframeId)) {
     deleteEmbedFrame(iframeId)
@@ -570,7 +583,8 @@ export const addEmbedFrame = (
     iframeId,
     embedUrl,
     parentElementId,
-    className
+    className,
+    recoverableError
   )
   embedFrames.set(iframeId, frame)
   return frame
