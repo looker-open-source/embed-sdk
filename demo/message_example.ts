@@ -456,7 +456,7 @@ const initializeErrorControls = (runtimeConfig: RuntimeConfig) => {
               // it is not. The Looker application is going to timeout because
               // it fails to get a handshake. This is considered a coding error
               // on the part of the embedding application (this) and is unrecoverable.
-              // Not that the Looker displays an explanatory message in the console.
+              // Note that the Looker application displays an explanatory message in the console.
               renderDashboard({ ...runtimeConfig }, '?sdk=2')
             }, 500)
           })
