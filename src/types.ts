@@ -69,7 +69,7 @@ export interface LookerEmbedCookielessSessionData {
   /**
    * Session time to live in seconds.
    */
-  session_ttl?: number | null
+  session_reference_token_ttl?: number | null
 }
 
 /**

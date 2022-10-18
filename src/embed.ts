@@ -46,6 +46,7 @@ export class EmbedClient<T> {
   _cookielessApiTokenTtl?: number | null
   _cookielessNavigationToken?: string | null
   _cookielessNavigationTokenTtl?: number | null
+  _cookielessSessionReferenceTokenTtl?: number | null
 
   /**
    * @hidden
@@ -94,11 +95,14 @@ export class EmbedClient<T> {
                 api_token_ttl,
                 navigation_token,
                 navigation_token_ttl,
+                session_reference_token_ttl,
               } = await this._builder.generateTokensCallback()
               this._cookielessApiToken = api_token
               this._cookielessApiTokenTtl = api_token_ttl
               this._cookielessNavigationToken = navigation_token
               this._cookielessNavigationTokenTtl = navigation_token_ttl
+              this._cookielessSessionReferenceTokenTtl =
+                session_reference_token_ttl
             } else {
               this._cookielessInitialized = true
             }
@@ -108,6 +112,8 @@ export class EmbedClient<T> {
               api_token_ttl: this._cookielessApiTokenTtl,
               navigation_token: this._cookielessNavigationToken,
               navigation_token_ttl: this._cookielessNavigationTokenTtl,
+              session_reference_token_ttl:
+                this._cookielessSessionReferenceTokenTtl,
             })
           }
         },
@@ -214,6 +220,7 @@ export class EmbedClient<T> {
       api_token_ttl,
       navigation_token,
       navigation_token_ttl,
+      session_reference_token_ttl,
     } = await acquireSessionCallback()
     if (!authentication_token || !navigation_token || !api_token) {
       throw new Error('failed to prepare cookieless embed session')
@@ -222,6 +229,7 @@ export class EmbedClient<T> {
     this._cookielessApiTokenTtl = api_token_ttl
     this._cookielessNavigationToken = navigation_token
     this._cookielessNavigationTokenTtl = navigation_token_ttl
+    this._cookielessSessionReferenceTokenTtl = session_reference_token_ttl
     const apiHost = `https://${this._builder.apiHost}`
     const sep =
       new URL(this._builder.embedUrl, apiHost).search === '' ? '?' : '&'
