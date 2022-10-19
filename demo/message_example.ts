@@ -36,6 +36,7 @@ import {
   addEmbedFrame,
   deleteEmbedFrame,
   getEmbedFrame,
+  getApplicationTokens,
 } from './message_utils'
 import type { RuntimeConfig } from './demo_config'
 import {
@@ -476,6 +477,26 @@ const initializeErrorControls = (runtimeConfig: RuntimeConfig) => {
               // be ignored.
               renderDashboard({ ...runtimeConfig }, '', true)
             }, 500)
+          })
+        }
+        // Simulate bad tokens
+        const error3 = document.getElementById('error-3') as HTMLButtonElement
+        if (error3) {
+          error3.addEventListener('click', () => {
+            getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send(
+              'session:tokens',
+              {}
+            )
+          })
+        }
+        // Simulate expired session
+        const error4 = document.getElementById('error-4') as HTMLButtonElement
+        if (error4) {
+          error4.addEventListener('click', () => {
+            getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send(
+              'session:tokens',
+              { ...getApplicationTokens(), session_reference_token_ttl: 0 }
+            )
           })
         }
       } else {

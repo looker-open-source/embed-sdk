@@ -72,6 +72,7 @@ interface ApplicationTokens {
   api_token_ttl: number
   navigation_token: string
   navigation_token_ttl: number
+  session_reference_token_ttl: number
 }
 
 // TODO consider creating two environment types, one for SSO, one for
@@ -118,12 +119,14 @@ class EmbedEnvironmentTypeImpl {
         api_token_ttl,
         navigation_token,
         navigation_token_ttl,
+        session_reference_token_ttl,
       } = this.sessionData || {}
       return {
         api_token: api_token!,
         api_token_ttl: api_token_ttl!,
         navigation_token: navigation_token!,
         navigation_token_ttl: navigation_token_ttl!,
+        session_reference_token_ttl: session_reference_token_ttl!,
       }
     }
     return undefined
@@ -465,7 +468,7 @@ class EmbedFrameImpl implements EmbedFrame {
   /**
    * Handler for token requests (cookieless embed only)
    */
-  private sessionTokensRequestHandler(_data: any) {
+  private async sessionTokensRequestHandler(_data: any) {
     const contentWindow = this.getContentWindow()
     if (contentWindow) {
       if (!this.connected) {
@@ -485,7 +488,7 @@ class EmbedFrameImpl implements EmbedFrame {
       } else {
         // If connected, the embedded Looker application has decided that
         // it needs new tokens. Generate new tokens.
-        const sessionTokens = this.embedEnvironment.generateTokens()
+        const sessionTokens = await this.embedEnvironment.generateTokens()
         this.send('session:tokens', sessionTokens)
       }
     }
@@ -595,3 +598,13 @@ export const addEmbedFrame = (
  */
 export const getEmbedFrame = (ifameId: string): EmbedFrame =>
   embedFrames.get(ifameId) as EmbedFrame
+
+/**
+ * Returns the application tokens
+ */
+export const getApplicationTokens = () => {
+  if (embedEnvironment.isInitialized && embedEnvironment.isCookielessEmbed) {
+    return { ...embedEnvironment.applicationTokens }
+  }
+  return undefined
+}
