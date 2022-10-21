@@ -237,7 +237,7 @@ const initializeShowDashboardCheckbox = () => {
         renderDashboard(runtimeConfig)
       })
     } else {
-      cb.style.display = 'none'
+      cb.parentElement!.style.display = 'none'
     }
   }
 }
@@ -258,7 +258,7 @@ const initializeShowLookCheckbox = () => {
         renderLook(runtimeConfig)
       })
     } else {
-      cb.style.display = 'none'
+      cb.parentElement!.style.display = 'none'
     }
   }
 }
@@ -279,7 +279,7 @@ const initializeShowExploreCheckbox = () => {
         renderExplore(runtimeConfig)
       })
     } else {
-      cb.style.display = 'none'
+      cb.parentElement!.style.display = 'none'
     }
   }
 }
@@ -300,7 +300,7 @@ const initializeShowExtensionCheckbox = () => {
         renderExtension(runtimeConfig)
       })
     } else {
-      cb.style.display = 'none'
+      cb.parentElement!.style.display = 'none'
     }
   }
 }
