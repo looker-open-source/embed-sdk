@@ -143,7 +143,7 @@ const initializeShowDashboardCheckbox = () => {
         renderDashboard(runtimeConfig)
       })
     } else {
-      cb.style.display = 'none'
+      cb.parentElement!.style.display = 'none'
     }
   }
 }
@@ -164,7 +164,7 @@ const initializeShowLookCheckbox = () => {
         renderLook(runtimeConfig)
       })
     } else {
-      cb.style.display = 'none'
+      cb.parentElement!.style.display = 'none'
     }
   }
 }

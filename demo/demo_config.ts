@@ -96,10 +96,10 @@ let runtimeConfig: RuntimeConfig = {
   lookId,
   lookerHost,
   preventNavigation: true,
-  showDashboard: !!dashboardId,
+  showDashboard: dashboardId > 0,
   showExplore: !!exploreId,
   showExtension: !!extensionId,
-  showLook: !!lookId,
+  showLook: lookId > 0,
   useCookieless: cookielessEmbedV2,
   useDynamicHeights: false,
 }
@@ -124,7 +124,12 @@ export const loadConfiguration = () => {
   try {
     const configJson = localStorage.getItem('embed-configuration')
     if (configJson) {
-      updateConfiguration(JSON.parse(configJson))
+      const config = JSON.parse(configJson)
+      if (config.lookerHost === runtimeConfig.lookerHost) {
+        updateConfiguration(config)
+      } else {
+        updateConfiguration(runtimeConfig)
+      }
     }
   } catch (error) {
     console.error('error loading embed-configuration', error)
