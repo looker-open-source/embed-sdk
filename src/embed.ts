@@ -37,6 +37,9 @@ const IS_URL = /^https?:\/\//
  */
 
 export class EmbedClient<T> {
+  private static sessionAcquired = false
+  private static acquireSessionPromise?: Promise<string>
+
   _hostBuilder: ChattyHostBuilder | null = null
   _host: ChattyHost | null = null
   _connection: Promise<T> | null = null
@@ -188,20 +191,18 @@ export class EmbedClient<T> {
     })
   }
 
-  private sessionAcquired = false
-  private acquireSessionPromise?: Promise<string>
-
   private async acquireCookielessEmbedSession(): Promise<string> {
-    if (this.sessionAcquired) {
+    if (EmbedClient.sessionAcquired) {
       return this.acquireCookielessEmbedSessionInternal()
     }
-    if (this.acquireSessionPromise) {
-      await this.acquireSessionPromise
+    if (EmbedClient.acquireSessionPromise) {
+      await EmbedClient.acquireSessionPromise
       return this.acquireCookielessEmbedSessionInternal()
     }
-    this.acquireSessionPromise = this.acquireCookielessEmbedSessionInternal()
-    return this.acquireSessionPromise.then((url) => {
-      this.sessionAcquired = true
+    EmbedClient.acquireSessionPromise =
+      this.acquireCookielessEmbedSessionInternal()
+    return EmbedClient.acquireSessionPromise.then((url) => {
+      EmbedClient.sessionAcquired = true
       return url
     })
   }
