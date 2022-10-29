@@ -169,9 +169,10 @@ export async function generateEmbedTokens(
     console.error(
       'embed session generate tokens failed, session not yet acquired'
     )
-    throw new Error(
-      'embed session generate tokens failed, session not yet acquired'
-    )
+    // In this scenario return expired session
+    return {
+      session_reference_token_ttl: 0,
+    }
   }
   await acquireLookerSession()
   try {
