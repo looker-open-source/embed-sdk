@@ -34,7 +34,7 @@ jobs:
       if: steps.git-check.outputs.modified == 'true'
       run: |
         git checkout HEAD
-        git config --global user.name 'Automated Embed SDK Docs Publisher'
+        git config --global user.name 'SDK Docs Bot'
         git config --global user.email 'actions@users.noreply.github.com'
-        git commit --no-verify -am "Auto generated Embed SDK documentation - Github workflow @ .github/workflow/docs.yml"
+        git commit --no-verify -am "Auto generated Embed SDK docs - Github workflow @ .github/workflow/docs.yml"
         git push
