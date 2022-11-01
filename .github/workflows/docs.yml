@@ -11,7 +11,9 @@ jobs:
   docgen:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
+      with:
+        ref: master
 
     - name: Use Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v1
@@ -31,10 +33,8 @@ jobs:
     - name: Commit and push changes
       if: steps.git-check.outputs.modified == 'true'
       run: |
+        git checkout HEAD
         git config --global user.name 'Automated Embed SDK Docs Publisher'
         git config --global user.email 'actions@users.noreply.github.com'
-        git commit --no-verify -am "Auto update Embed SDK documentation \n\n Github workflow @ .github/workflow/docs.yml"
-
-        git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-
+        git commit --no-verify -am "Auto generated Embed SDK documentation - Github workflow @ .github/workflow/docs.yml"
         git push
