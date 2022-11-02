@@ -67,4 +67,5 @@ export interface ApplicationConfig {
   host: string
   secret: string
   verify_ssl: boolean
+  cookie_secret: string
 }

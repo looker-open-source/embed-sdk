@@ -47,11 +47,6 @@ export const setConfig = (conf: ApplicationConfig) => (config = conf)
 // The Looker session
 let lookerSession: NodeSession
 
-// A very simple cache for storing one session per user agent.
-// In a production environment the cache key should be based upon
-// the embed userid and the browser user agent.
-const embedSessions: Record<string, IEmbedCookielessSessionAcquireResponse> = {}
-
 /**
  * Create a Looker session using the Looker SDK. This session can be
  * be shared amongst all embed users. If data is required for the embed
@@ -95,11 +90,10 @@ const acquireLookerSession = async () => {
  */
 const acquireEmbedSessionInternal = async (
   userAgent: string,
-  user: LookerEmbedUser
+  user: LookerEmbedUser,
+  embedSession?: IEmbedCookielessSessionAcquireResponse
 ) => {
   try {
-    const cacheKey = `${user.external_user_id}/${userAgent}`
-    const embedSession = embedSessions[cacheKey]
     const request = {
       ...user,
       session_reference_token: embedSession?.session_reference_token,
@@ -112,25 +106,7 @@ const acquireEmbedSessionInternal = async (
         },
       })
     )
-    embedSessions[cacheKey] = response
-    const {
-      authentication_token,
-      authentication_token_ttl,
-      navigation_token,
-      navigation_token_ttl,
-      session_reference_token_ttl,
-      api_token,
-      api_token_ttl,
-    } = response
-    return {
-      api_token,
-      api_token_ttl,
-      authentication_token,
-      authentication_token_ttl,
-      navigation_token,
-      navigation_token_ttl,
-      session_reference_token_ttl,
-    }
+    return response
   } catch (error) {
     console.error('embed session acquire failed', { error })
     throw error
@@ -147,10 +123,11 @@ const acquireEmbedSessionInternal = async (
  */
 export async function acquireEmbedSession(
   userAgent: string,
-  user: LookerEmbedUser
+  user: LookerEmbedUser,
+  embedSession?: IEmbedCookielessSessionAcquireResponse
 ) {
   await acquireLookerSession()
-  return acquireEmbedSessionInternal(userAgent, user)
+  return acquireEmbedSessionInternal(userAgent, user, embedSession)
 }
 
 /**
@@ -161,10 +138,8 @@ export async function acquireEmbedSession(
  */
 export async function generateEmbedTokens(
   userAgent: string,
-  user: LookerEmbedUser
+  embedSession?: IEmbedCookielessSessionAcquireResponse
 ) {
-  const cacheKey = `${user.external_user_id}/${userAgent}`
-  const embedSession = embedSessions[cacheKey]
   if (!embedSession) {
     console.error(
       'embed session generate tokens failed, session not yet acquired'
@@ -193,8 +168,6 @@ export async function generateEmbedTokens(
         }
       )
     )
-    const cacheKey = `${user.external_user_id}/${userAgent}`
-    embedSessions[cacheKey] = response
     return {
       api_token: response.api_token,
       api_token_ttl: response.api_token_ttl,

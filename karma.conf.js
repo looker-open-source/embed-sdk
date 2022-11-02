@@ -19,7 +19,7 @@ module.exports = function (config) {
     ],
 
     // list of files to exclude
-    exclude: ['server_utils/cookieless_utils.ts'],
+    exclude: ['server_utils/cookieless_utils.ts', 'server_utils/routes.ts'],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor

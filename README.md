@@ -113,7 +113,7 @@ The _backend_ process entails hosting a service at an endpoint such as `/auth` w
 
 2. The Embed SDK calls the backend service and provides a query string containing the desired embedding.
 
-3. The backend service takes the information from the Embed SDK _along with any information about the currently authenticated user_ and genereates the signed URL. For example, this Python code represents a partial example of a backend that generates the signed URL by calling the Looker API:
+3. The backend service takes the information from the Embed SDK _along with any information about the currently authenticated user_ and generates the signed URL. For example, this Python code represents a partial example of a backend that generates the signed URL by calling the Looker API:
 
 ```python
 # receives a request path that includes /looker_auth
@@ -227,14 +227,14 @@ Cookieless embed sessions are associated with the user's browser user agent. It 
 
 The `acquire_embed_cookieless_session` returns a number of tokens if successful:
 
-- `session_reference_token` - this token is used to generate new tokens. If it exists, it is used to attach to an existing session. It is important to secure this token and it should not be exposed to the browser. This token lives for the duration of the session. Note that a new cookieless embed session will need to be created if the `session_reference_token` has expired.
+- `session_reference_token` - this token is used to generate new tokens. If it exists, it is used to attach to an existing session. It is important to secure this token and it should not be exposed to the browser. This token lives for the duration of the session. Note that a new cookieless embed session will need to be created if the `session_reference_token` has expired. It also means that the server application needs to keep track of it.
 - `authentication_token` - this is one time token that has a lifespan of 30 seconds. It is used with the `/login/embed/{target}` endpoint.
 - `navigation_token` - this token is used to navigate to different Looker pages in the Looker application. This token lives for 10 minutes.
 - `api_token` - this token is used for api calls. This token lives for 10 minutes.
 
 A time to live for each token is also returned for each token. It is important that the response of the `acquire_embed_cookieless_session` be returned to the browser with the exception of the `session_reference_token`.
 
-The example below uses javascript, but you may utilize the Looker SDK in the language of your choice. Note that this is very simplistic implementation for demonstration purposes only. An actual implementation should be a lot more robust.
+The example below uses javascript, but you may utilize the Looker SDK in the language of your choice. Note that this is very simplistic implementation for demonstration purposes only. An actual implementation should be a lot more robust. The example below uses a simple in memory cache to keep track of the `session_reference_token`. An in memory cache will not work in a clustered environment so use a distributed cache such as `redis` for production implementations. Alternatively, the `session_reference_token` can be saved in an encrypted session cookie. The demo has been updated utilize session cookies instead of the in memory cache.
 
 ```javascript
 // Simple endpoint to acquire a user session. In this case the user has been
@@ -613,6 +613,7 @@ LOOKER_DASHBOARD_ID=1
 LOOKER_LOOK_ID=1
 LOOKER_EXPLORE_ID=thelook::orders
 LOOKER_EXTENSION_ID=extension::my-great-extension
+COOKIE_SECRET=cookie_stash
 ```
 
 ## Embedded Javascript Events
