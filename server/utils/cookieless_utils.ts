@@ -29,7 +29,7 @@ import { Looker40SDK } from '@looker/sdk'
 import { NodeSession } from '@looker/sdk-node'
 import type { IApiSection } from '@looker/sdk-rtl'
 import { DefaultSettings } from '@looker/sdk-rtl'
-import type { ApplicationConfig, LookerEmbedUser } from './types'
+import type { ApplicationConfig, LookerEmbedUser } from '../types'
 
 /**
  * The functions in this file demonstrate how to call server

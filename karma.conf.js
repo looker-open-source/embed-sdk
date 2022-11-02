@@ -13,13 +13,13 @@ module.exports = function (config) {
     // list of files / patterns to load in the browser
     files: [
       { pattern: 'src/**/*.ts' },
-      { pattern: 'server_utils/**/*.ts' },
+      { pattern: 'server/utils/*.ts' },
       { pattern: 'tests/**/*.spec.ts' },
       { pattern: 'tests/**/*.html' },
     ],
 
     // list of files to exclude
-    exclude: ['server_utils/cookieless_utils.ts', 'server_utils/routes.ts'],
+    exclude: ['server/utils/cookieless_utils.ts'],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor

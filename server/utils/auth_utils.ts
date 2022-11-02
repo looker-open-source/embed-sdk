@@ -25,7 +25,7 @@
  */
 
 import createHmac from 'create-hmac'
-import type { LookerEmbedUser } from './types'
+import type { LookerEmbedUser } from '../types'
 
 function stringify(params: { [key: string]: string | undefined }) {
   const result: string[] = []
