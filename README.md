@@ -113,7 +113,7 @@ The _backend_ process entails hosting a service at an endpoint such as `/auth` w
 
 2. The Embed SDK calls the backend service and provides a query string containing the desired embedding.
 
-3. The backend service takes the information from the Embed SDK _along with any information about the currently authenticated user_ and genereates the signed URL. For example, this Python code represents a partial example of a backend that generates the signed URL by calling the Looker API:
+3. The backend service takes the information from the Embed SDK _along with any information about the currently authenticated user_ and generates the signed URL. For example, this Python code represents a partial example of a backend that generates the signed URL by calling the Looker API:
 
 ```python
 # receives a request path that includes /looker_auth
@@ -225,21 +225,21 @@ This process will be called every time a Looker embed IFRAME is created. The acq
 
 Cookieless embed sessions are associated with the user's browser user agent. It is important that that user agent for the browser be set on the request.
 
-The `acquire_embed_cookieless_session` returns a number of tokens if successful:
+If successful, the `acquire_embed_cookieless_session` returns a number of tokens:
 
-- `session_reference_token` - this token is used to generate new tokens. If it exists, it is used to attach to an existing session. It is important to secure this token and it should not be exposed to the browser. This token lives for the duration of the session. Note that a new cookieless embed session will need to be created if the `session_reference_token` has expired.
+- `session_reference_token` - this token is used to generate new tokens and created new IFRAMEs. It is important to secure and keep track of this token. It should not be returned to the browser. This token lives for the duration of the session. A new cookieless embed session will need to be created when the `session_reference_token` expires.
 - `authentication_token` - this is one time token that has a lifespan of 30 seconds. It is used with the `/login/embed/{target}` endpoint.
 - `navigation_token` - this token is used to navigate to different Looker pages in the Looker application. This token lives for 10 minutes.
 - `api_token` - this token is used for api calls. This token lives for 10 minutes.
 
-A time to live for each token is also returned for each token. It is important that the response of the `acquire_embed_cookieless_session` be returned to the browser with the exception of the `session_reference_token`.
+A time to live for each token is also returned. It is important that the response of the `acquire_embed_cookieless_session` be returned to the browser with the exception of the `session_reference_token`. The hosting application MUST keep track of the `session_reference_token` for each user.
 
-The example below uses javascript, but you may utilize the Looker SDK in the language of your choice. Note that this is very simplistic implementation for demonstration purposes only. An actual implementation should be a lot more robust.
+The example shown below is simplistic and uses an in memory cache to keep track of the `session_reference_token`. In memory caches will not work in clustered environments so a use a distributed cache such as `redis` in production. An alternative is to save the `session_reference_token` in an encrypted session cookie. The use of session cookies is demonstrated [here](/server_utils/routes.ts).
 
 ```javascript
-// Simple endpoint to acquire a user session. In this case the user has been
-// is pulled from a configuration file. In a real life application the user
-// would be derived from a session.
+// Simple endpoint to acquire an embed session. In this case the user data
+// comes from a configuration file. In a real life application the user data
+// would be derived from the embedding hosts session.
 app.get('/acquire-embed-session', async function (req, res) {
   try {
     const tokens = await acquireEmbedSession(req.headers['user-agent'], user)
@@ -253,7 +253,7 @@ app.get('/acquire-embed-session', async function (req, res) {
 let lookerSession
 
 // A very simple cache for storing embed sessions. In a real life application the
-// embed session should be stored with the applications users session.
+// embed session should be associated with the embedding application user's session.
 const embedSessions = {}
 
 // Simple function to acquire a looker session and then acquire an embed
@@ -263,7 +263,7 @@ async function acquireEmbedSession(userAgent, user) {
   return acquireEmbedSessionInternal(userAgent, user)
 }
 
-// Simple function to acquire a Looker session.
+// Simple function to acquire a Looker API session.
 const acquireLookerSession = async () => {
   if (!lookerSession || !lookerSession.activeToken.isActive()) {
     const { api_url, client_id, client_secret, verify_ssl } = config
@@ -360,9 +360,10 @@ const acquireEmbedSessionCallback = async () => {
 
 This process is called whenever tokens are about to expire and can be called after a token has expired (for example, a user waking up computer that has gone to sleep). The generate tokens backend process requires that the Looker api endpoint `generate_tokens_for_cookieless_session` be called to generate new navigation and api tokens.
 
-Cookieless embed sessions are associated with the user's browser user agent. It is important that that user agent for the browser be set on the request.
+Cookieless embed sessions are associated with the user's browser user agent. It is important that that user agent for the browser be included in the request.
 
-The example below uses javascript, but you may utilize the Looker SDK in the language of your choice. Note that this is very simplistic implementation for demonstration purposes only. An actual implementation should be a lot more robust.
+This is very simplistic implementation for demonstration purposes only. An actual implementation should be a lot more robust. If the embed session has expired,
+the `session_reference_token_ttl` value will be set to 0. When this happens, embedded IFRAMEs can no longer be used and are locked from further interaction.
 
 ```javascript
 app.get('/generate-embed-tokens', async function (req, res) {
@@ -613,6 +614,7 @@ LOOKER_DASHBOARD_ID=1
 LOOKER_LOOK_ID=1
 LOOKER_EXPLORE_ID=thelook::orders
 LOOKER_EXTENSION_ID=extension::my-great-extension
+COOKIE_SECRET=cookie_stash
 ```
 
 ## Embedded Javascript Events
