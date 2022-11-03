@@ -1,17 +1,15 @@
-name: Auto Doc Gen
-on:
-  push:
-    branches:
-      - master
+name: Check documentation freshness
+
+on: [push]
 
 env:
   NODE_VERSION: 16.x
 
 jobs:
-  docgen:
+  doccheck:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Use Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v1
@@ -21,20 +19,9 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Generate docs
+    - name: Try to generate docs
       run: npm run docs
 
-    - name: Check for modified files
-      id: git-check
-      run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
-
-    - name: Commit and push changes
-      if: steps.git-check.outputs.modified == 'true'
-      run: |
-        git config --global user.name 'Automated Embed SDK Docs Publisher'
-        git config --global user.email 'actions@users.noreply.github.com'
-        git commit --no-verify -am "Auto update Embed SDK documentation \n\n Github workflow @ .github/workflow/docs.yml"
-
-        git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-
-        git push
+    - name: Check for uncommitted doc files
+      # Returns 1 if there are uncomitted files in docs/
+      run: git diff --exit-code docs
