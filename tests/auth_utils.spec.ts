@@ -24,11 +24,8 @@
 
  */
 
-import type {
-  LookerEmbedUser,
-  LookerUserPermission,
-} from '../server_utils/types'
-import { createSignedUrl } from '../server_utils/auth_utils'
+import type { LookerEmbedUser, LookerUserPermission } from '../server/types'
+import { createSignedUrl } from '../server/utils/auth_utils'
 
 const testUser = () =>
   ({

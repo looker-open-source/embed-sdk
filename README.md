@@ -234,7 +234,7 @@ If successful, the `acquire_embed_cookieless_session` returns a number of tokens
 
 A time to live for each token is also returned. It is important that the response of the `acquire_embed_cookieless_session` be returned to the browser with the exception of the `session_reference_token`. The hosting application MUST keep track of the `session_reference_token` for each user.
 
-The example shown below is simplistic and uses an in memory cache to keep track of the `session_reference_token`. In memory caches will not work in clustered environments so a use a distributed cache such as `redis` in production. An alternative is to save the `session_reference_token` in an encrypted session cookie. The use of session cookies is demonstrated [here](/server_utils/routes.ts).
+The example shown below is simplistic and uses an in memory cache to keep track of the `session_reference_token`. In memory caches will not work in clustered environments so use a distributed cache such as `redis` in production. An alternative is to save the `session_reference_token` in an encrypted session cookie. The use of session cookies is demonstrated [here](/server_utils/routes.ts).
 
 ```javascript
 // Simple endpoint to acquire an embed session. In this case the user data
@@ -465,6 +465,8 @@ LookerEmbedSDK.initCookieless(
 
 A simple demo is provided in the `/demo` directory that uses a basic JS frontend and a Python backend. The example backend `demo.py` uses the Looker API to create a signed URL. The example backend `demo_self_signed.py` uses the embed secret and a helper function to sign the URL. The instructions below are for the example using the Looker API.
 
+The python simple demo server does not support cookieless embed but alternative TypeScript backend is available which does support cookieless embed.
+
 ### Step 1 - Enable Embedding in your Looker instance
 
 Enabling SSO embedding is documented in more detail [here](https://cloud.google.com/looker/docs/single-sign-on-embedding).
@@ -489,6 +491,11 @@ Note that `demo.py` and `demo_self_signed.py` have NOT been updated to support c
 - If you are using the main `demo.py`, provide your API credentials to the server by updating `demo/looker.ini` following [these instructions](https://community.looker.com/technical-tips-tricks-1021/the-how-to-on-initializing-the-sdk-with-different-profiles-in-your-ini-file-26846), with credentials obtained from [the Users page](https://cloud.google.com/looker/docs/api-auth).
 
 - Alternatively, if you are using `demo_self_signed.py`, provide your embed secret to the server. You can do this a couple ways.
+
+  - Set it as `LOOKER_EMBED_SECRET` in your shell environment.
+  - Create a file named `.env` in the root of the sdk directory. Add a line to that file: `LOOKER_EMBED_SECRET="YourLookerSecret"`
+
+- Another alternative is to use the TypeScript demo server. The embed secret can be provided in the following way:
 
   - Set it as `LOOKER_EMBED_SECRET` in your shell environment.
   - Create a file named `.env` in the root of the sdk directory. Add a line to that file: `LOOKER_EMBED_SECRET="YourLookerSecret"`
@@ -575,10 +582,10 @@ The following applies to SSO embed only. Run the following commands from the top
 
 If you want to use the `demo_self_signed.py` example you will need to update `packages.json` and replace `demo.py` with `demo_self_signed.py`.
 
-To run the cookieless embed demo, run the following commands from the top-level embed-sdk directory.
+Alternatively run the TypeScript demo server which also supports cookieless embed.
 
 - `npm install`
-- `npm start`
+- `npm run server`
 - The server will listen on port 8080.
 
 ## Troubleshooting

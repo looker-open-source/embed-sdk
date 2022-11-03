@@ -28,12 +28,12 @@ import type { Express, Request, Response } from 'express'
 import cookieParser from 'cookie-parser'
 import cookieEncrypter from 'cookie-encrypter'
 import type { IEmbedCookielessSessionAcquireResponse } from '@looker/sdk'
-import { createSignedUrl } from './auth_utils'
+import { createSignedUrl } from './utils/auth_utils'
 import {
   acquireEmbedSession,
   generateEmbedTokens,
   setConfig,
-} from './cookieless_utils'
+} from './utils/cookieless_utils'
 import type { ApplicationConfig, LookerEmbedUser } from './types'
 
 /**

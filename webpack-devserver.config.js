@@ -3,7 +3,7 @@ var config = require('./config')
 const webpack = require('webpack')
 
 var user = require('./demo/demo_user.json')
-var { addRoutes } = require('./server_utils/routes')
+var { addRoutes } = require('./server/routes')
 
 var webpackConfig = {
   mode: 'development',
