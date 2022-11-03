@@ -27,9 +27,9 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm run test-once",
     "python": "webpack --config webpack-devserver.config.js && pip install -r demo/requirements.txt && python demo/demo.py",
-    "server-prep": "webpack --config webpack-devserver.config.js && rm -rf ./server/public && mkdir ./server/public && cp ./demo/*.css ./server/public && cp ./demo/*.html ./server/public && cp ./demo/*.js ./server/public",
+    "server-prep": "npm run build && rm -rf ./server/public && mkdir ./server/public && cp ./demo/*.css ./server/public && cp ./demo/*.html ./server/public && cp ./demo/*.js ./server/public",
     "server": "npm run server-prep && cd server && ts-node ./app.ts",
-    "server-dev": "cd server && ts-node-dev ./app.ts",
+    "server-dev": "cd server && rm -rf *.js  && rm -rf *.js.map && ts-node-dev --watch ./utils ./app.ts",
     "test": "npm run lint && karma start karma.conf.js",
     "test-once": "npm run lint && karma start karma.conf.js --single-run "
   },

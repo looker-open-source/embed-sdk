@@ -144,6 +144,7 @@ export const addRoutes = (
           req.headers['user-agent']!,
           embedSession
         )
+        generateCookie(res, { ...embedSession, ...tokens })
         res.json(tokens)
       } catch (err: any) {
         res.status(400).send({ message: err.message })

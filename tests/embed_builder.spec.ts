@@ -357,8 +357,8 @@ describe('LookerEmbedBuilder', () => {
     beforeEach(() => {
       embedSdk.apiHost = undefined
       embedSdk.auth = undefined
-      embedSdk.acquireSessionCallback = undefined
-      embedSdk.generateTokensCallback = undefined
+      embedSdk.acquireSession = undefined
+      embedSdk.generateTokens = undefined
     })
 
     it('builder allows api host and auth url to be set', () => {
@@ -464,8 +464,8 @@ describe('LookerEmbedBuilder', () => {
     beforeEach(() => {
       embedSdk.apiHost = undefined
       embedSdk.auth = undefined
-      embedSdk.acquireSessionCallback = undefined
-      embedSdk.generateTokensCallback = undefined
+      embedSdk.acquireSession = undefined
+      embedSdk.generateTokens = undefined
     })
 
     it('initializes cookieless embed', () => {
@@ -481,8 +481,8 @@ describe('LookerEmbedBuilder', () => {
         acquireSessionCallback,
         generateTokensCallback
       )
-      expect(embedSdk.acquireSessionCallback).toEqual(acquireSessionCallback)
-      expect(embedSdk.generateTokensCallback).toEqual(generateTokensCallback)
+      expect(embedSdk.acquireSession).toEqual(acquireSessionCallback)
+      expect(embedSdk.generateTokens).toEqual(generateTokensCallback)
       expect(embedSdk.apiHost).toEqual(host)
     })
   })

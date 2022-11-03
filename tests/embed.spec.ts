@@ -433,13 +433,14 @@ describe('LookerEmbed', () => {
   })
 
   describe('cookieless embed', () => {
+    let fetchSpy: any
     let fakeDashboardClient: any
-    const acquire = () =>
-      Promise.resolve({
-        api_token: 'abcdef-api',
-        authentication_token: 'abcdef-auth',
-        navigation_token: 'abcdef-nav',
-      })
+    const acquireData = {
+      api_token: 'abcdef-api',
+      authentication_token: 'abcdef-auth',
+      navigation_token: 'abcdef-nav',
+    }
+    const acquire = () => Promise.resolve(acquireData)
     // Not possible to test generate callback as it is tied to chatty
     // which is overridden by the createIFrame spy.
     const generate = () =>
@@ -449,7 +450,11 @@ describe('LookerEmbed', () => {
       })
 
     beforeEach(() => {
-      mock.setup()
+      fetchSpy = spyOn(window, 'fetch').and.returnValue({
+        json: () => acquireData,
+        ok: true,
+        status: 200,
+      })
       fakeDashboardClient = {}
       builder = LookerEmbedSDK.createDashboardWithId(11)
       client = builder.build()
@@ -458,9 +463,7 @@ describe('LookerEmbed', () => {
       )
     })
 
-    afterEach(() => mock.teardown())
-
-    it('should acquire tokens', (done) => {
+    it('should acquire tokens using callback', (done) => {
       LookerEmbedSDK.initCookieless('host.looker.com:9999', acquire, generate)
       client
         .connect()
@@ -468,6 +471,42 @@ describe('LookerEmbed', () => {
           expect(client.createIframe).toHaveBeenCalledWith(
             'https://host.looker.com:9999/login/embed/%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
           )
+          done()
+        })
+        .catch(done.fail)
+    })
+
+    it('should acquire tokens using a url', (done) => {
+      LookerEmbedSDK.initCookieless(
+        'host.looker.com:9999',
+        '/acquire',
+        '/generate'
+      )
+      client
+        .connect()
+        .then(() => {
+          expect(client.createIframe).toHaveBeenCalledWith(
+            'https://host.looker.com:9999/login/embed/%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+          )
+          expect(fetchSpy).toHaveBeenCalledWith('/acquire', undefined)
+          done()
+        })
+        .catch(done.fail)
+    })
+
+    it('should acquire tokens using a ResponseInit object', (done) => {
+      LookerEmbedSDK.initCookieless(
+        'host.looker.com:9999',
+        { url: '/acquire' },
+        { url: '/generate' }
+      )
+      client
+        .connect()
+        .then(() => {
+          expect(client.createIframe).toHaveBeenCalledWith(
+            'https://host.looker.com:9999/login/embed/%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+          )
+          expect(fetchSpy).toHaveBeenCalledWith('/acquire', {})
           done()
         })
         .catch(done.fail)

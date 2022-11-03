@@ -29,7 +29,6 @@
 import type {
   LookerEmbedLook,
   LookerEmbedDashboard,
-  LookerEmbedCookielessSessionData,
   LookerEmbedExplore,
   PagePropertiesChangedEvent,
 } from '../src/index'
@@ -41,46 +40,6 @@ import {
   loadConfiguration,
   resetConfiguration,
 } from './demo_config'
-
-/**
- * Acquire a cookieless embed session. The embed host is expected
- * to implement an endpoint the calls the Looker `acquire_embed_cookieless_session`
- * endpoint. This endpoint will either create a session OR attach to
- * an existing session. This allows multiple IFRAMES to be attached
- * to the same session.
- */
-const acquireEmbedSessionCallback =
-  async (): Promise<LookerEmbedCookielessSessionData> => {
-    const resp = await fetch('/acquire-embed-session')
-    if (!resp.ok) {
-      console.error('acquire-embed-session failed', { resp })
-      throw new Error(
-        `acquire-embed-session failed: ${resp.status} ${resp.statusText}`
-      )
-    }
-    return (await resp.json()) as LookerEmbedCookielessSessionData
-  }
-
-/**
- * Generate new embed tokens. The embed host is expected to implement
- * an endpoint that calls the Looker `generate_tokens_for_cookieless_session`
- * endpoint. Cookieless embed provides relatively short lived tokens that
- * need to be regenerated on a regular basis. The embedded Looker UI keeps
- * track of the time to live for these tokens and as they get close to
- * expiration will ask for the tokens to be regenerated. This callback is
- * called when the tokens need to be regenerated.
- */
-const generateEmbedTokensCallback =
-  async (): Promise<LookerEmbedCookielessSessionData> => {
-    const resp = await fetch('/generate-embed-tokens')
-    if (!resp.ok) {
-      console.error('generate-embed-tokens failed', { resp })
-      throw new Error(
-        `generate-embed-tokens failed: ${resp.status} ${resp.statusText}`
-      )
-    }
-    return (await resp.json()) as LookerEmbedCookielessSessionData
-  }
 
 /**
  * Set up the dashboard after the SDK connects
@@ -560,8 +519,8 @@ const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
     // Use cookieless embed
     LookerEmbedSDK.initCookieless(
       runtimeConfig.lookerHost,
-      acquireEmbedSessionCallback,
-      generateEmbedTokensCallback
+      '/acquire-embed-session',
+      '/generate-embed-tokens'
     )
   } else {
     // Use SSO embed

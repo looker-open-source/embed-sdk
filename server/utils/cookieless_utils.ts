@@ -141,9 +141,7 @@ export async function generateEmbedTokens(
   embedSession?: IEmbedCookielessSessionAcquireResponse
 ) {
   if (!embedSession) {
-    console.error(
-      'embed session generate tokens failed, session not yet acquired'
-    )
+    console.error('embed session generate tokens failed')
     // In this scenario return expired session
     return {
       session_reference_token_ttl: 0,
@@ -175,7 +173,16 @@ export async function generateEmbedTokens(
       navigation_token_ttl: response.navigation_token_ttl,
       session_reference_token_ttl: response.session_reference_token_ttl,
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message?.includes('Invalid input tokens provided')) {
+      // Currently the Looker UI does not know how to handle a bad
+      // token. This should not happen but if it does expire the
+      // session. If the token is bad there is not much that can be
+      // done anyway.
+      return {
+        session_reference_token_ttl: 0,
+      }
+    }
     console.error('embed session generate tokens failed', { error })
     throw error
   }

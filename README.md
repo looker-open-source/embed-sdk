@@ -339,23 +339,6 @@ const acquireEmbedSessionInternal = async (userAgent, user) => {
 }
 ```
 
-### Acquire session frontend process
-
-When the Looker EmbedSDK is initialized for cookieless embed it requires a simple callback to call the backend process to acquire a session.
-
-```javascript
-const acquireEmbedSessionCallback = async () => {
-  const resp = await fetch('/acquire-embed-session')
-  if (!resp.ok) {
-    console.error('acquire-embed-session failed', { resp })
-    throw new Error(
-      `acquire-embed-session failed: ${resp.status} ${resp.statusText}`
-    )
-  }
-  return await resp.json()
-}
-```
-
 ### Generate tokens backend process
 
 This process is called whenever tokens are about to expire and can be called after a token has expired (for example, a user waking up computer that has gone to sleep). The generate tokens backend process requires that the Looker api endpoint `generate_tokens_for_cookieless_session` be called to generate new navigation and api tokens.
@@ -421,45 +404,17 @@ export async function generateEmbedTokens(userAgent, user) {
 }
 ```
 
-### Generate token frontend process
-
-When the Looker EmbedSDK is initialized for cookieless embed it requires a simple callback to call the backend process to generate new tokens.
-
-```javascript
-const generateEmbedTokensCallback = async () => {
-  const resp = await fetch('/generate-embed-tokens')
-  if (!resp.ok) {
-    console.error('generate-embed-tokens failed', { resp })
-    throw new Error(
-      `generate-embed-tokens failed: ${resp.status} ${resp.statusText}`
-    )
-  }
-  return await resp.json()
-}
-```
-
 ### Initializing the Looker SDK in the frontend
 
-Cookieless embed is initialized by calling `LookerEmbedSDK.initCookieless` passing in the Looker host value and the two callbacks described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
+Cookieless embed is initialized by calling `LookerEmbedSDK.initCookieless` passing in the Looker host value and the the urls of the backened endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
 
 ```javascript
-
-const acquireEmbedSessionCallback = async () => {
-  . . .
-}
-
-const generateEmbedTokensCallback = async () => {
-  . . .
-}
-
 LookerEmbedSDK.initCookieless(
   'looker.example.com',
-  acquireEmbedSessionCallback,
-  generateEmbedTokensCallback
+  '/acquire-embed-session',
+  '/generate-embed-tokens'
 )
 ```
-
-### Loading
 
 ## Demo
 
@@ -587,8 +542,6 @@ Alternatively run the TypeScript demo server which also supports cookieless embe
 - `npm install`
 - `npm run server`
 - The server will listen on port 8080.
-
-## Troubleshooting
 
 ### Logging
 
