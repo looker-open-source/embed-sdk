@@ -175,10 +175,10 @@ export async function generateEmbedTokens(
     }
   } catch (error: any) {
     if (error.message?.includes('Invalid input tokens provided')) {
-      // Currently the Looker UI does not know how to handle a bad
-      // token. This should not happen but if it does expire the
-      // session. If the token is bad there is not much that can be
-      // done anyway.
+      // Currently the Looker UI does not know how to handle bad
+      // tokens. This should not happen but if it does expire the
+      // session. If the token is bad there is not much that that
+      // the Looker UI can do.
       return {
         session_reference_token_ttl: 0,
       }

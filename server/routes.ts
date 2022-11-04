@@ -144,6 +144,8 @@ export const addRoutes = (
           req.headers['user-agent']!,
           embedSession
         )
+        // It is important to keep track of recent api and
+        // navigation tokens.
         generateCookie(res, { ...embedSession, ...tokens })
         res.json(tokens)
       } catch (err: any) {
