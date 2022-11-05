@@ -76,7 +76,12 @@ const acquireEmbedSessionCallback =
  */
 const generateEmbedTokensCallback =
   async (): Promise<LookerEmbedCookielessSessionData> => {
-    const resp = await fetch('/generate-embed-tokens')
+    const { api_token, navigation_token } = getApplicationTokens() || {}
+    const resp = await fetch('/generate-embed-tokens', {
+      body: JSON.stringify({ api_token, navigation_token }),
+      headers: { 'content-type': 'application/json' },
+      method: 'PUT',
+    })
     if (!resp.ok) {
       // A response status of 400 is currently unrecoverable.
       // Terminate the session.

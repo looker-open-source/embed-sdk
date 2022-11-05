@@ -271,8 +271,18 @@ export class EmbedClient<T> {
       return await generateTokens()
     }
     try {
-      const { url, init } = this.getResource(generateTokens!)
-      const resp = await fetch(url, init!)
+      const { url, init: defaultInit } = this.getResource(generateTokens!)
+      const init = defaultInit || {
+        body: JSON.stringify({
+          api_token: this._cookielessApiToken,
+          navigation_token: this._cookielessNavigationToken,
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'PUT',
+      }
+      const resp = await fetch(url, init)
       if (!resp.ok) {
         if (resp.status === 400) {
           return { session_reference_token_ttl: 0 }

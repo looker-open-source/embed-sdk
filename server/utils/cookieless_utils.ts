@@ -24,7 +24,6 @@
 
  */
 
-import type { IEmbedCookielessSessionAcquireResponse } from '@looker/sdk'
 import { Looker40SDK } from '@looker/sdk'
 import { NodeSession } from '@looker/sdk-node'
 import type { IApiSection } from '@looker/sdk-rtl'
@@ -91,12 +90,12 @@ const acquireLookerSession = async () => {
 const acquireEmbedSessionInternal = async (
   userAgent: string,
   user: LookerEmbedUser,
-  embedSession?: IEmbedCookielessSessionAcquireResponse
+  session_reference_token?: string
 ) => {
   try {
     const request = {
       ...user,
-      session_reference_token: embedSession?.session_reference_token,
+      session_reference_token: session_reference_token,
     }
     const sdk = new Looker40SDK(lookerSession)
     const response = await sdk.ok(
@@ -124,10 +123,10 @@ const acquireEmbedSessionInternal = async (
 export async function acquireEmbedSession(
   userAgent: string,
   user: LookerEmbedUser,
-  embedSession?: IEmbedCookielessSessionAcquireResponse
+  session_reference_token: string
 ) {
   await acquireLookerSession()
-  return acquireEmbedSessionInternal(userAgent, user, embedSession)
+  return acquireEmbedSessionInternal(userAgent, user, session_reference_token)
 }
 
 /**
@@ -138,19 +137,19 @@ export async function acquireEmbedSession(
  */
 export async function generateEmbedTokens(
   userAgent: string,
-  embedSession?: IEmbedCookielessSessionAcquireResponse
+  session_reference_token: string,
+  api_token: string,
+  navigation_token: string
 ) {
-  if (!embedSession) {
+  if (!session_reference_token) {
     console.error('embed session generate tokens failed')
-    // In this scenario return expired session
+    // missing session reference  treat as expired session
     return {
       session_reference_token_ttl: 0,
     }
   }
   await acquireLookerSession()
   try {
-    const { api_token, navigation_token, session_reference_token } =
-      embedSession
     const sdk = new Looker40SDK(lookerSession)
     const response = await sdk.ok(
       sdk.generate_tokens_for_cookieless_session(
