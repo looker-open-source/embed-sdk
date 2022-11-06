@@ -39,6 +39,19 @@ export interface LookerAuthConfig {
 }
 
 /**
+ * Cookieless request init
+ */
+export interface CookielessRequestInit extends RequestInit {
+  url: string
+}
+
+/**
+ * Cookieless request callback function
+ */
+
+export type CookielessCallback = () => Promise<LookerEmbedCookielessSessionData>
+
+/**
  * Cookieless session data
  */
 export interface LookerEmbedCookielessSessionData {

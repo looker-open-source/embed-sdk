@@ -24,10 +24,9 @@
 
  */
 
-import type { Express, Request, Response } from 'express'
-import cookieParser from 'cookie-parser'
-import cookieEncrypter from 'cookie-encrypter'
-import type { IEmbedCookielessSessionAcquireResponse } from '@looker/sdk'
+import type { Express, NextFunction, Request, Response } from 'express'
+import cookieSession from 'cookie-session'
+import bodyParser from 'body-parser'
 import { createSignedUrl } from './utils/auth_utils'
 import {
   acquireEmbedSession,
@@ -35,52 +34,6 @@ import {
   setConfig,
 } from './utils/cookieless_utils'
 import type { ApplicationConfig, LookerEmbedUser } from './types'
-
-/**
- * Extract the embed session data from a secure encrypted cookie.
- */
-const getEmbedSession = (req: Request) => {
-  let embedSession: IEmbedCookielessSessionAcquireResponse | undefined
-  if (req.signedCookies.embed_session) {
-    try {
-      embedSession = JSON.parse(req.signedCookies.embed_session)
-    } catch (error) {
-      console.error('failed to parse embed_session cookie', error)
-      // noop
-    }
-  }
-  return embedSession
-}
-
-/**
- * Generates the embed session cookie. Note that max age reflects the
- * embed sessions time to live.
- */
-const generateCookie = (
-  res: Response,
-  embedSession: IEmbedCookielessSessionAcquireResponse
-) => {
-  const { session_reference_token_ttl } = embedSession
-  if (session_reference_token_ttl && session_reference_token_ttl > 0) {
-    res.cookie('embed_session', JSON.stringify(embedSession), {
-      expires: new Date(Date.now() + session_reference_token_ttl * 1000),
-      httpOnly: true,
-      maxAge: session_reference_token_ttl * 1000,
-      // secure false is development only - for production this should be true
-      secure: false,
-      signed: true,
-    })
-  } else if (session_reference_token_ttl === 0) {
-    res.cookie('embed_session', '', {
-      expires: new Date(),
-      httpOnly: true,
-      maxAge: 0,
-      // secure false is development only - for production this should be true
-      secure: false,
-      signed: true,
-    })
-  }
-}
 
 /**
  * Add embed routes to an express application
@@ -92,8 +45,23 @@ export const addRoutes = (
 ) => {
   setConfig(config)
 
-  app.use(cookieParser(config.cookie_secret))
-  app.use(cookieEncrypter(config.cookie_secret))
+  app.use(bodyParser.json())
+
+  app.use(
+    cookieSession({
+      maxAge: user.session_length * 1000,
+      name: 'embed_session',
+      secret: config.cookie_secret,
+    })
+  )
+
+  app.use(function (req: Request, _res: Response, next: NextFunction) {
+    if (req.session!.external_user_id !== user.external_user_id) {
+      req.session!.external_user_id = user.external_user_id
+      req.session!.session_reference_token = undefined
+    }
+    next()
+  })
 
   app.get('/auth', function (req: Request, res: Response) {
     // Authenticate the request is from a valid user here
@@ -101,25 +69,31 @@ export const addRoutes = (
     const url = createSignedUrl(src, user, config.host, config.secret)
     res.json({ url })
   })
+
   app.get(
     '/acquire-embed-session',
     async function (req: Request, res: Response) {
       try {
+        const current_session_reference_token =
+          req.session && req.session.session_reference_token
+
         const response = await acquireEmbedSession(
           req.headers['user-agent']!,
           user,
-          getEmbedSession(req)
+          current_session_reference_token
         )
         const {
           authentication_token,
           authentication_token_ttl,
           navigation_token,
           navigation_token_ttl,
+          session_reference_token,
           session_reference_token_ttl,
           api_token,
           api_token_ttl,
         } = response
-        generateCookie(res, response)
+        req.session!.session_reference_token = session_reference_token
+
         res.json({
           api_token,
           api_token_ttl,
@@ -135,14 +109,17 @@ export const addRoutes = (
     }
   )
 
-  app.get(
+  app.put(
     '/generate-embed-tokens',
     async function (req: Request, res: Response) {
       try {
-        const embedSession = getEmbedSession(req)
+        const session_reference_token = req.session!.session_reference_token
+        const { api_token, navigation_token } = req.body as any
         const tokens = await generateEmbedTokens(
           req.headers['user-agent']!,
-          embedSession
+          session_reference_token,
+          api_token,
+          navigation_token
         )
         res.json(tokens)
       } catch (err: any) {

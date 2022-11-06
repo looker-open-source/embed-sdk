@@ -28,6 +28,10 @@ import type { ChattyHost, ChattyHostBuilder } from '@looker/chatty'
 import { Chatty } from '@looker/chatty'
 import type { LookerEmbedBase } from './embed_base'
 import type { EmbedBuilder } from './embed_builder'
+import type {
+  CookielessRequestInit,
+  LookerEmbedCookielessSessionData,
+} from './types'
 
 const IS_URL = /^https?:\/\//
 
@@ -90,7 +94,7 @@ export class EmbedClient<T> {
           if (
             this._client &&
             this._cookielessApiToken &&
-            this._builder.generateTokensCallback
+            this._builder.generateTokens
           ) {
             if (this._cookielessInitialized) {
               const {
@@ -99,7 +103,7 @@ export class EmbedClient<T> {
                 navigation_token,
                 navigation_token_ttl,
                 session_reference_token_ttl,
-              } = await this._builder.generateTokensCallback()
+              } = await this.generateTokens()
               this._cookielessApiToken = api_token
               this._cookielessApiTokenTtl = api_token_ttl
               this._cookielessNavigationToken = navigation_token
@@ -208,12 +212,12 @@ export class EmbedClient<T> {
   }
 
   private async acquireCookielessEmbedSessionInternal(): Promise<string> {
-    const { acquireSessionCallback, generateTokensCallback } = this._builder
-    if (!acquireSessionCallback) {
-      throw new Error('invalid state: acquireSessionCallback not defined')
+    const { acquireSession, generateTokens } = this._builder
+    if (!acquireSession) {
+      throw new Error('invalid state: acquireSession not defined')
     }
-    if (!generateTokensCallback) {
-      throw new Error('invalid state: generateTokensCallback not defined')
+    if (!generateTokens) {
+      throw new Error('invalid state: generateTokens not defined')
     }
     const {
       authentication_token,
@@ -222,7 +226,7 @@ export class EmbedClient<T> {
       navigation_token,
       navigation_token_ttl,
       session_reference_token_ttl,
-    } = await acquireSessionCallback()
+    } = await this.acquireSession()
     if (!authentication_token || !navigation_token || !api_token) {
       throw new Error('failed to prepare cookieless embed session')
     }
@@ -240,6 +244,70 @@ export class EmbedClient<T> {
       encodeURIComponent(src) +
       `?embed_authentication_token=${authentication_token}`
     return `${apiHost}${embedPath}`
+  }
+
+  private async acquireSession(): Promise<LookerEmbedCookielessSessionData> {
+    const { acquireSession } = this._builder
+    if (typeof acquireSession === 'function') {
+      return await acquireSession()
+    }
+    try {
+      const { url, init } = this.getResource(acquireSession!)
+      const resp = await fetch(url, init)
+      if (!resp.ok) {
+        console.error('acquire embed session failed', { resp })
+        throw new Error(`acquire embed session failed`)
+      }
+      return (await resp.json()) as LookerEmbedCookielessSessionData
+    } catch (error: any) {
+      console.error(error)
+      throw new Error(`acquire embed session failed`)
+    }
+  }
+
+  private async generateTokens(): Promise<LookerEmbedCookielessSessionData> {
+    const { generateTokens } = this._builder
+    if (typeof generateTokens === 'function') {
+      return await generateTokens()
+    }
+    try {
+      const { url, init: defaultInit } = this.getResource(generateTokens!)
+      const init = defaultInit || {
+        body: JSON.stringify({
+          api_token: this._cookielessApiToken,
+          navigation_token: this._cookielessNavigationToken,
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'PUT',
+      }
+      const resp = await fetch(url, init)
+      if (!resp.ok) {
+        if (resp.status === 400) {
+          return { session_reference_token_ttl: 0 }
+        }
+        console.error('generate tokens failed', { resp })
+        throw new Error(`generate tokens failed`)
+      }
+      return (await resp.json()) as LookerEmbedCookielessSessionData
+    } catch (error: any) {
+      console.error(error)
+      throw new Error(`generate tokens failed`)
+    }
+  }
+
+  private getResource(resource: string | CookielessRequestInit) {
+    let url
+    let init
+    if (typeof resource === 'object') {
+      const { url: tempUrl, ...rest } = resource
+      init = rest
+      url = tempUrl
+    } else {
+      url = resource
+    }
+    return { init, url }
   }
 
   /**

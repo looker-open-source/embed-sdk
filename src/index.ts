@@ -31,7 +31,8 @@ import { LookerEmbedExtension } from './extension_client'
 import { LookerEmbedLook } from './look_client'
 import type {
   LookerAuthConfig,
-  LookerEmbedCookielessSessionData,
+  CookielessCallback,
+  CookielessRequestInit,
 } from './types'
 
 export type { LookerEmbedDashboard } from './dashboard_client'
@@ -55,33 +56,31 @@ export class LookerEmbedSDK {
   static init(apiHost: string, auth?: string | LookerAuthConfig) {
     this.apiHost = apiHost
     this.auth = typeof auth === 'string' ? { url: auth } : auth
-    this.acquireSessionCallback = undefined
-    this.generateTokensCallback = undefined
+    this.acquireSession = undefined
+    this.generateTokens = undefined
   }
 
   /**
    * Initialize the Embed SDK to use a cookieless session.
    *
-   * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
-   *                This is required for verification of messages sent from the embedded content.
-   * @param acquireSessionCallback A callback that will acquire a cookieless session. The `acquire_embed_cookieless_session`
-   * api end point should ultimately be called. The recommended approach is via a proxy endpoint provided by the hosting
-   * application. Two tokens are returned. The navigation token is automatically appended to Looker URLs that result in
-   * navigation in the embedded IFRAME. The api token is sent to the Looker Application running in the embedded IFRAME
-   * once the underlying chatty connection has been established.
-   * @param generateTokensCallback A callback that will generate new navigation and api tokens. The `generate_tokens_for_cookieless_session`
-   * api end point should ultimately be called. The recommended approach is via a proxy endpoint provided by the hosting
-   * application. The Embed SDK will call this prior to the api and navigation tokens expiring and will send the new api
-   * token to the embedded IFRAME.
+   * @param apiHost The address or base URL of the host (example.looker.com:9999, https://example.looker.com:9999)
+   * @param acquireSession is either a string containing a server endpoint that will acquire the embed session OR
+   * a RequestInfo object for a fetch call to the server endpoint that will acquire the embed session OR
+   * a callback that will invoke the server endpoint that will acquire the embed session.
+   * The server endpoint must ultimately call the Looker endpoint `acquire_embed_cookieless_session`.
+   * @param generateTokens is either a string containing a server endpoint that will generate new tokens OR
+   * a RequestInfo object for a fetch call to the server endpoint that will generate new tokens OR
+   * a callback that will invoke the server endpoint that will generate new tokens.
+   * The server endpoint should ultimately call the Looker endpoint `generate_tokens_for_cookieless_session`.
    */
   static initCookieless(
     apiHost: string,
-    acquireSessionCallback: () => Promise<LookerEmbedCookielessSessionData>,
-    generateTokensCallback: () => Promise<LookerEmbedCookielessSessionData>
+    acquireSession: string | CookielessRequestInit | CookielessCallback,
+    generateTokens: string | CookielessRequestInit | CookielessCallback
   ) {
     this.apiHost = apiHost
-    this.acquireSessionCallback = acquireSessionCallback
-    this.generateTokensCallback = generateTokensCallback
+    this.acquireSession = acquireSession
+    this.generateTokens = generateTokens
     this.auth = undefined
   }
 
@@ -222,11 +221,11 @@ export class LookerEmbedSDK {
    * @hidden
    */
 
-  static acquireSessionCallback?: () => Promise<LookerEmbedCookielessSessionData>
+  static acquireSession?: string | CookielessRequestInit | CookielessCallback
 
   /**
    * @hidden
    */
 
-  static generateTokensCallback?: () => Promise<LookerEmbedCookielessSessionData>
+  static generateTokens?: string | CookielessRequestInit | CookielessCallback
 }

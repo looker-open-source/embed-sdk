@@ -24,7 +24,6 @@
 
  */
 
-import type { IEmbedCookielessSessionAcquireResponse } from '@looker/sdk'
 import { Looker40SDK } from '@looker/sdk'
 import { NodeSession } from '@looker/sdk-node'
 import type { IApiSection } from '@looker/sdk-rtl'
@@ -91,12 +90,12 @@ const acquireLookerSession = async () => {
 const acquireEmbedSessionInternal = async (
   userAgent: string,
   user: LookerEmbedUser,
-  embedSession?: IEmbedCookielessSessionAcquireResponse
+  session_reference_token?: string
 ) => {
   try {
     const request = {
       ...user,
-      session_reference_token: embedSession?.session_reference_token,
+      session_reference_token: session_reference_token,
     }
     const sdk = new Looker40SDK(lookerSession)
     const response = await sdk.ok(
@@ -124,10 +123,10 @@ const acquireEmbedSessionInternal = async (
 export async function acquireEmbedSession(
   userAgent: string,
   user: LookerEmbedUser,
-  embedSession?: IEmbedCookielessSessionAcquireResponse
+  session_reference_token: string
 ) {
   await acquireLookerSession()
-  return acquireEmbedSessionInternal(userAgent, user, embedSession)
+  return acquireEmbedSessionInternal(userAgent, user, session_reference_token)
 }
 
 /**
@@ -138,21 +137,19 @@ export async function acquireEmbedSession(
  */
 export async function generateEmbedTokens(
   userAgent: string,
-  embedSession?: IEmbedCookielessSessionAcquireResponse
+  session_reference_token: string,
+  api_token: string,
+  navigation_token: string
 ) {
-  if (!embedSession) {
-    console.error(
-      'embed session generate tokens failed, session not yet acquired'
-    )
-    // In this scenario return expired session
+  if (!session_reference_token) {
+    console.error('embed session generate tokens failed')
+    // missing session reference  treat as expired session
     return {
       session_reference_token_ttl: 0,
     }
   }
   await acquireLookerSession()
   try {
-    const { api_token, navigation_token, session_reference_token } =
-      embedSession
     const sdk = new Looker40SDK(lookerSession)
     const response = await sdk.ok(
       sdk.generate_tokens_for_cookieless_session(
@@ -175,7 +172,16 @@ export async function generateEmbedTokens(
       navigation_token_ttl: response.navigation_token_ttl,
       session_reference_token_ttl: response.session_reference_token_ttl,
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message?.includes('Invalid input tokens provided')) {
+      // Currently the Looker UI does not know how to handle bad
+      // tokens. This should not happen but if it does expire the
+      // session. If the token is bad there is not much that that
+      // the Looker UI can do.
+      return {
+        session_reference_token_ttl: 0,
+      }
+    }
     console.error('embed session generate tokens failed', { error })
     throw error
   }
