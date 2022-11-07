@@ -72,6 +72,8 @@ export class LookerEmbedSDK {
    * a RequestInfo object for a fetch call to the server endpoint that will generate new tokens OR
    * a callback that will invoke the server endpoint that will generate new tokens.
    * The server endpoint should ultimately call the Looker endpoint `generate_tokens_for_cookieless_session`.
+   *
+   * Looker 22.20
    */
   static initCookieless(
     apiHost: string,

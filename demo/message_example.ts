@@ -280,7 +280,7 @@ const initializeDashboardControls = (runtimeConfig: RuntimeConfig) => {
     )
   }
 
-  // Add a listener to the dashboard's "Send session token" button and send a 'session:token' message when clicked
+  // Add a listener to the dashboard's "Send session token" button and send a 'session:tokens' message when clicked
   const stopButton = document.querySelector('#stop-dashboard')
   if (stopButton) {
     stopButton.addEventListener('click', () =>
