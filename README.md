@@ -562,7 +562,7 @@ localStorage.debug = ''
 
 The embed demo environment can be configured using a `.env` file. The following is a template that can be used to create the file (in the root of this repo). The `.env` file should never be stored in your git repo and is included in the repo's `.ignore` file.
 
-```env
+```shell
 LOOKER_EMBED_HOST=mycompany.looker.com
 LOOKER_EMBED_API_URL=https://mycompany.looker.com:19999
 LOOKER_DEMO_HOST=localhost

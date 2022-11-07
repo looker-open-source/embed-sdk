@@ -40,7 +40,7 @@ export interface LookerAuthConfig {
 
 /**
  * Cookieless request init
- * Looker 22.20
+ * Looker 22.20+
  */
 export interface CookielessRequestInit extends RequestInit {
   url: string
@@ -48,14 +48,14 @@ export interface CookielessRequestInit extends RequestInit {
 
 /**
  * Cookieless request callback function
- * Looker 22.20
+ * Looker 22.20+
  */
 
 export type CookielessCallback = () => Promise<LookerEmbedCookielessSessionData>
 
 /**
  * Cookieless session data
- * Looker 23.0
+ * Looker 23.0+
  */
 export interface LookerEmbedCookielessSessionData {
   /**
@@ -185,14 +185,14 @@ export interface EventDetail {
 
 /**
  * Cookieless embed session token request
- *  * Looker 22.20
+ * Looker 22.20+
  */
 
 export type SessionTokenRequest = EventDetail
 
 /**
  * Cookieless session status event
- *  * Looker 23.0
+ * Looker 23.0+
  */
 
 export interface SessionStatus extends EventDetail {
@@ -385,20 +385,20 @@ export interface LookEvent extends LookerEmbedEvent {
 
 /**
  * Look save event details
- * Looker version 21.6
+ * Looker version 21.6+
  */
 
 export interface LookSaveEventDetail extends LookEventDetail {
   /**
    * Folder Look is associated with
-   * Looker version 21.8
+   * Looker version 21.8+
    */
   spaceId: number
 }
 
 /**
  * Look save event
- * Looker version 21.6
+ * Looker version 21.6+
  */
 export interface LookSaveEvent extends LookerEmbedEvent {
   look: LookSaveEventDetail
@@ -475,7 +475,7 @@ export interface LookerEmbedEventMap {
   /**
    * Dashboard editing started event.
    * Not available to legacy dashboards.
-   * Looker 22.20
+   * Looker 22.20+
    */
   'dashboard:edit:start': (
     this: LookerEmbedDashboard,
@@ -484,7 +484,7 @@ export interface LookerEmbedEventMap {
   /**
    * Dashboard editing cancelled event.
    * Not available to legacy dashboards.
-   * Looker 22.20
+   * Looker 22.20+
    */
   'dashboard:edit:cancel': (
     this: LookerEmbedDashboard,
@@ -494,7 +494,7 @@ export interface LookerEmbedEventMap {
    * Dashboard saved event. Fired when a dashboard
    * being edited is saved. Use in conjunction with
    * `dashboard:edit:start` and `dashboard:edit:save`.
-   * Looker 21.6
+   * Looker 21.6+
    */
   'dashboard:save:complete': (
     this: LookerEmbedDashboard,
@@ -502,7 +502,7 @@ export interface LookerEmbedEventMap {
   ) => void
   /**
    * Dashboard deleted event
-   * Looker 21.6
+   * Looker 21.6+
    */
   'dashboard:delete:complete': (
     this: LookerEmbedDashboard,
@@ -547,12 +547,12 @@ export interface LookerEmbedEventMap {
   'look:run:complete': (this: LookerEmbedLook, event: LookEvent) => void
   /**
    * Look saved event
-   * Looker 21.6
+   * Looker 21.6+
    */
   'look:save:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
   /**
    * Look deleted event
-   * Looker 21.6
+   * Looker 21.6+
    */
   'look:delete:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
   'look:ready': (this: LookerEmbedLook, event: LookEvent) => void
@@ -565,7 +565,7 @@ export interface LookerEmbedEventMap {
   ) => void
   /**
    * Cookieless embed session tokens request event
-   * Looker 22.20
+   * Looker 22.20+
    */
   'session:token:request': (
     this: LookerEmbedBase,
@@ -573,7 +573,7 @@ export interface LookerEmbedEventMap {
   ) => void
   /**
    * Cookieless embed session status event
-   * Looker 23.0
+   * Looker 23.0+
    */
   'session:status': (this: LookerEmbedBase, event: SessionStatus) => void
 
