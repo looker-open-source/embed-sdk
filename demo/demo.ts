@@ -351,7 +351,7 @@ const processSessionStatus = (event: SessionStatus, selector: string) => {
   if (expired) {
     updateStatus(selector, 'Session has expired')
   } else if (interrupted) {
-    updateStatus(selector, 'Session has been interrupeted')
+    updateStatus(selector, 'Session has been interrupted')
   }
 }
 
