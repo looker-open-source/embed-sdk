@@ -40,6 +40,7 @@ export interface LookerAuthConfig {
 
 /**
  * Cookieless request init
+ * Looker 22.20
  */
 export interface CookielessRequestInit extends RequestInit {
   url: string
@@ -47,12 +48,14 @@ export interface CookielessRequestInit extends RequestInit {
 
 /**
  * Cookieless request callback function
+ * Looker 22.20
  */
 
 export type CookielessCallback = () => Promise<LookerEmbedCookielessSessionData>
 
 /**
  * Cookieless session data
+ * Looker 23.0
  */
 export interface LookerEmbedCookielessSessionData {
   /**
@@ -178,6 +181,42 @@ export interface LookerEmbedEvent {
 
 export interface EventDetail {
   [key: string]: any
+}
+
+/**
+ * Cookieless embed session token request
+ *  * Looker 22.20
+ */
+
+export type SessionTokenRequest = EventDetail
+
+/**
+ * Cookieless session status event
+ *  * Looker 23.0
+ */
+
+export interface SessionStatus extends EventDetail {
+  /**
+   * Session time to live in seconds
+   */
+  session_ttl: number
+  /**
+   * Session expired when true
+   */
+  expired: boolean
+  /**
+   * Session interrupted when true. This means new
+   * tokens could not be retrieved in a timely manner.
+   * Can happen if server is temporarily unavailable
+   * for some reason
+   */
+  interrupted: boolean
+  /**
+   * Interrupted session can be recovered. When false
+   * session cannot continue. This is most likely
+   * a problem with the embedding application.
+   */
+  recoverable?: boolean
 }
 
 /**
@@ -524,6 +563,19 @@ export interface LookerEmbedEventMap {
     this: LookerEmbedBase,
     event: PagePropertiesChangedEvent
   ) => void
+  /**
+   * Cookieless embed session tokens request event
+   * Looker 22.20
+   */
+  'session:token:request': (
+    this: LookerEmbedBase,
+    event: SessionTokenRequest
+  ) => void
+  /**
+   * Cookieless embed session status event
+   * Looker 23.0
+   */
+  'session:status': (this: LookerEmbedBase, event: SessionStatus) => void
 
   [key: string]: any
 }

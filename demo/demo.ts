@@ -31,6 +31,7 @@ import type {
   LookerEmbedDashboard,
   LookerEmbedExplore,
   PagePropertiesChangedEvent,
+  SessionStatus,
 } from '../src/index'
 import { LookerEmbedSDK } from '../src/index'
 import type { RuntimeConfig } from './demo_config'
@@ -342,6 +343,19 @@ const initializeConfigurationControls = () => {
 }
 
 /**
+ * Monitor cookieless embed session status. A simple implementation
+ * that displays a message.
+ */
+const processSessionStatus = (event: SessionStatus, selector: string) => {
+  const { expired, interrupted } = event
+  if (expired) {
+    updateStatus(selector, 'Session has expired')
+  } else if (interrupted) {
+    updateStatus(selector, 'Session has been interrupted')
+  }
+}
+
+/**
  * Render a dashboard using the Embed SDK. When active this sets up listeners
  * for events that can be sent by the Looker embedded UI.
  */
@@ -375,6 +389,9 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
       )
       .on('page:properties:changed', (event: PagePropertiesChangedEvent) => {
         pagePropertiesChangedHandler(event, 'dashboard')
+      })
+      .on('session:status', (event: SessionStatus) => {
+        processSessionStatus(event, '#dashboard-state')
       })
       // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', preventNavigation)
@@ -421,6 +438,9 @@ const renderLook = (runtimeConfig: RuntimeConfig) => {
       // Listen to messages that change Look
       .on('look:save:complete', () => updateStatus('#look-state', 'Saved'))
       .on('look:delete:complete', () => updateStatus('#look-state', 'Deleted'))
+      .on('session:status', (event: SessionStatus) => {
+        processSessionStatus(event, '#look-state')
+      })
       // Give the embedded content a class for styling purposes
       .withClassName('looker-embed')
       // Set the initial filters
@@ -457,6 +477,9 @@ const renderExplore = (runtimeConfig: RuntimeConfig) => {
       .on('explore:ready', () => updateStatus('#explore-state', 'Loaded'))
       .on('explore:run:start', () => updateStatus('#explore-state', 'Running'))
       .on('explore:run:complete', () => updateStatus('#explore-state', 'Done'))
+      .on('session:status', (event: SessionStatus) => {
+        processSessionStatus(event, '#explore-state')
+      })
       // Give the embedded content a class for styling purposes
       .withClassName('looker-embed')
       // Set the initial filters
@@ -491,6 +514,9 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
     LookerEmbedSDK.createExtensionWithId(runtimeConfig.extensionId)
       // Append to the #extension element
       .appendTo('#extension')
+      .on('session:status', (event: SessionStatus) => {
+        processSessionStatus(event, '#extension-state')
+      })
       // Give the embedded content a class for styling purposes
       .withClassName('looker-embed')
       // Finalize the build
