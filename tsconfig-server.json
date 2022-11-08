@@ -3,15 +3,19 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitReturns": true,
-    "outDir": "server_utils",
+    "outDir": "server",
     "strict": true,
     "target": "ES5",
     "lib": ["es6", "es2017.object"],
+    "esModuleInterop": true,
+    "sourceMap": true
   },
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "files": [
-    "server_utils/auth_utils.ts"
+    "server/utils/auth_utils.ts",
+    "server/utils/cookieless_utils.ts",
+    "server/types.ts",
+    "server/routes.ts",
+    "server/index.d.ts"
   ]
 }

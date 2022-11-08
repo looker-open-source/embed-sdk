@@ -30,6 +30,8 @@ import type {
   LookerAuthConfig,
   LookerEmbedEventMap,
   LookerEmbedFilterParams,
+  CookielessCallback,
+  CookielessRequestInit,
 } from './types'
 
 type EmbedClientConstructor<T> = { new (host: ChattyHostConnection): T }
@@ -37,6 +39,8 @@ type EmbedClientConstructor<T> = { new (host: ChattyHostConnection): T }
 interface LookerEmbedHostSettings {
   apiHost: string
   auth?: LookerAuthConfig
+  acquireSession?: CookielessCallback | string | CookielessRequestInit
+  generateTokens?: CookielessCallback | string | CookielessRequestInit
 }
 
 export interface UrlParams {
@@ -254,6 +258,9 @@ export class EmbedBuilder<T> {
    */
 
   withUrl(url: string) {
+    if (this.isCookielessEmbed) {
+      throw new Error('withUrl not supported by cookieless embed')
+    }
     this._url = url
     return this
   }
@@ -316,6 +323,28 @@ export class EmbedBuilder<T> {
 
   get apiHost() {
     return this._hostSettings.apiHost
+  }
+
+  /**
+   * Is cookieless embedding being used
+   */
+
+  get isCookielessEmbed() {
+    return !!this._hostSettings.acquireSession
+  }
+
+  /**
+   * Cookieless embed acquire session
+   */
+  get acquireSession() {
+    return this._hostSettings.acquireSession
+  }
+
+  /**
+   * Cookieless embed generate tokens
+   */
+  get generateTokens() {
+    return this._hostSettings.generateTokens
   }
 
   /**

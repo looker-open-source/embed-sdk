@@ -28,6 +28,7 @@ import { LookerEmbedDashboard } from '../src/dashboard_client'
 import { EmbedClient } from '../src/embed'
 import type { EmbedBuilder } from '../src/embed_builder'
 import { LookerEmbedExplore } from '../src/explore_client'
+import type { LookerEmbedCookielessSessionData } from '../src/index'
 import { LookerEmbedSDK } from '../src/index'
 import { LookerEmbedLook } from '../src/look_client'
 import { LookerEmbedExtension } from '../src/extension_client'
@@ -356,6 +357,8 @@ describe('LookerEmbedBuilder', () => {
     beforeEach(() => {
       embedSdk.apiHost = undefined
       embedSdk.auth = undefined
+      embedSdk.acquireSession = undefined
+      embedSdk.generateTokens = undefined
     })
 
     it('builder allows api host and auth url to be set', () => {
@@ -452,6 +455,35 @@ describe('LookerEmbedBuilder', () => {
       } catch (err) {
         expect(err.message).toEqual('not allowed to change auth')
       }
+    })
+  })
+
+  describe('cookieless embed setup', () => {
+    const embedSdk = LookerEmbedSDK
+
+    beforeEach(() => {
+      embedSdk.apiHost = undefined
+      embedSdk.auth = undefined
+      embedSdk.acquireSession = undefined
+      embedSdk.generateTokens = undefined
+    })
+
+    it('initializes cookieless embed', () => {
+      const host = 'host.looker.com:9999'
+      const acquireSessionCallback = async () => {
+        return {} as LookerEmbedCookielessSessionData
+      }
+      const generateTokensCallback = async () => {
+        return {} as LookerEmbedCookielessSessionData
+      }
+      LookerEmbedSDK.initCookieless(
+        host,
+        acquireSessionCallback,
+        generateTokensCallback
+      )
+      expect(embedSdk.acquireSession).toEqual(acquireSessionCallback)
+      expect(embedSdk.generateTokens).toEqual(generateTokensCallback)
+      expect(embedSdk.apiHost).toEqual(host)
     })
   })
 })

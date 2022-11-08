@@ -39,6 +39,56 @@ export interface LookerAuthConfig {
 }
 
 /**
+ * Cookieless request init
+ * Looker 22.20+
+ */
+export interface CookielessRequestInit extends RequestInit {
+  url: string
+}
+
+/**
+ * Cookieless request callback function
+ * Looker 22.20+
+ */
+
+export type CookielessCallback = () => Promise<LookerEmbedCookielessSessionData>
+
+/**
+ * Cookieless session data
+ * Looker 23.0+
+ */
+export interface LookerEmbedCookielessSessionData {
+  /**
+   * One time use token used to establish the cookieless embed session.
+   */
+  authentication_token?: string | null
+  /**
+   * Authentication token time to live in seconds.
+   */
+  authentication_token_ttl?: number | null
+  /**
+   * Token used to load and navigate between pages in the embedded session. This token is appended to the embed iframe url.
+   */
+  navigation_token?: string | null
+  /**
+   * Navigation token time to live in seconds.
+   */
+  navigation_token_ttl?: number | null
+  /**
+   * Token to used to call Looker APIs. The host application MUST send the api token to the embedded Looker application. Do not expose the token in the dom.
+   */
+  api_token?: string | null
+  /**
+   * api_token time to live in seconds.
+   */
+  api_token_ttl?: number | null
+  /**
+   * Session time to live in seconds.
+   */
+  session_reference_token_ttl?: number | null
+}
+
+/**
  * Data structure for filters.
  */
 
@@ -131,6 +181,42 @@ export interface LookerEmbedEvent {
 
 export interface EventDetail {
   [key: string]: any
+}
+
+/**
+ * Cookieless embed session token request
+ * Looker 22.20+
+ */
+
+export type SessionTokenRequest = EventDetail
+
+/**
+ * Cookieless session status event
+ * Looker 23.0+
+ */
+
+export interface SessionStatus extends EventDetail {
+  /**
+   * Session time to live in seconds
+   */
+  session_ttl: number
+  /**
+   * Session expired when true
+   */
+  expired: boolean
+  /**
+   * Session interrupted when true. This means new
+   * tokens could not be retrieved in a timely manner.
+   * Can happen if server is temporarily unavailable
+   * for some reason
+   */
+  interrupted: boolean
+  /**
+   * Interrupted session can be recovered. When false
+   * session cannot continue. This is most likely
+   * a problem with the embedding application.
+   */
+  recoverable?: boolean
 }
 
 /**
@@ -299,20 +385,20 @@ export interface LookEvent extends LookerEmbedEvent {
 
 /**
  * Look save event details
- * Looker version 21.6
+ * Looker version 21.6+
  */
 
 export interface LookSaveEventDetail extends LookEventDetail {
   /**
    * Folder Look is associated with
-   * Looker version 21.8
+   * Looker version 21.8+
    */
   spaceId: number
 }
 
 /**
  * Look save event
- * Looker version 21.6
+ * Looker version 21.6+
  */
 export interface LookSaveEvent extends LookerEmbedEvent {
   look: LookSaveEventDetail
@@ -389,7 +475,7 @@ export interface LookerEmbedEventMap {
   /**
    * Dashboard editing started event.
    * Not available to legacy dashboards.
-   * Looker 22.20
+   * Looker 22.20+
    */
   'dashboard:edit:start': (
     this: LookerEmbedDashboard,
@@ -398,7 +484,7 @@ export interface LookerEmbedEventMap {
   /**
    * Dashboard editing cancelled event.
    * Not available to legacy dashboards.
-   * Looker 22.20
+   * Looker 22.20+
    */
   'dashboard:edit:cancel': (
     this: LookerEmbedDashboard,
@@ -408,7 +494,7 @@ export interface LookerEmbedEventMap {
    * Dashboard saved event. Fired when a dashboard
    * being edited is saved. Use in conjunction with
    * `dashboard:edit:start` and `dashboard:edit:save`.
-   * Looker 21.6
+   * Looker 21.6+
    */
   'dashboard:save:complete': (
     this: LookerEmbedDashboard,
@@ -416,7 +502,7 @@ export interface LookerEmbedEventMap {
   ) => void
   /**
    * Dashboard deleted event
-   * Looker 21.6
+   * Looker 21.6+
    */
   'dashboard:delete:complete': (
     this: LookerEmbedDashboard,
@@ -461,12 +547,12 @@ export interface LookerEmbedEventMap {
   'look:run:complete': (this: LookerEmbedLook, event: LookEvent) => void
   /**
    * Look saved event
-   * Looker 21.6
+   * Looker 21.6+
    */
   'look:save:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
   /**
    * Look deleted event
-   * Looker 21.6
+   * Looker 21.6+
    */
   'look:delete:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
   'look:ready': (this: LookerEmbedLook, event: LookEvent) => void
@@ -477,6 +563,19 @@ export interface LookerEmbedEventMap {
     this: LookerEmbedBase,
     event: PagePropertiesChangedEvent
   ) => void
+  /**
+   * Cookieless embed session tokens request event
+   * Looker 22.20+
+   */
+  'session:token:request': (
+    this: LookerEmbedBase,
+    event: SessionTokenRequest
+  ) => void
+  /**
+   * Cookieless embed session status event
+   * Looker 23.0+
+   */
+  'session:status': (this: LookerEmbedBase, event: SessionStatus) => void
 
   [key: string]: any
 }
