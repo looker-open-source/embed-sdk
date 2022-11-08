@@ -51,7 +51,7 @@ let lookerSession: NodeSession
  * be shared amongst all embed users. If data is required for the embed
  * user, this session can be used to create a session for the embed user,
  * something like the following but not required for this demo.
- * ```
+ * ```js
  * const sdk = new Looker40SDK(session)
  * const embedUser = await sdk.ok(
  *   sdk.user_for_credential('embed', embedUserId),
