@@ -27,7 +27,7 @@
 export interface RuntimeConfig {
   [key: string]: any
   preventNavigation: boolean
-  dashboardId: number
+  dashboardId: number | string
   exploreId: string
   extensionId: string
   lookId: number
@@ -68,38 +68,54 @@ export interface RuntimeConfig {
   useDynamicHeights: boolean
 }
 
-export const lookerHost =
-  process.env.LOOKER_EMBED_HOST || 'mycompany.looker.com'
+const lookerHost = 'mycompany.looker.com'
 
-// A dashboard that the user can see. Set to 0 to disable dashboard demo.
-const dashboardId = parseInt(process.env.LOOKER_DASHBOARD_ID || '1', 10)
+// A dashboard that the user can see. Set to '-' or 0 to disable dashboard demo.
+// dashboardId can be a numeric id or a slug string.
+const dashboardId: number | string = 1
 
 // A Look that the user can see. Set to 0 to disable look demo.
-const lookId = parseInt(process.env.LOOKER_LOOK_ID || '1', 10)
+// lookId must be numeric. Slugs are NOT supported.
+const lookId = 1
 
-// An Explore that the user can see. Set to '' to disable explore demo.
-const exploreId = process.env.LOOKER_EXPLORE_ID || 'thelook::orders'
+// An Explore that the user can see. Set to '-' to disable explore demo.
+const exploreId = 'thelook::orders'
 
-// An Extension that the user can see. Set to '' to disable extension demo.
+// An Extension that the user can see. Set to '-' to disable extension demo.
 // Requires Looker 7.12 and extensions framework.
-const extensionId =
-  process.env.LOOKER_EXTENSION_ID || 'extension::my-great-extension'
+const extensionId = 'extension::my-great-extension'
 
 // Demo new cookieless embed (new cookieless embed is not backward compatible)
 const cookielessEmbedV2 = false
 
+const getId = (defaultId: string, id?: string) => {
+  const _id = id || defaultId
+  if (_id === '-' || _id === '0') {
+    return ''
+  }
+  return _id
+}
+
+const _dashboardId = getId(
+  dashboardId.toString(),
+  process.env.LOOKER_DASHBOARD_ID
+)
+const _exploreId = getId(exploreId, process.env.LOOKER_EXPLORE_ID)
+const _extensionId = getId(extensionId, process.env.LOOKER_EXTENSION_ID)
+const _lookId = parseInt(process.env.LOOKER_LOOK_ID || lookId.toString(), 10)
+
 // Current runtime config
 let runtimeConfig: RuntimeConfig = {
-  dashboardId,
-  exploreId,
-  extensionId,
-  lookId,
-  lookerHost,
+  dashboardId: _dashboardId,
+  exploreId: _exploreId,
+  extensionId: _extensionId,
+  lookId: _lookId,
+  lookerHost: process.env.LOOKER_EMBED_HOST || lookerHost,
   preventNavigation: true,
-  showDashboard: dashboardId > 0,
-  showExplore: !!exploreId,
-  showExtension: !!extensionId,
-  showLook: lookId > 0,
+  showDashboard: typeof _dashboardId === 'string' && _dashboardId.trim() !== '',
+  showExplore: typeof _exploreId === 'string' && _exploreId.trim() !== '',
+  showExtension: typeof _extensionId === 'string' && _extensionId.trim() !== '',
+  showLook: _lookId > 0,
   useCookieless: cookielessEmbedV2,
   useDynamicHeights: false,
 }
@@ -119,17 +135,21 @@ export const updateConfiguration = (config: RuntimeConfig) => {
   saveConfiguration()
 }
 
-// Merge static configuration with configuration from local storage
+// load configuration from local storage UNLESS ids chan
 export const loadConfiguration = () => {
   try {
     const configJson = localStorage.getItem('embed-configuration')
-    if (configJson) {
-      const config = JSON.parse(configJson)
-      if (config.lookerHost === runtimeConfig.lookerHost) {
-        updateConfiguration(config)
-      } else {
-        updateConfiguration(runtimeConfig)
-      }
+    const config = JSON.parse(configJson || '{}')
+    if (
+      config.lookerHost !== runtimeConfig.lookerHost ||
+      config.dashboardId !== runtimeConfig.dashboardId ||
+      config.lookId !== runtimeConfig.lookId ||
+      config.exploreId !== runtimeConfig.exploreId ||
+      config.extensionId !== runtimeConfig.extensionId
+    ) {
+      saveConfiguration()
+    } else {
+      runtimeConfig = { ...config }
     }
   } catch (error) {
     console.error('error loading embed-configuration', error)

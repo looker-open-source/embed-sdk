@@ -466,12 +466,22 @@ Note that `demo.py` and `demo_self_signed.py` have NOT been updated to support c
 // The address of your Looker instance. Required.
 // Include the port if it is necessary when accessing looker in a browser
 // Do NOT include the protocol
-export const lookerHost = 'self-signed.looker.com:9999'
+const lookerHost = 'mycompany.looker.com'
 
-// A dashboard that the user can see. Set to 0 to disable dashboard.
-export const dashboardId = 1
-// A Look that the user can see. Set to 0 to disable look.
-export const lookId = 1
+// A dashboard that the user can see. Set to '-' or '0' to disable dashboard demo.
+// dashboardId can be a numeric id or a slug string.
+const dashboardId = 1
+
+// A Look that the user can see. Set to 0 to disable look demo.
+// lookId must be numeric. Slugs are NOT supported.
+const lookId = 1
+
+// An Explore that the user can see. Set to '-' to disable explore demo.
+const exploreId = 'thelook::orders'
+
+// An Extension that the user can see. Set to '-' to disable extension demo.
+// Requires Looker 7.12 and extensions framework.
+const extensionId = 'extension::my-great-extension'
 ```
 
 - Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application (e.g your customer portal) to inform Looker about important user properties that control data access controls. Note that the `demo/demo_user.json` file is also used for cookieless embedding. The one difference is that cookieless_embed will ignore the value of `force_logout_login` and will ALWAYs treat the value as `true`.
