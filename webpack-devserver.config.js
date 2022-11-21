@@ -36,13 +36,13 @@ var webpackConfig = {
     ],
   },
   plugins: [
-    new webpack.EnvironmentPlugin([
-      'LOOKER_EMBED_HOST',
-      'LOOKER_DASHBOARD_ID',
-      'LOOKER_LOOK_ID',
-      'LOOKER_EXPLORE_ID',
-      'LOOKER_EXTENSION_ID',
-    ]),
+    new webpack.EnvironmentPlugin({
+      LOOKER_EMBED_HOST: null,
+      LOOKER_DASHBOARD_ID: null,
+      LOOKER_LOOK_ID: null,
+      LOOKER_EXPLORE_ID: null,
+      LOOKER_EXTENSION_ID: null,
+    }),
   ],
   devServer: {
     compress: true,
