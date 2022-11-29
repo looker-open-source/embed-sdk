@@ -131,7 +131,7 @@ export const resetConfiguration = () => {
 export const getConfiguration = () => ({ ...runtimeConfig })
 
 export const updateConfiguration = (config: RuntimeConfig) => {
-  runtimeConfig = { ...config, dashboardId, exploreId, extensionId, lookId }
+  runtimeConfig = { ...config }
   saveConfiguration()
 }
 
