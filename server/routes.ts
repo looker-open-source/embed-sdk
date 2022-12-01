@@ -66,6 +66,15 @@ export const addRoutes = (
   app.get('/auth', function (req: Request, res: Response) {
     // Authenticate the request is from a valid user here
     const src = req.query.src as string
+    if (!config.host || !config.secret) {
+      console.error(
+        'Config does not have the neccassary host or secret to generate an embedded url. Config:',
+        config
+      )
+      res.status(400).send({
+        message: 'This is an error!',
+      })
+    }
     const url = createSignedUrl(src, user, config.host, config.secret)
     res.json({ url })
   })
@@ -122,6 +131,26 @@ export const addRoutes = (
           navigation_token
         )
         res.json(tokens)
+      } catch (err: any) {
+        res.status(400).send({ message: err.message })
+      }
+    }
+  )
+
+  app.get(
+    '/set-config-embed-secret',
+    async function (req: Request, res: Response) {
+      try {
+        const session_reference_token = req.session!.session_reference_token
+        const { api_token, navigation_token } = req.body as any
+        const tokens = await generateEmbedTokens(
+          req.headers['user-agent']!,
+          session_reference_token,
+          api_token,
+          navigation_token
+        )
+
+        config.secret = tokens.api_token ? tokens.api_token : ''
       } catch (err: any) {
         res.status(400).send({ message: err.message })
       }
