@@ -32,6 +32,7 @@ import {
   acquireEmbedSession,
   generateEmbedTokens,
   setConfig,
+  isValidConfig,
 } from './utils/cookieless_utils'
 import type { ApplicationConfig, LookerEmbedUser } from './types'
 
@@ -66,17 +67,13 @@ export const addRoutes = (
   app.get('/auth', function (req: Request, res: Response) {
     // Authenticate the request is from a valid user here
     const src = req.query.src as string
-    if (!config.host || !config.secret) {
-      console.error(
-        'Config does not have the neccassary host or secret to generate an embedded url. Config:',
-        config
-      )
-      res.status(400).send({
-        message: 'This is an error!',
+    if (!isValidConfig()) {
+      return res.status(400).send({
+        message: 'Invalid Configuration',
       })
     }
     const url = createSignedUrl(src, user, config.host, config.secret)
-    res.json({ url })
+    return res.json({ url })
   })
 
   app.get(
@@ -140,19 +137,11 @@ export const addRoutes = (
   app.get(
     '/set-config-embed-secret',
     async function (req: Request, res: Response) {
-      try {
-        const session_reference_token = req.session!.session_reference_token
-        const { api_token, navigation_token } = req.body as any
-        const tokens = await generateEmbedTokens(
-          req.headers['user-agent']!,
-          session_reference_token,
-          api_token,
-          navigation_token
-        )
-
-        config.secret = tokens.api_token ? tokens.api_token : ''
-      } catch (err: any) {
-        res.status(400).send({ message: err.message })
+      if (req.query.secret !== undefined) {
+        config.secret = req.query.secret as string
+        res.status(200).send({ message: 'Embed Secret Set' })
+      } else {
+        res.status(400).send({ message: 'No Secret Provided' })
       }
     }
   )

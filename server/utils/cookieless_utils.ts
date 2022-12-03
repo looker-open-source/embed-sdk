@@ -186,3 +186,14 @@ export async function generateEmbedTokens(
     throw error
   }
 }
+
+export function isValidConfig() {
+  if (!config.host || !config.secret) {
+    console.error(
+      'Config does not have the neccassary host or secret to generate an embedded url. Config:',
+      config
+    )
+    return false
+  }
+  return true
+}
