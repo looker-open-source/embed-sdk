@@ -67,11 +67,9 @@ export const addRoutes = (
   app.get('/auth', function (req: Request, res: Response) {
     // Authenticate the request is from a valid user here
     const src = req.query.src as string
-    if (!isValidConfig()) {
-      return res.status(400).send({
-        message: 'Invalid Configuration',
-      })
-    }
+
+    if (isValidConfig(res) !== true) return isValidConfig(res)
+
     const url = createSignedUrl(src, user, config.host, config.secret)
     return res.json({ url })
   })
