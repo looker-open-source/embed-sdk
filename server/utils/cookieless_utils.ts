@@ -188,7 +188,7 @@ export async function generateEmbedTokens(
   }
 }
 
-export function isValidConfig(res: Response) {
+export function isValidAuthConfig(res: Response) {
   if (!config.host || !config.secret) {
     console.error(
       'Config does not have the neccassary host or secret to generate an embedded url. Config:',
