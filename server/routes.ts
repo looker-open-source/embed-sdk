@@ -69,10 +69,10 @@ export const addRoutes = (
     const src = req.query.src as string
     const configValid = isValidAuthConfig(res)
 
-    if (configValid !== true) return configValid
+    if (configValid !== true) return
 
     const url = createSignedUrl(src, user, config.host, config.secret)
-    return res.json({ url })
+    res.json({ url })
   })
 
   app.get(
