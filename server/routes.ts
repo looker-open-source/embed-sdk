@@ -140,7 +140,7 @@ export const addRoutes = (
         config.secret = req.query.secret as string
         res.status(200).send({ message: 'Embed Secret Set' })
       } else {
-        res.status(400).send({ message: 'No Secret Provided' })
+        res.status(400).send({ message: 'No Embed Secret Provided' })
       }
     }
   )
