@@ -32,6 +32,7 @@ import {
   acquireEmbedSession,
   generateEmbedTokens,
   setConfig,
+  isValidAuthConfig,
 } from './utils/cookieless_utils'
 import type { ApplicationConfig, LookerEmbedUser } from './types'
 
@@ -66,6 +67,10 @@ export const addRoutes = (
   app.get('/auth', function (req: Request, res: Response) {
     // Authenticate the request is from a valid user here
     const src = req.query.src as string
+    const configValid = isValidAuthConfig(res)
+
+    if (configValid !== true) return
+
     const url = createSignedUrl(src, user, config.host, config.secret)
     res.json({ url })
   })
@@ -124,6 +129,18 @@ export const addRoutes = (
         res.json(tokens)
       } catch (err: any) {
         res.status(400).send({ message: err.message })
+      }
+    }
+  )
+
+  app.get(
+    '/set-config-embed-secret',
+    async function (req: Request, res: Response) {
+      if (req.query.secret) {
+        config.secret = req.query.secret as string
+        res.status(200).send({ message: 'Embed Secret Set' })
+      } else {
+        res.status(400).send({ message: 'No Embed Secret Provided' })
       }
     }
   )
