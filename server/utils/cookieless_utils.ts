@@ -28,6 +28,7 @@ import { Looker40SDK } from '@looker/sdk'
 import { NodeSession } from '@looker/sdk-node'
 import type { IApiSection } from '@looker/sdk-rtl'
 import { DefaultSettings } from '@looker/sdk-rtl'
+import type { Response } from 'express'
 import type { ApplicationConfig, LookerEmbedUser } from '../types'
 
 /**
@@ -185,4 +186,17 @@ export async function generateEmbedTokens(
     console.error('embed session generate tokens failed', { error })
     throw error
   }
+}
+
+export function isValidAuthConfig(res: Response) {
+  if (!config.host || !config.secret) {
+    console.error(
+      'Config does not have the neccassary host or secret to generate an embedded url. Config:',
+      config
+    )
+    return res.status(400).send({
+      message: 'Invalid Configuration',
+    })
+  }
+  return true
 }

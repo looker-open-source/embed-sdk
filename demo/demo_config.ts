@@ -116,7 +116,8 @@ let runtimeConfig: RuntimeConfig = {
   showExplore: typeof _exploreId === 'string' && _exploreId.trim() !== '',
   showExtension: typeof _extensionId === 'string' && _extensionId.trim() !== '',
   showLook: _lookId > 0,
-  useCookieless: cookielessEmbedV2,
+  useCookieless:
+    process.env.LOOKER_COOKIELESS_ENABLED === 'true' ? true : cookielessEmbedV2,
   useDynamicHeights: false,
 }
 
