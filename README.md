@@ -234,7 +234,7 @@ If successful, the `acquire_embed_cookieless_session` returns a number of tokens
 
 A time to live for each token is also returned. It is important that the response of the `acquire_embed_cookieless_session` be returned to the browser with the exception of the `session_reference_token`. The hosting application MUST keep track of the `session_reference_token` for each user.
 
-The example shown below is simplistic and uses an in memory cache to keep track of the `session_reference_token`. In memory caches will not work in clustered environments so use a distributed cache such as `redis` in production. An alternative is to save the `session_reference_token` in an encrypted session cookie. The use of session cookies is demonstrated [here](/server_utils/routes.ts).
+The example shown below is simplistic and uses an in memory cache to keep track of the `session_reference_token`. In memory caches will not work in clustered environments so use a distributed cache such as `redis` in production. An alternative is to save the `session_reference_token` in an encrypted session cookie. The use of session cookies is demonstrated [here](/server/routes.ts).
 
 ```javascript
 // Simple endpoint to acquire an embed session. In this case the user data
