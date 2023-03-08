@@ -354,6 +354,8 @@ class EmbedFrameImpl implements EmbedFrame {
       if (this.className) {
         iframeElement.className = this.className
       }
+      // Automatically allow fullscreen display of visualizations
+      iframeElement.allow = 'fullscreen'
       const parentElement = document.getElementById(
         this.parentElementId
       ) as Element

@@ -364,6 +364,8 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
     document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
       ''
     LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+      // Allow fullscreen tile visualizations
+      .withAllowAttr('fullscreen')
       // Append to the #dashboard element
       .appendTo('#dashboard')
       // Listen to messages to display progress

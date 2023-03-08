@@ -277,6 +277,17 @@ describe('LookerEmbedBuilder', () => {
       expect(builder.sandboxAttrs).toEqual(['alpha', 'beta'])
     })
 
+    it('should allow adding allow attributes', () => {
+      builder.withAllowAttr('alpha')
+      builder.withAllowAttr('beta')
+      expect(builder.allowAttrs).toEqual(['alpha', 'beta'])
+    })
+
+    it('should allow adding several allow attributes at once', () => {
+      builder.withAllowAttr('alpha', 'beta')
+      expect(builder.allowAttrs).toEqual(['alpha', 'beta'])
+    })
+
     it('should allow adding classNames', () => {
       builder.withClassName('alpha')
       builder.withClassName('beta')

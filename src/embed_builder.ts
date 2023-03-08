@@ -68,6 +68,7 @@ export class EmbedBuilder<T> {
   private _handlers: CallbackStore = {}
   private _appendTo: HTMLElement | null = null
   private _sandboxAttrs: string[] = []
+  private _allowAttrs: string[] = []
   private _classNames: string[] = []
   private _frameBorder: string = '0'
   private _id?: number | string
@@ -166,6 +167,16 @@ export class EmbedBuilder<T> {
 
   withSandboxAttr(...attr: string[]) {
     this._sandboxAttrs = this._sandboxAttrs.concat(attr)
+    return this
+  }
+
+  /**
+   * Allows specifying allow attributes (for example fullscreen) for an embedded content iframe.
+   * @param attr one or more allow attributes for an embedded content iframe.
+   */
+
+  withAllowAttr(...attr: string[]) {
+    this._allowAttrs = this._allowAttrs.concat(attr)
     return this
   }
 
@@ -395,6 +406,14 @@ export class EmbedBuilder<T> {
 
   get sandboxAttrs() {
     return this._sandboxAttrs
+  }
+
+  /**
+   * The allowed attributes of an embedded content iframe, if provided
+   */
+
+  get allowAttrs() {
+    return this._allowAttrs
   }
 
   /**
