@@ -136,6 +136,9 @@ export class EmbedClient<T> {
     for (const attr of this._builder.sandboxAttrs) {
       this._hostBuilder.withSandboxAttribute(attr)
     }
+    for (const attr of this._builder.allowAttrs) {
+      this._hostBuilder.withAllowAttribute(attr)
+    }
     this._host = this._hostBuilder
       // tslint:disable-next-line:deprecation
       .frameBorder(this._builder.frameBorder)
