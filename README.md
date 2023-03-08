@@ -591,3 +591,29 @@ COOKIE_SECRET=cookie_stash
 ## Embedded Javascript Events
 
 Prior to the release of the Embed SDK, Looker exposed an API that utilized JavaScript `postMessage` events. This API is still available for customers who cannot or do not want to use the Embed SDK (note that using the Embed SDK is highly recommended as it provides additional functionality and is simpler to use). An example application has been created to ensure that cookieless embed also works with JavaScript `postMessage` events. This example can be found [here](demo/message_example.ts).
+
+## Additional Considerations
+
+### Full screen tile visualizations
+
+Looker has the capability to display individual tile visualizations in full screen mode. This feature works for embedded IFRAMEs but the `fullscreen` feature MUST be added to the containing IFRAME. Version 1.8.2 of the Embed SDK was updated to allow features to be added. The following example shows how to enable support for full screen mode.
+
+```
+    LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+      // Allow fullscreen tile visualizations
+      .withAllowAttr('fullscreen')
+      // Append to the #dashboard element
+      .appendTo('#dashboard')
+      ...
+      // Finalize the build
+      .build()
+      // Connect to Looker
+      .connect()
+      // Finish up setup
+      .then((dashboard: LookerEmbedDashboard) => {
+        ...
+      })
+      .catch((error: Error) => {
+        ...
+      })
+```

@@ -42,15 +42,33 @@ import {
   resetConfiguration,
 } from './demo_config'
 
+let currentDashboard: LookerEmbedDashboard | undefined
+let currentLook: LookerEmbedLook | undefined
+let currentExplore: LookerEmbedExplore | undefined
+
+const initializeRunAllButton = () => {
+  // Add a listener to the "Run All" button and send 'xxxx:run' messages when clicked
+  const runAllButton = document.querySelector('#run-all')
+  if (runAllButton) {
+    runAllButton.addEventListener('click', () => {
+      if (currentDashboard) {
+        currentDashboard.run()
+      }
+      if (currentLook) {
+        currentLook.run()
+      }
+      if (currentExplore) {
+        currentExplore.run()
+      }
+    })
+  }
+}
+
 /**
  * Set up the dashboard after the SDK connects
  */
 const setupDashboard = (dashboard: LookerEmbedDashboard) => {
-  // Add a listener to the "Run All" button and send a 'dashboard:run' message when clicked
-  const runAllButton = document.querySelector('#run-all')
-  if (runAllButton) {
-    runAllButton.addEventListener('click', () => dashboard.run())
-  }
+  currentDashboard = dashboard
 
   // Add a listener to the dashboard's "Run" button and send a 'dashboard:run' message when clicked
   const runButton = document.querySelector('#run-dashboard')
@@ -85,11 +103,7 @@ const setupDashboard = (dashboard: LookerEmbedDashboard) => {
  * Set up the look after the SDK connects.
  */
 const setupLook = (look: LookerEmbedLook) => {
-  // Add a listener to the "Run All" button and send a 'look:run' message when clicked
-  const runAllButton = document.querySelector('#run-all')
-  if (runAllButton) {
-    runAllButton.addEventListener('click', () => look.run())
-  }
+  currentLook = look
 
   // Add a listener to the look's "Run" button and send a 'look:run' message when clicked
   const runButton = document.querySelector('#run-look')
@@ -112,11 +126,7 @@ const setupLook = (look: LookerEmbedLook) => {
  * Set up the explore after the SDK connects.
  */
 const setupExplore = (explore: LookerEmbedExplore) => {
-  // Add a listener to the "Run All" button and send a 'look:run' message when clicked
-  const runAllButton = document.querySelector('#run-all')
-  if (runAllButton) {
-    runAllButton.addEventListener('click', () => explore.run())
-  }
+  currentExplore = explore
 
   // Add a listener to the explore's "Run" button and send a 'explore:run' message when clicked
   const runButton = document.querySelector('#run-explore')
@@ -197,6 +207,7 @@ const initializeShowDashboardCheckbox = () => {
         renderDashboard(runtimeConfig)
       })
     } else {
+      currentDashboard = undefined
       cb.parentElement!.style.display = 'none'
     }
   }
@@ -218,6 +229,7 @@ const initializeShowLookCheckbox = () => {
         renderLook(runtimeConfig)
       })
     } else {
+      currentLook = undefined
       cb.parentElement!.style.display = 'none'
     }
   }
@@ -239,6 +251,7 @@ const initializeShowExploreCheckbox = () => {
         renderExplore(runtimeConfig)
       })
     } else {
+      currentExplore = undefined
       cb.parentElement!.style.display = 'none'
     }
   }
@@ -329,9 +342,10 @@ const initializeResetConfigButton = () => {
 }
 
 /**
- * Initialize configuration controls.
+ * Initialize controls.
  */
-const initializeConfigurationControls = () => {
+const initializeControls = () => {
+  initializeRunAllButton()
   initializeShowDashboardCheckbox()
   initializeShowLookCheckbox()
   initializeShowExploreCheckbox()
@@ -562,7 +576,7 @@ const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
  */
 document.addEventListener('DOMContentLoaded', function () {
   loadConfiguration()
-  initializeConfigurationControls()
+  initializeControls()
   const runtimeConfig = getConfiguration()
   initializeEmbedSdk(runtimeConfig)
   renderDashboard(runtimeConfig)

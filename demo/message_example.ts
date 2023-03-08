@@ -264,14 +264,6 @@ const getDashboardFrameId = ({ dashboardId }: RuntimeConfig) =>
  * Initialize the dashboard controls
  */
 const initializeDashboardControls = (runtimeConfig: RuntimeConfig) => {
-  // Add a listener to the "Run All" button and send a 'dashboard:run' message when clicked
-  const runAllButton = document.querySelector('#run-all')
-  if (runAllButton) {
-    runAllButton.addEventListener('click', () =>
-      getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send('dashboard:run')
-    )
-  }
-
   // Add a listener to the dashboard's "Run" button and send a 'dashboard:run' message when clicked
   const runButton = document.querySelector('#run-dashboard')
   if (runButton) {
@@ -393,14 +385,6 @@ const getLookFrameId = ({ lookId }: RuntimeConfig) => `embed-dasboard-${lookId}`
  * Initialize the dashboard controls
  */
 const initializeLookControls = (runtimeConfig: RuntimeConfig) => {
-  // Add a listener to the "Run All" button and send a 'look:run' message when clicked
-  const runAllButton = document.querySelector('#run-all')
-  if (runAllButton) {
-    runAllButton.addEventListener('click', () =>
-      getEmbedFrame(getLookFrameId(runtimeConfig))?.send('look:run')
-    )
-  }
-
   // Add a listener to the look's "Run" button and send a 'look:run' message when clicked
   const runButton = document.querySelector('#run-look')
   if (runButton) {
@@ -442,6 +426,20 @@ const initializeLookerEmbed = (runtimeConfig: RuntimeConfig) => {
   } else {
     // Use SSO embed
     initSSOEmbed(runtimeConfig.lookerHost, '/auth')
+  }
+}
+
+/**
+ * Initialize the run all button
+ */
+const initializeRunAllButton = (runtimeConfig: RuntimeConfig) => {
+  // Add a listener to the "Run All" button and send 'xxxx:run' messages when clicked
+  const runAllButton = document.querySelector('#run-all')
+  if (runAllButton) {
+    runAllButton.addEventListener('click', () => {
+      getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send('dashboard:run')
+      getEmbedFrame(getLookFrameId(runtimeConfig))?.send('look:run')
+    })
   }
 }
 
@@ -524,6 +522,7 @@ document.addEventListener('DOMContentLoaded', function () {
   loadConfiguration()
   initializeConfigurationControls()
   const runtimeConfig = getConfiguration()
+  initializeRunAllButton(runtimeConfig)
   initializeErrorControls(runtimeConfig)
   initializeDashboardControls(runtimeConfig)
   initializeLookControls(runtimeConfig)
