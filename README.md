@@ -594,11 +594,50 @@ Prior to the release of the Embed SDK, Looker exposed an API that utilized JavaS
 
 ## Additional Considerations
 
+## Dynamic dashboard height
+
+The IFRAMEs containing dashboards can be resized to reflect the height of the embedded dashboard. This allows the IFRAME to own the scrollbar rather than the embedded dashboard. To implement dynamic dashboard heights, listen to `page:properties:changed` events and use the height to set the IFRAME height. Example:
+
+```javascript
+const pagePropertiesChangedHandler = (
+  { height }: PagePropertiesChangedEvent,
+  elementId: string
+) => {
+  if (height && height > 100) {
+    const element = document.querySelector(
+      `#${elementId} iframe`
+    ) as HTMLIFrameElement
+    if (element) {
+      element.style.height = `${height}px`
+    }
+  }
+}
+
+
+LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+  .appendTo('#dashboard')
+  .on('page:properties:changed', (event: PagePropertiesChangedEvent) => {
+    pagePropertiesChangedHandler(event, 'dashboard')
+  })
+  .build()
+  .connect()
+```
+
+The Embed SDK also contains a convenience method to add this functionality for you. Example:
+
+```javascript
+LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+  .withDynamicIFrameHeight()
+  .appendTo('#dashboard')
+  .build()
+  .connect()
+```
+
 ### Full screen tile visualizations
 
 Looker has the capability to display individual tile visualizations in full screen mode. This feature works for embedded IFRAMEs but the `fullscreen` feature MUST be added to the containing IFRAME. Version 1.8.2 of the Embed SDK was updated to allow features to be added. The following example shows how to enable support for full screen mode.
 
-```
+```javascript
     LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
       // Allow fullscreen tile visualizations
       .withAllowAttr('fullscreen')
@@ -617,3 +656,31 @@ Looker has the capability to display individual tile visualizations in full scre
         ...
       })
 ```
+
+### Tile dialogs
+
+Users have the capability of opening dialogs from a dashboard tile. One downside of open the dialogs is that unexpected scrolling can occur. With Looker 23.6+ it is now possible to mitigate the scolling using the Embed SDK. Example:
+
+```javascript
+LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+  // Scrolls the top of the IFRAME into view when drilling
+  .withDialogScroll()
+  // Ensures that the tile download and tile alert dialogs remain in view
+  .withScrollMonitor()
+  // Append to the #dashboard element
+  .appendTo('#dashboard')
+  ...
+  // Finalize the build
+  .build()
+  // Connect to Looker
+  .connect()
+  // Finish up setup
+  .then((dashboard: LookerEmbedDashboard) => {
+    ...
+  })
+  .catch((error: Error) => {
+    ...
+  })
+```
+
+Note that this functionality is also available to the javascript API. See [here](demo/message_example.ts) for how to add this functionality.

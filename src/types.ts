@@ -456,6 +456,36 @@ export interface CancellableEventResponse {
 }
 
 /**
+ * Host scroll event data. Provides information to the Looker client
+ * about the current scroll state. This allows the Looker client to
+ * position dialogs within the users view port.
+ *
+ * Looker 23.6+
+ */
+
+export interface EnvHostScrollEvent extends LookerEmbedEvent {
+  scrollY: number
+  screenX: number
+  offsetTop: number
+  offsetLeft: number
+}
+
+/**
+ * Client dialog data. Provides information about Looker dialogs that
+ * are being displayed. Information is only provided for those dialogs
+ * that might require some viewport adjustment on the part of the
+ * hosting application.
+ *
+ * Looker 23.6+
+ */
+
+export interface EnvClientDialogEvent extends LookerEmbedEvent {
+  open: boolean
+  placement: 'cover' | 'top' | 'center'
+  dialogType: string
+}
+
+/**
  * Current Looker embed events as of version 6.20 (except where stated)
  */
 
@@ -576,6 +606,14 @@ export interface LookerEmbedEventMap {
    * Looker 23.0+
    */
   'session:status': (this: LookerEmbedBase, event: SessionStatus) => void
+  /**
+   * Environment client dialog event
+   * Looker 23.6+
+   */
+  'env:client:dialog': (
+    this: LookerEmbedBase,
+    event: EnvClientDialogEvent
+  ) => void
 
   [key: string]: any
 }

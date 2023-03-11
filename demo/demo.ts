@@ -30,7 +30,6 @@ import type {
   LookerEmbedLook,
   LookerEmbedDashboard,
   LookerEmbedExplore,
-  PagePropertiesChangedEvent,
   SessionStatus,
 } from '../src/index'
 import { LookerEmbedSDK } from '../src/index'
@@ -167,28 +166,6 @@ const preventNavigation = (event: any): any => {
     return { cancel: !event.modal }
   }
   return {}
-}
-
-/**
- * A page properties changed handler that can be used to control the height of the
- * embedded IFRAME. Different dashboards can be displayed by either calling the
- * `loadDashboard` Embed SDK method OR by using the inbuilt embed content navigation
- * feature. Whenever, the dashboard changes a `page:properties:changed` event is
- * fired and this event contains the height of the dashboard content.
- */
-const pagePropertiesChangedHandler = (
-  { height }: PagePropertiesChangedEvent,
-  elementId: string
-) => {
-  const { useDynamicHeights } = getConfiguration()
-  if (useDynamicHeights && height && height > 100) {
-    const element = document.querySelector(
-      `#${elementId} iframe`
-    ) as HTMLIFrameElement
-    if (element) {
-      element.style.height = `${height}px`
-    }
-  }
 }
 
 /**
@@ -378,6 +355,15 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
     document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
       ''
     LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+      // When true scrolls the top of the IFRAME into view
+      .withDialogScroll(runtimeConfig.useDynamicHeights)
+      // When true updates the IFRAME height to reflect the height of the
+      // dashboard
+      .withDynamicIFrameHeight(runtimeConfig.useDynamicHeights)
+      // When true monitors the scroll position of the hosting window
+      // and sends it to the Looker IFRAME. The Looker IFRAME uses the
+      // information to position dialogs correctly.
+      .withScrollMonitor(runtimeConfig.useDynamicHeights)
       // Allow fullscreen tile visualizations
       .withAllowAttr('fullscreen')
       // Append to the #dashboard element
@@ -403,9 +389,6 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
       .on('dashboard:delete:complete', () =>
         updateStatus('#dashboard-state', 'Deleted')
       )
-      .on('page:properties:changed', (event: PagePropertiesChangedEvent) => {
-        pagePropertiesChangedHandler(event, 'dashboard')
-      })
       .on('session:status', (event: SessionStatus) => {
         processSessionStatus(event, '#dashboard-state')
       })

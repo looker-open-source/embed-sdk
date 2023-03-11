@@ -335,6 +335,21 @@ describe('LookerEmbedBuilder', () => {
       // tslint:disable-next-line:deprecation
       expect(builder.auth).toEqual({ url: '/auth' })
     })
+
+    it('should return the scrollMonitor config', () => {
+      builder.withScrollMonitor()
+      expect(builder.scrollMonitor).toEqual(true)
+    })
+
+    it('should return the dynamicIFrameHeight config', () => {
+      builder.withDynamicIFrameHeight()
+      expect(builder.dynamicIFrameHeight).toEqual(true)
+    })
+
+    it('should return the dialogScroll config', () => {
+      builder.withDialogScroll()
+      expect(builder.dialogScroll).toEqual(true)
+    })
   })
 
   describe('build', () => {
