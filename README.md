@@ -659,7 +659,7 @@ Looker has the capability to display individual tile visualizations in full scre
 
 ### Tile dialogs
 
-Users have the capability of opening dialogs from a dashboard tile. One downside of open the dialogs is that unexpected scrolling can occur. With Looker 23.6+ it is now possible to mitigate the scolling using the Embed SDK. Example:
+Users have the capability of opening dialogs from a dashboard tile. One downside of opening the dialogs is that unexpected scrolling can occur. With Looker 23.6+ it is now possible to mitigate the scrolling using the Embed SDK. Example:
 
 ```javascript
 LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
