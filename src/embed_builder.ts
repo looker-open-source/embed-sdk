@@ -76,6 +76,9 @@ export class EmbedBuilder<T> {
   private _suffix: string = ''
   private _url?: string | null
   private _sandboxedHost?: boolean
+  private _scrollMonitor?: boolean
+  private _dynamicIFrameHeight?: boolean
+  private _dialogScroll?: boolean
 
   /**
    * @hidden
@@ -210,6 +213,44 @@ export class EmbedBuilder<T> {
 
   withTheme(theme: string) {
     this._params.theme = theme
+    return this
+  }
+
+  /**
+   * Monitors scroll position and informs the embedded Looker IFRAME
+   * of the current scroll position and the offset of the containing
+   * IFRAME within the window. Looker uses this information to position
+   * dialogs within the users viewport.
+   *
+   * Requires Looker >=23.6.0
+   *
+   * @param monitor defaults to true
+   *
+   */
+  withScrollMonitor(monitor = true) {
+    this._scrollMonitor = monitor
+    return this
+  }
+
+  /**
+   * Listens for page changed events from the embedded Looker IFRAME
+   * and updates the height of the IFRAME.
+   *
+   * @param dynamicIFrameHeight defaults to true
+   */
+  withDynamicIFrameHeight(dynamicIFrameHeight = true) {
+    this._dynamicIFrameHeight = dynamicIFrameHeight
+    return this
+  }
+
+  /**
+   * Listens for covering dialogs being opened in the Looker IFRAME
+   * and scrolls the top of dialog into view.
+   *
+   * @param dialogScroll defaults to true
+   */
+  withDialogScroll(dialogScroll = true) {
+    this._dialogScroll = dialogScroll
     return this
   }
 
@@ -438,6 +479,30 @@ export class EmbedBuilder<T> {
 
   get id() {
     return this._id
+  }
+
+  /**
+   * Whether scrolling is monitored
+   */
+
+  get scrollMonitor() {
+    return this._scrollMonitor
+  }
+
+  /**
+   * Whether IFRAME height is to be dynamically updated
+   */
+
+  get dynamicIFrameHeight() {
+    return this._dynamicIFrameHeight
+  }
+
+  /**
+   * Whether cover dialogs tops are to be scrolled into view
+   */
+
+  get dialogScroll() {
+    return this._dialogScroll
   }
 
   /**

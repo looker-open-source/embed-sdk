@@ -30,7 +30,9 @@ import type { LookerEmbedBase } from './embed_base'
 import type { EmbedBuilder } from './embed_builder'
 import type {
   CookielessRequestInit,
+  EnvClientDialogEvent,
   LookerEmbedCookielessSessionData,
+  PagePropertiesChangedEvent,
 } from './types'
 
 const IS_URL = /^https?:\/\//
@@ -88,6 +90,37 @@ export class EmbedClient<T> {
 
   private async createIframe(url: string) {
     this._hostBuilder = Chatty.createHost(url)
+    if (this._builder.dialogScroll) {
+      this._builder.handlers['env:client:dialog'] = [
+        ({ open, placement }: EnvClientDialogEvent) => {
+          // Placement of 'cover' means that the dialog top is close
+          // to the top of the IFRAME. The top MAY be scrolled out
+          // of view. The following attempts to scroll the top of the
+          // dialog into view.
+          if (open && placement === 'cover') {
+            // Timeout is a little ugly. Suspect there might be an issue
+            // with a Looker component where the last row is scrolled
+            // into view. Normally not an issue because outside of embed
+            // as the dialog is limited to the viewport.
+            // Make timeout configurable?
+            window.setTimeout(() => {
+              if (this._host) {
+                this._host.iframe.scrollIntoView(true)
+              }
+            }, 200)
+          }
+        },
+      ]
+    }
+    if (this._builder.dynamicIFrameHeight) {
+      this._builder.handlers['page:properties:changed'] = [
+        ({ height }: PagePropertiesChangedEvent) => {
+          if (height && height > 100 && this._host) {
+            this._host.iframe.style.height = `${height}px`
+          }
+        },
+      ]
+    }
     if (this._builder.isCookielessEmbed) {
       this._builder.handlers['session:tokens:request'] = [
         async () => {
@@ -151,10 +184,33 @@ export class EmbedClient<T> {
       this._host.iframe.classList.add(...this._builder.classNames)
     }
 
+    if (this._builder.scrollMonitor) {
+      this.addIframeMonitor(this._host.iframe)
+    }
+
     return this._host.connect().then((host) => {
       // eslint-disable-next-line new-cap
       this._client = new this._builder.clientConstructor(host)
       return this._client
+    })
+  }
+
+  private sendScrollData(iframe: HTMLIFrameElement) {
+    const client = this._client as unknown as LookerEmbedBase
+    client.send('env:host:scroll', {
+      offsetLeft: iframe.offsetLeft,
+      offsetTop: iframe.offsetTop,
+      screenX: window.scrollX,
+      scrollY: window.scrollY,
+    })
+  }
+
+  private addIframeMonitor(iframe: HTMLIFrameElement) {
+    document.addEventListener('scroll', (_event: Event) => {
+      this.sendScrollData(iframe)
+    })
+    window.addEventListener('resize', (_event: Event) => {
+      this.sendScrollData(iframe)
     })
   }
 

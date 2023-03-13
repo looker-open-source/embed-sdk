@@ -29,6 +29,7 @@
 import type {
   LookerEmbedCookielessSessionData,
   PagePropertiesChangedEvent,
+  EnvClientDialogEvent,
 } from '../src/index'
 import {
   initSSOEmbed,
@@ -213,6 +214,29 @@ const initializePreventNavigationCheckbox = () => {
 }
 
 /**
+ * Get the id of the dashboard IFRAME
+ */
+const getDashboardFrameId = ({ dashboardId }: RuntimeConfig) =>
+  `embed-dasboard-${dashboardId}`
+
+/**
+ * Send scroll data to the Looker client
+ */
+const sendScrollData = () => {
+  const runtimeConfig = getConfiguration()
+  const dashboardFrameId = getDashboardFrameId(runtimeConfig)
+  const element = document.getElementById(dashboardFrameId)
+  if (element) {
+    getEmbedFrame(dashboardFrameId)?.send('env:host:scroll', {
+      offsetLeft: element.offsetLeft,
+      offsetTop: element.offsetTop,
+      screenX: window.scrollX,
+      scrollY: window.scrollY,
+    })
+  }
+}
+
+/**
  * Initialize the use dynamic heights configuration checkbox.
  */
 const initializeUseDynamicHeightsCheckbox = () => {
@@ -226,6 +250,14 @@ const initializeUseDynamicHeightsCheckbox = () => {
       updateConfiguration(runtimeConfig)
       location.reload()
     })
+    if (useDynamicHeights) {
+      document.addEventListener('scroll', (_event: Event) => {
+        sendScrollData()
+      })
+      window.addEventListener('resize', (_event: Event) => {
+        sendScrollData()
+      })
+    }
   }
 }
 
@@ -253,12 +285,6 @@ const initializeConfigurationControls = () => {
   initializeUseDynamicHeightsCheckbox()
   initializeResetConfigButton()
 }
-
-/**
- * Get the id of the dashboard IFRAME
- */
-const getDashboardFrameId = ({ dashboardId }: RuntimeConfig) =>
-  `embed-dasboard-${dashboardId}`
 
 /**
  * Initialize the dashboard controls
@@ -298,6 +324,36 @@ const initializeDashboardControls = (runtimeConfig: RuntimeConfig) => {
 }
 
 /**
+ * Scroll drilling dialog into view
+ */
+const envClientDialogEventListener = ({
+  open,
+  placement,
+}: EnvClientDialogEvent) => {
+  const runtimeConfig = getConfiguration()
+  if (runtimeConfig.useDynamicHeights) {
+    const dashboardFrameId = getDashboardFrameId(runtimeConfig)
+    const element = document.getElementById(dashboardFrameId)
+    if (element) {
+      // Placement of 'cover' means that the dialog top is close
+      // to the top of the IFRAME. The top MAY be scrolled out
+      // of view. The following attempts to scroll the top of the
+      // dialog into view.
+      if (open && placement === 'cover') {
+        // Timeout is a little ugly. Suspect there might be an issue
+        // with a Looker component where the last row is scrolled
+        // into view. Normally not an issue because outside of embed
+        // as the dialog is limited to the viewport.
+        // Make timeout configurable?
+        window.setTimeout(() => {
+          element.scrollIntoView(true)
+        }, 200)
+      }
+    }
+  }
+}
+
+/**
  * Render a dashboard. When active this sets up listeners
  * for events that can be sent by the embedded Looker UI.
  */
@@ -307,7 +363,7 @@ const renderDashboard = (
   recoverableError?: boolean
 ) => {
   if (runtimeConfig.showDashboard) {
-    const { dashboardId } = runtimeConfig
+    const { dashboardId, useDynamicHeights } = runtimeConfig
     document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
       ''
     addEmbedFrame(
@@ -334,6 +390,8 @@ const renderDashboard = (
       .on('page:properties:changed', (event: PagePropertiesChangedEvent) => {
         pagePropertiesChangedHandler(event, 'dashboard')
       })
+      // Listen to messages that can scroll drilling dialog into view
+      .on('env:client:dialog', envClientDialogEventListener)
       // Listen to messages to prevent the user from navigating away
       .on('drillmenu:click', embedEventListener)
       .on('drillmodal:explore', embedEventListener)
