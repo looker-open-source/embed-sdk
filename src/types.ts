@@ -465,7 +465,7 @@ export interface CancellableEventResponse {
 
 export interface EnvHostScrollEvent extends LookerEmbedEvent {
   scrollY: number
-  screenX: number
+  scrollX: number
   offsetTop: number
   offsetLeft: number
 }

@@ -200,7 +200,7 @@ export class EmbedClient<T> {
     client.send('env:host:scroll', {
       offsetLeft: iframe.offsetLeft,
       offsetTop: iframe.offsetTop,
-      screenX: window.scrollX,
+      scrollX: window.scrollX,
       scrollY: window.scrollY,
     })
   }
