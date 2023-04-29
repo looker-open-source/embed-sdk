@@ -75,7 +75,7 @@ const acquireLookerSession = async () => {
       lookerSettings.base_url = api_url
       lookerSettings.verify_ssl = verify_ssl
       lookerSession = new NodeSession(lookerSettings)
-      lookerSession.login()
+      await lookerSession.login()
     } catch (error) {
       console.error('login failed', { error })
       throw error
