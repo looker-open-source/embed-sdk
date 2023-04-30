@@ -68,4 +68,5 @@ export interface ApplicationConfig {
   secret: string
   verify_ssl: boolean
   cookie_secret: string
+  use_embed_domain: boolean
 }

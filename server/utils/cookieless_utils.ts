@@ -94,9 +94,13 @@ const acquireEmbedSessionInternal = async (
   session_reference_token?: string
 ) => {
   try {
-    const request = {
+    // TODO type when 23.8 Looker SDK is published
+    const request: any = {
       ...user,
       session_reference_token: session_reference_token,
+    }
+    if (config.use_embed_domain) {
+      request.embed_domain = `http://${config.demo_host}:${config.demo_port}`
     }
     const sdk = new Looker40SDK(lookerSession)
     const response = await sdk.ok(
