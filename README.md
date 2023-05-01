@@ -422,7 +422,7 @@ LookerEmbedSDK.initCookieless(
 Looker embed SSO requires that the host application domain be added to an allow list using the Looker configure admin page. Starting with Looker version `23.8`, the embed domain can be specified in the payload of the `acquire_embed_cookieless_session` call. This allows customers to dynamically specify the allowed domains. Note that the allowed domain is associated with the embed session stored in the Looker server. It is NOT persisted to the internal Looker database. This means that the embed domain must be included with every `acquire_embed_cookieless_session` call. 
 
 When implementing it is HIGHLY recommended that that the implementor
-NOT trust any embed domain sent from the browser (in other words do
+NOT trust any embed domain sent from the browser (in other words do not
 use the location.origin from the browser). Instead, the embed application should implement a mechanism in the server that maps a
 user to particular domain. 
 
@@ -596,7 +596,6 @@ LOOKER_DASHBOARD_ID=1
 LOOKER_LOOK_ID=1
 LOOKER_EXPLORE_ID=thelook::orders
 LOOKER_EXTENSION_ID=extension::my-great-extension
-LOOKER_USE_EMBED_DOMAIN=false
 COOKIE_SECRET=cookie_stash
 LOOKER_USE_EMBED_DOMAIN=false
 ```
