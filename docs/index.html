@@ -161,6 +161,16 @@ the <code>session_reference_token_ttl</code> value will be set to 0. When this h
 <pre><code class="language-javascript"><span class="hl-0">LookerEmbedSDK</span><span class="hl-1">.</span><span class="hl-2">initCookieless</span><span class="hl-1">(</span><br/><span class="hl-1">  </span><span class="hl-3">&#39;looker.example.com&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&#39;/acquire-embed-session&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&#39;/generate-embed-tokens&#39;</span><br/><span class="hl-1">)</span>
 </code></pre>
 
+<a href="#embed-domain-allow-list" id="embed-domain-allow-list" style="color: inherit; text-decoration: none;">
+  <h3>Embed domain allow list</h3>
+</a>
+<p>Looker embed SSO requires that the host application domain be added to an allow list using the Looker configure admin page. Starting with Looker version <code>23.8</code>, the embed domain can be specified in the payload of the <code>acquire_embed_cookieless_session</code> call. This allows customers to dynamically specify the allowed domains. Note that the allowed domain is associated with the embed session stored in the Looker server. It is NOT persisted to the internal Looker database. This means that the embed domain must be included with every <code>acquire_embed_cookieless_session</code> call. </p>
+<p>When implementing it is HIGHLY recommended that that the implementor
+NOT trust any embed domain sent from the browser (in other words do not
+use the location.origin from the browser). Instead, the embed application should implement a mechanism in the server that maps a
+user to particular domain. </p>
+<p>To add the embed domain to the <code>acquire_embed_cookieless_session</code> payload set the <code>LOOKER_USE_EMBED_DOMAIN</code> variable to true in the <code>.env</code> file</p>
+
 <a href="#demo" id="demo" style="color: inherit; text-decoration: none;">
   <h2>Demo</h2>
 </a>
@@ -254,7 +264,7 @@ in a browser console with</p>
   <h3><a name='env' id='env'></a> <code>.env</code> setup</h3>
 </a>
 <p>The embed demo environment can be configured using a <code>.env</code> file. The following is a template that can be used to create the file (in the root of this repo). The <code>.env</code> file should never be stored in your git repo and is included in the repo&#39;s <code>.ignore</code> file.</p>
-<pre><code class="language-shell"><span class="hl-1">LOOKER_EMBED_HOST=mycompany.looker.com</span><br/><span class="hl-1">LOOKER_EMBED_API_URL=https://mycompany.looker.com:19999</span><br/><span class="hl-1">LOOKER_DEMO_HOST=localhost</span><br/><span class="hl-1">LOOKER_DEMO_PORT=8080</span><br/><span class="hl-1">LOOKER_EMBED_SECRET=</span><br/><span class="hl-1">LOOKER_CLIENT_ID=</span><br/><span class="hl-1">LOOKER_CLIENT_SECRET=</span><br/><span class="hl-1">LOOKER_DASHBOARD_ID=1</span><br/><span class="hl-1">LOOKER_LOOK_ID=1</span><br/><span class="hl-1">LOOKER_EXPLORE_ID=thelook::orders</span><br/><span class="hl-1">LOOKER_EXTENSION_ID=extension::my-great-extension</span><br/><span class="hl-1">COOKIE_SECRET=cookie_stash</span>
+<pre><code class="language-shell"><span class="hl-1">LOOKER_EMBED_HOST=mycompany.looker.com</span><br/><span class="hl-1">LOOKER_EMBED_API_URL=https://mycompany.looker.com:19999</span><br/><span class="hl-1">LOOKER_DEMO_HOST=localhost</span><br/><span class="hl-1">LOOKER_DEMO_PORT=8080</span><br/><span class="hl-1">LOOKER_EMBED_SECRET=</span><br/><span class="hl-1">LOOKER_CLIENT_ID=</span><br/><span class="hl-1">LOOKER_CLIENT_SECRET=</span><br/><span class="hl-1">LOOKER_DASHBOARD_ID=1</span><br/><span class="hl-1">LOOKER_LOOK_ID=1</span><br/><span class="hl-1">LOOKER_EXPLORE_ID=thelook::orders</span><br/><span class="hl-1">LOOKER_EXTENSION_ID=extension::my-great-extension</span><br/><span class="hl-1">COOKIE_SECRET=cookie_stash</span><br/><span class="hl-1">LOOKER_USE_EMBED_DOMAIN=false</span>
 </code></pre>
 
 <a href="#embedded-javascript-events" id="embedded-javascript-events" style="color: inherit; text-decoration: none;">

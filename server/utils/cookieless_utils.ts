@@ -94,9 +94,19 @@ const acquireEmbedSessionInternal = async (
   session_reference_token?: string
 ) => {
   try {
-    const request = {
+    // TODO type when 23.8 Looker SDK is published
+    const request: any = {
       ...user,
       session_reference_token: session_reference_token,
+    }
+    if (config.use_embed_domain) {
+      // IMPORTANT: The domain should come from a trusted source. Ideally from
+      // kind of internal mapping of the user to the domain. The origin of browser
+      // should NOT be trusted.
+      // This is simplistic implementation to demonstrate how cookieless embed can
+      // specify the embed domain. Ideally a customer's implementation will more
+      // robust and secure.
+      request.embed_domain = `http://${config.demo_host}:${config.demo_port}`
     }
     const sdk = new Looker40SDK(lookerSession)
     const response = await sdk.ok(

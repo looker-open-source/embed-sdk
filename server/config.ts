@@ -42,5 +42,6 @@ export const config: ApplicationConfig = {
   demo_port: parseInt(process.env.LOOKER_DEMO_PORT || '8080', 10),
   host: process.env.LOOKER_EMBED_HOST || 'self-signed.looker.com:9999',
   secret: process.env.LOOKER_EMBED_SECRET!,
+  use_embed_domain: process.env.LOOKER_USE_EMBED_DOMAIN === 'true' || false,
   verify_ssl: process.env.LOOKER_VERIFY_SSL === 'true' || false,
 }

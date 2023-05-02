@@ -10,6 +10,8 @@ module.exports = {
   client_id: process.env.LOOKER_CLIENT_ID,
   client_secret: process.env.LOOKER_CLIENT_SECRET,
   verify_ssl: process.env.LOOKER_VERIFY_SSL === 'true' || false,
+  use_embed_domain:
+    process.env.LOOKER_USE_EMBED_DOMAIN?.toLowerCase() === 'true' || false,
   cookie_secret: (process.env.COOKIE_SECRET || 'secret').padEnd(
     32,
     'ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456'

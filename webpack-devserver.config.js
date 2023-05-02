@@ -43,6 +43,7 @@ var webpackConfig = {
       LOOKER_EXPLORE_ID: null,
       LOOKER_EXTENSION_ID: null,
       LOOKER_COOKIELESS_ENABLED: null,
+      LOOKER_USE_EMBED_DOMAIN: null,
     }),
   ],
   devServer: {
