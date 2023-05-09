@@ -496,7 +496,7 @@ const exploreId = 'thelook::orders'
 const extensionId = 'extension::my-great-extension'
 ```
 
-- Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application (e.g your customer portal) to inform Looker about important user properties that control data access controls. Note that the `demo/demo_user.json` file is also used for cookieless embedding. The one difference is that cookieless_embed will ignore the value of `force_logout_login` and will ALWAYs treat the value as `true`.
+- Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application (e.g your customer portal) to inform Looker about important user properties that control data access controls. Note that the `demo/demo_user.json` file is also used for cookieless embedding. The one difference is that cookieless_embed will ignore the value of `force_logout_login` and will ALWAYs treat the value as `true`. See [documentation](https://cloud.google.com/looker/docs/single-sign-on-embedding) for detailed information on the content of the embed user definition.
 
 ```javascript
 {
@@ -515,23 +515,29 @@ const extensionId = 'extension::my-great-extension'
   "group_ids": [],
   // Permissions. See documentation for details. Required.
   // Can any combination of:
-  //   access_data
-  //   see_looks
-  //   see_user_dashboards
-  //   see_lookml_dashboards
-  //   explore
-  //   create_table_calculations
-  //   download_with_limit
-  //   download_without_limit
-  //   see_drill_overlay
-  //   see_sql
-  //   save_content
-  //   embed_browse_spaces
-  //   schedule_look_emails
-  //   send_to_sftp
-  //   send_to_s3
-  //   send_outgoing_webhook
-  //   schedule_external_look_emails
+  //   'access_data'
+  //   'see_lookml_dashboards'
+  //   'see_looks'
+  //   'see_user_dashboards'
+  //   'explore'
+  //   'create_table_calculations'
+  //   'create_custom_fields'
+  //   'can_create_forecast'
+  //   'save_content'
+  //   'send_outgoing_webhook'
+  //   'send_to_s3'
+  //   'send_to_sftp'
+  //   'schedule_look_emails'
+  //   'schedule_external_look_emails'
+  //   'send_to_integration'
+  //   'create_alerts'
+  //   'download_with_limit'
+  //   'download_without_limit'
+  //   'see_sql'
+  //   'clear_cache_refresh'
+  //   'see_drill_overlay'
+  //   'embed_browse_spaces'
+  //   'embed_save_shared_space'
   "permissions": [
     "access_data",
     "see_looks",
