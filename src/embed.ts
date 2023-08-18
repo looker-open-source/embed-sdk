@@ -290,6 +290,7 @@ export class EmbedClient<T> {
       navigation_token,
       navigation_token_ttl,
       session_reference_token_ttl,
+      signed_embed_url,
     } = await this.acquireSession()
     if (!authentication_token || !navigation_token || !api_token) {
       throw new Error('failed to prepare cookieless embed session')
@@ -299,6 +300,9 @@ export class EmbedClient<T> {
     this._cookielessNavigationToken = navigation_token
     this._cookielessNavigationTokenTtl = navigation_token_ttl
     this._cookielessSessionReferenceTokenTtl = session_reference_token_ttl
+    if (signed_embed_url) {
+      return signed_embed_url
+    }
     const apiHost = `https://${this._builder.apiHost}`
     const sep =
       new URL(this._builder.embedUrl, apiHost).search === '' ? '?' : '&'
