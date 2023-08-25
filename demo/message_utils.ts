@@ -406,7 +406,7 @@ class EmbedFrameImpl implements EmbedFrame {
         if (data) {
           let parsedData: any
           try {
-            parsedData = JSON.parse(data)
+            parsedData = typeof data === 'object' ? data : JSON.parse(data)
           } catch (error) {
             console.error('data is not json', { data })
           }
