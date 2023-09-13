@@ -396,7 +396,6 @@ describe('LookerEmbed', () => {
   })
 
   describe('receiving messages', () => {
-    let mockDashboardClient: any
     let embedDashboard: any
 
     const startFn = jasmine.createSpy('onStart').and.callFake(function () {
@@ -410,7 +409,6 @@ describe('LookerEmbed', () => {
       ) {
         return Promise.resolve({})
       })
-      mockDashboardClient = {}
       builder = LookerEmbedSDK.createDashboardWithUrl(testUrl)
       builder.on('dashboard:run:start', startFn)
       client = builder.build()
@@ -531,6 +529,69 @@ describe('LookerEmbed', () => {
         done.fail('withUrl should not work')
       } catch (err) {
         done()
+      }
+    })
+  })
+
+  describe('cookieless embed error', () => {
+    let fetchSpy: any
+    let fakeDashboardClient: any
+    const acquireData = [
+      {},
+      {
+        api_token: 'abcdef-api',
+        authentication_token: 'abcdef-auth',
+        navigation_token: 'abcdef-nav',
+      },
+    ]
+    const acquire = () => {
+      const data = acquireData.splice(0, 1)[0]
+      return Promise.resolve(data)
+    }
+    // Not possible to test generate callback as it is tied to chatty
+    // which is overridden by the createIFrame spy.
+    const generate = () =>
+      Promise.resolve({
+        api_token: 'mnopqr-api',
+        navigation_token: 'mnopqr-nav',
+      })
+
+    beforeEach(() => {
+      fetchSpy = spyOn(window, 'fetch').and.returnValue({
+        json: () => ({}),
+        ok: true,
+        status: 200,
+      })
+      fakeDashboardClient = {}
+      builder = LookerEmbedSDK.createDashboardWithId(11)
+      client = builder.build()
+      spyOn<any>(client, 'createIframe').and.returnValue(
+        Promise.resolve(fakeDashboardClient)
+      )
+    })
+
+    afterEach(() => {
+      fetchSpy.calls.reset()
+    })
+
+    it('should allow connect to be called successfully after an error', async () => {
+      LookerEmbedSDK.initCookieless('host.looker.com:9999', acquire, generate)
+      try {
+        await client.connect()
+        fail()
+        return
+      } catch (error) {
+        expect(error.message).toEqual(
+          'failed to prepare cookieless embed session'
+        )
+      }
+      try {
+        await client.connect()
+        expect(client.createIframe).toHaveBeenCalledWith(
+          'https://host.looker.com:9999/login/embed/%2Fembed%2Fdashboards%2F11%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+        )
+      } catch (_error) {
+        fail()
       }
     })
   })

@@ -264,10 +264,15 @@ export class EmbedClient<T> {
     }
     EmbedClient.acquireSessionPromise =
       this.acquireCookielessEmbedSessionInternal()
-    return EmbedClient.acquireSessionPromise.then((url) => {
-      EmbedClient.sessionAcquired = true
-      return url
-    })
+    return EmbedClient.acquireSessionPromise
+      .then((url) => {
+        EmbedClient.sessionAcquired = true
+        return url
+      })
+      .catch((error) => {
+        EmbedClient.acquireSessionPromise = undefined
+        throw error
+      })
   }
 
   private async acquireCookielessEmbedSessionInternal(): Promise<string> {
@@ -384,9 +389,12 @@ export class EmbedClient<T> {
       this._connection = this.createIframe(this._builder.url)
     } else {
       if (this._builder.isCookielessEmbed) {
-        this._connection = this.acquireCookielessEmbedSession().then(
-          async (url) => this.createIframe(url)
-        )
+        this._connection = this.acquireCookielessEmbedSession()
+          .then(async (url) => this.createIframe(url))
+          .catch((_error) => {
+            this._connection = null
+            throw _error
+          })
       } else {
         this._connection = this.createUrl().then(async (url) =>
           this.createIframe(url)
