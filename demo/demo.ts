@@ -41,9 +41,33 @@ import {
   resetConfiguration,
 } from './demo_config'
 
+const CLIENT_SESSION_ID_SESSION_STORAGE_KEY =
+  '__LOOKER_EMBED_CLIENT_SESSION_ID_SESSION_STORAGE_KEY__'
+
 let currentDashboard: LookerEmbedDashboard | undefined
 let currentLook: LookerEmbedLook | undefined
 let currentExplore: LookerEmbedExplore | undefined
+
+const getClientSessionId = () => {
+  let clientSessionId = sessionStorage.getItem(
+    CLIENT_SESSION_ID_SESSION_STORAGE_KEY
+  )
+  if (!clientSessionId) {
+    try {
+      clientSessionId = crypto.randomUUID()
+    } catch (_) {
+      console.warn(
+        'Failed to generated a uuid crypto.randomUUID. Using current time as client session id which may not be unique.'
+      )
+      clientSessionId = Date.now().toString()
+    }
+    sessionStorage.setItem(
+      CLIENT_SESSION_ID_SESSION_STORAGE_KEY,
+      clientSessionId
+    )
+  }
+  return clientSessionId
+}
 
 const initializeRunAllButton = () => {
   // Add a listener to the "Run All" button and send 'xxxx:run' messages when clicked
@@ -318,10 +342,38 @@ const initializeResetConfigButton = () => {
   }
 }
 
+const initializeUserSelect = () => {
+  const sc = document.getElementById('user-id') as HTMLSelectElement
+  if (sc) {
+    const params = new URLSearchParams(location.search)
+    const user_id = params.get('user')
+    if (user_id) {
+      const option = sc.querySelector(`option[value="${user_id}"]`)
+      if (option) {
+        option.setAttribute('selected', 'true')
+      } else {
+        location.replace(`${location.origin}`)
+      }
+    }
+    sc.addEventListener('change', (event) => {
+      sessionStorage.removeItem(CLIENT_SESSION_ID_SESSION_STORAGE_KEY)
+      const user = (event.target as HTMLSelectElement).value
+      if (!user) {
+        location.replace(location.origin)
+      } else {
+        location.replace(`${location.origin}?user=${user}`)
+      }
+    })
+
+    // sc.addEventListener()
+  }
+}
+
 /**
  * Initialize controls.
  */
 const initializeControls = () => {
+  initializeUserSelect()
   initializeRunAllButton()
   initializeShowDashboardCheckbox()
   initializeShowLookCheckbox()
@@ -541,11 +593,16 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
  */
 const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.useCookieless) {
+    const clientSessionId = getClientSessionId()
+    const userId = new URLSearchParams(location.search).get('user')
+    const search = userId
+      ? `?userId=${userId}&clientId=${clientSessionId}`
+      : `?clientId=${clientSessionId}`
     // Use cookieless embed
     LookerEmbedSDK.initCookieless(
       runtimeConfig.lookerHost,
-      '/acquire-embed-session',
-      '/generate-embed-tokens'
+      `/acquire-embed-session${search}`,
+      `/generate-embed-tokens${search}`
     )
   } else {
     // Use SSO embed

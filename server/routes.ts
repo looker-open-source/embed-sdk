@@ -36,13 +36,24 @@ import {
 } from './utils/cookieless_utils'
 import type { ApplicationConfig, LookerEmbedUser } from './types'
 
+interface ClientSession {
+  user_index: number
+  external_user_id: string
+  session_reference_token?: string
+  client_session_id?: string
+}
+
+interface SessionData {
+  clientSessions: ClientSession[]
+}
+
 /**
  * Add embed routes to an express application
  */
 export const addRoutes = (
   app: Express,
   config: ApplicationConfig,
-  user: LookerEmbedUser
+  users: LookerEmbedUser[]
 ) => {
   setConfig(config)
 
@@ -50,16 +61,46 @@ export const addRoutes = (
 
   app.use(
     cookieSession({
-      maxAge: user.session_length * 1000,
+      maxAge: users[0].session_length * 1000,
       name: 'embed_session',
       secret: config.cookie_secret,
     })
   )
 
-  app.use(function (req: Request, _res: Response, next: NextFunction) {
-    if (req.session!.external_user_id !== user.external_user_id) {
-      req.session!.external_user_id = user.external_user_id
-      req.session!.session_reference_token = undefined
+  app.use(function (req: Request, res: Response, next: NextFunction) {
+    if (!req.session) {
+      res.status(400).send({ message: 'session cookie data missing' })
+      return
+    }
+    const { clientId } = req.query
+    const clientSessions: ClientSession[] = req.session.client_sessions
+    if (!clientSessions) {
+      req.session.client_sessions = []
+      res.locals.current_session = {}
+    } else {
+      if (clientId) {
+        res.locals.current_session = clientSessions.find(
+          (clientSession) => clientSession.client_session_id === clientId
+        )
+      } else {
+        res.locals.current_session = clientSessions.find(
+          (clientSession) =>
+            clientSession.external_user_id === users[0].external_user_id
+        )
+      }
+    }
+    let userId = req.query.userId || users[0].external_user_id
+    if (!users.find((user) => user.external_user_id === userId)) {
+      userId = users[0].external_user_id
+    }
+    if (
+      !res.locals.current_session ||
+      res.locals.current_session.external_user_id !== userId
+    ) {
+      res.locals.current_session = {
+        client_session_id: clientId,
+        external_user_id: userId,
+      }
     }
     next()
   })
@@ -71,7 +112,7 @@ export const addRoutes = (
 
     if (configValid !== true) return
 
-    const url = createSignedUrl(src, user, config.host, config.secret)
+    const url = createSignedUrl(src, users[0], config.host, config.secret)
     res.json({ url })
   })
 
@@ -79,9 +120,11 @@ export const addRoutes = (
     '/acquire-embed-session',
     async function (req: Request, res: Response) {
       try {
-        const current_session_reference_token =
-          req.session && req.session.session_reference_token
-
+        const { current_session_reference_token, external_user_id } =
+          res.locals.current_session
+        const user =
+          users.find((user) => user.external_user_id === external_user_id) ||
+          users[0]
         const response = await acquireEmbedSession(
           req.headers['user-agent']!,
           user,
@@ -97,8 +140,26 @@ export const addRoutes = (
           api_token,
           api_token_ttl,
         } = response
-        req.session!.session_reference_token = session_reference_token
-
+        if (
+          req.session &&
+          current_session_reference_token !== session_reference_token
+        ) {
+          res.locals.current_session.session_reference_token =
+            session_reference_token
+          const clientSessions: ClientSession[] = req.session.client_sessions
+          const clientSessionIndex = clientSessions.findIndex(
+            (session) =>
+              session.client_session_id ===
+              res.locals.current_session.client_session_id
+          )
+          if (clientSessionIndex < 0) {
+            req.session.client_sessions.push(res.locals.current_session)
+          } else {
+            req.session.client_sessions[
+              clientSessionIndex
+            ].session_reference_token = session_reference_token
+          }
+        }
         res.json({
           api_token,
           api_token_ttl,
@@ -117,8 +178,17 @@ export const addRoutes = (
   app.put(
     '/generate-embed-tokens',
     async function (req: Request, res: Response) {
+      if (!req.session) {
+        res.status(400).send({ message: 'session cookie data missing' })
+        return
+      }
+      if (!res.locals.current_session) {
+        res.status(400).send({ message: 'current session data not found' })
+        return
+      }
       try {
-        const session_reference_token = req.session!.session_reference_token
+        const session_reference_token =
+          res.locals.current_session.session_reference_token
         const { api_token, navigation_token } = req.body as any
         const tokens = await generateEmbedTokens(
           req.headers['user-agent']!,
@@ -129,18 +199,6 @@ export const addRoutes = (
         res.json(tokens)
       } catch (err: any) {
         res.status(400).send({ message: err.message })
-      }
-    }
-  )
-
-  app.get(
-    '/set-config-embed-secret',
-    async function (req: Request, res: Response) {
-      if (req.query.secret) {
-        config.secret = req.query.secret as string
-        res.status(200).send({ message: 'Embed Secret Set' })
-      } else {
-        res.status(400).send({ message: 'No Embed Secret Provided' })
       }
     }
   )

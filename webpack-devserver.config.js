@@ -2,7 +2,7 @@ var path = require('path')
 var config = require('./config')
 const webpack = require('webpack')
 
-var user = require('./demo/demo_user.json')
+var users = require('./demo/demo_users.json')
 var { addRoutes } = require('./server/routes')
 
 var webpackConfig = {
@@ -53,7 +53,7 @@ var webpackConfig = {
     port: config.demo_port,
     watchContentBase: true,
     before: (app) => {
-      addRoutes(app, config, user)
+      addRoutes(app, config, users)
     },
   },
 }

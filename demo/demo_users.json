@@ -1,0 +1,60 @@
+[
+  {
+    "external_user_id": "user1",
+    "first_name": "Pat",
+    "last_name": "Embed",
+    "session_length": 3600,
+    "force_logout_login": true,
+    "external_group_id": "group1",
+    "group_ids": [],
+    "permissions": [
+      "access_data",
+      "see_looks",
+      "see_user_dashboards",
+      "explore",
+      "save_content",
+      "embed_browse_spaces",
+      "download_without_limit",
+      "create_alerts"
+    ],
+    "models": [
+      "faa",
+      "powered_by",
+      "thelook",
+      "extension",
+      "system__activity",
+      "app-lookml-diagram",
+      "hello_world"
+    ],
+    "user_attributes": { "locale": "en_US", "embed_encrypted": "abcd" }
+  },
+  {
+    "external_user_id": "user2",
+    "first_name": "Testy",
+    "last_name": "McTestface",
+    "session_length": 3600,
+    "force_logout_login": true,
+    "external_group_id": "group1",
+    "group_ids": [],
+    "permissions": [
+      "access_data",
+      "see_looks",
+      "see_user_dashboards",
+      "explore",
+      "save_content",
+      "embed_browse_spaces",
+      "download_without_limit",
+      "create_alerts"
+    ],
+    "models": [
+      "faa",
+      "powered_by",
+      "thelook",
+      "extension",
+      "system__activity",
+      "app-lookml-diagram",
+      "hello_world"
+    ],
+    "user_attributes": { "locale": "en_US" }
+  }
+]

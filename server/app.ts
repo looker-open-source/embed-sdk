@@ -28,11 +28,11 @@ import express from 'express'
 import { addRoutes } from './routes'
 import { config } from './config'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const user = require('../demo/demo_user.json')
+const users = require('../demo/demo_users.json')
 
 const app = express()
 
-addRoutes(app, config, user)
+addRoutes(app, config, users)
 
 app.use('/', express.static('public'))
 
