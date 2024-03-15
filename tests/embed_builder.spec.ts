@@ -250,6 +250,11 @@ describe('LookerEmbedBuilder', () => {
       expect(builder.embedUrl).toMatch('alpha=1&beta=2')
     })
 
+    it('should add url parameters / list', () => {
+      builder.withParams({ values: ['1', '2'] })
+      expect(builder.embedUrl).toMatch('values=1&values=2')
+    })
+
     it('should allow specifying a theme', () => {
       builder.withTheme('Fancy')
       expect(builder.embedUrl).toMatch('theme=Fancy')
