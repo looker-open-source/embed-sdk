@@ -170,7 +170,7 @@ This section does not apply to cookieless embed as an alternate mechanism for au
 If you prefer, your backend service can [implement the signature function](https://github.com/looker/looker_embed_sso_examples) instead of calling the Looker API by using a [Looker Embed secret](https://docs.looker.com/r/sdk/sso-embed). Manually generating the signed URL avoids a call to the Looker API but is more error prone.
 
 One example of a helper method that generates a signed URL, `createSignedUrl()`, is provided in
-[server_utils/auth_utils.ts](blob/master/demo/demo_config.ts). Its usage is as follows:
+[server_utils/auth_utils.ts](blob/master/server_utils/auth_utils.ts). Its usage is as follows:
 
 ```javascript
 import { createSignedUrl } from './auth_utils'
