@@ -86,6 +86,13 @@ export interface LookerEmbedCookielessSessionData {
    * Session time to live in seconds.
    */
   session_reference_token_ttl?: number | null
+
+  /**
+   * Backend generated embed url for sessions with access to an exclusive component.
+   * For when using callback methods that inject additional information for session creation.
+   * If present, this value bypasses local url generation.
+   */
+  signed_embed_url?: string | null
 }
 
 /**
