@@ -44,13 +44,19 @@ interface LookerEmbedHostSettings {
 }
 
 export interface UrlParams {
-  [key: string]: string
+  [key: string]: string | string[]
 }
 
-function stringify(params: { [key: string]: string }) {
+function stringify(params: UrlParams) {
   const result = []
   for (const key in params) {
-    result.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+    const value = params[key]
+    const valueArray = Array.isArray(value) ? value : [value]
+    for (const singleValue of valueArray) {
+      result.push(
+        `${encodeURIComponent(key)}=${encodeURIComponent(singleValue)}`
+      )
+    }
   }
   return result.join('&')
 }
