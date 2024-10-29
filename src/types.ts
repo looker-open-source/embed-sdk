@@ -357,6 +357,21 @@ export interface DrillMenuEvent extends LookerEmbedEvent {
   addFilterJson: AddFilterJson
 }
 
+ /**
+  * Drill modal download event
+  */
+ export interface DrillModalDownloadEvent extends LookerEmbedEvent {
+  dashboard: {
+    id: string | number
+    title: string
+    url: string
+    absoluteUrl: string
+    dashboard_filters: LookerEmbedFilterParams
+  }
+  drillExploreUrl: string
+  fileFormat: string
+}
+
 /**
  * Drill Modal Explore from Here event
  *
@@ -563,6 +578,10 @@ export interface LookerEmbedEventMap {
     this: LookerEmbedBase,
     event: DrillMenuEvent
   ) => CancellableEventResponse | undefined
+  'drillmodal:download': (
+    this: LookerEmbedBase,
+    event: DrillModalDownloadEvent
+  ) => void
   'drillmodal:explore': (
     this: LookerEmbedBase,
     event: DrillModalExploreEvent
