@@ -14,15 +14,40 @@
     "save_content",
     "embed_browse_spaces",
     "download_without_limit",
-    "create_alerts"
+    "create_alerts",
+    "see_lookml_dashboards",
+    "create_table_calculations",
+    "create_custom_fields",
+    "can_create_forecast",
+    "send_outgoing_webhook",
+    "send_to_s3",
+    "send_to_sftp",
+    "schedule_look_emails",
+    "schedule_external_look_emails",
+    "send_to_integration",
+    "create_alerts",
+    "see_sql",
+    "clear_cache_refresh",
+    "see_drill_overlay",
+    "embed_save_shared_space"
   ],
   "models": [
     "powered_by",
     "thelook",
+    "cypress_thelook",
     "extension",
     "system__activity",
     "app-lookml-diagram",
-    "hello_world"
+    "hello_world",
+    "benchmark_pg",
+    "faa",
+    "cucu_mysql",
+    "cucu_thelook",
+    "cypress_mysql",
+    "thelook",
+    "hello_world",
+    "faa",
+    "performance_test_thelook"
   ],
   "user_attributes": { "locale": "en_US", "embed_encrypted": "abcd" }
 }
