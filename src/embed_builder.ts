@@ -203,7 +203,7 @@ export class EmbedBuilder<T> {
    *
    * @param suffix Next generation suffix. Defaults to '-next'.
    * @deprecated this is now a noop as dashboards next is the default dashboards
-   *             experence and the legacy dashboards have been removed.
+   *             experience and the legacy dashboards have been removed.
    */
 
   withNext(_ = '') {
