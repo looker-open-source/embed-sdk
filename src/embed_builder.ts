@@ -79,7 +79,6 @@ export class EmbedBuilder<T> {
   private _frameBorder: string = '0'
   private _id?: number | string
   private _params: UrlParams
-  private _suffix: string = ''
   private _url?: string | null
   private _sandboxedHost?: boolean
   private _scrollMonitor?: boolean
@@ -203,11 +202,11 @@ export class EmbedBuilder<T> {
    * Allows specifying next generation content
    *
    * @param suffix Next generation suffix. Defaults to '-next'.
+   * @deprecated this is now a noop as dashboards next is the default dashboards
+   *             experence and the legacy dashboards have been removed.
    */
 
-  withNext(suffix = '-next') {
-    this._suffix = suffix
-    this._endpoint += this._suffix
+  withNext(_ = '') {
     return this
   }
 
@@ -473,10 +472,11 @@ export class EmbedBuilder<T> {
 
   /**
    * The the suffix to append to the content type portion of the url
+   * @deprecated will always return an empty string
    */
 
   get suffix() {
-    return this._suffix
+    return ''
   }
 
   /**
