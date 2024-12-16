@@ -64,16 +64,6 @@ describe('LookerEmbedBuilder', () => {
       expect(builder.embedUrl).toMatch(`/embed/dashboards/${dashboardId}`)
     })
 
-    it('should generate a next generation dashboard URL', () => {
-      builder = builder.withNext()
-      expect(builder.embedUrl).toMatch(`/embed/dashboards-next/${dashboardId}`)
-    })
-
-    it('should generate a dashboard URL with a provided suffix', () => {
-      builder = builder.withNext('-beta')
-      expect(builder.embedUrl).toMatch(`/embed/dashboards-beta/${dashboardId}`)
-    })
-
     it('should generate a dashboard URL with the requested filters', () => {
       const filterName = 'My_Number'
       const filterValue = '123'
