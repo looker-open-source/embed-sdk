@@ -1,6 +1,7 @@
 var path = require('path')
 var config = require('./config')
 const webpack = require('webpack')
+const express = require('express')
 
 var user = require('./demo/demo_user.json')
 var { addRoutes } = require('./server/routes')
@@ -47,13 +48,16 @@ var webpackConfig = {
     }),
   ],
   devServer: {
+    static: {
+      directory: path.join(__dirname, 'demo'),
+    },
     compress: true,
-    contentBase: [path.join(__dirname, 'demo')],
     host: config.demo_host,
     port: config.demo_port,
-    watchContentBase: true,
-    before: (app) => {
+    app: () => {
+      const app = express()
       addRoutes(app, config, user)
+      return app
     },
   },
 }
