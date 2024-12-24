@@ -1,7 +1,3 @@
-body {
-  font-family: 'open sans', arial, sans-serif;
-  text-align: center;
-}
 .embeds-header {
   width: 100%;
   display: grid;
@@ -22,14 +18,6 @@ body {
     grid-template-rows: repeat(auto-fill, 1fr);
   }
 }
-select {
-  min-width: 150px;
-  height: 25px;
-}
-button {
-  min-width: 100px;
-  height: 25px;
-}
 .loading-message {
   padding-top: 10px;
 }
@@ -49,10 +37,6 @@ button {
 }
 .embed-header {
   height: 65px;
-  width: 100%;
-}
-.error-controls {
-  height: 40px;
   width: 100%;
 }
 .looker-embed {

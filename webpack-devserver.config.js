@@ -11,6 +11,7 @@ var webpackConfig = {
   devtool: 'source-map',
   entry: {
     demo: './demo/demo.ts',
+    demo_v1: './demo/demo_v1.ts',
     message_example: './demo/message_example.ts',
   },
   output: {
@@ -40,6 +41,7 @@ var webpackConfig = {
     new webpack.EnvironmentPlugin({
       LOOKER_EMBED_HOST: null,
       LOOKER_DASHBOARD_ID: null,
+      LOOKER_DASHBOARD_ID_2: null,
       LOOKER_LOOK_ID: null,
       LOOKER_EXPLORE_ID: null,
       LOOKER_EXTENSION_ID: null,

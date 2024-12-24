@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "build": "npm run clean && npm run build_utils && tsc && webpack",
+    "build-css": "npx tailwindcss -i ./tw/components.css -o ./demo/components.css --watch",
     "build_utils": "tsc --build tsconfig-server.json",
     "clean": "rm -rf lib dist",
     "docs": "typedoc --gitRevision master --githubPages false --out docs src/index.ts",
@@ -66,6 +67,7 @@
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-testing-library": "^5.0.3",
     "express": "^4.18.2",
+    "flowbite": "^2.5.2",
     "husky": "^9.1.7",
     "jasmine-core": "^4.0.0",
     "karma": "^6.3.11",
@@ -74,6 +76,7 @@
     "karma-typescript": "^5.5.3",
     "karma-typescript-es6-transform": "^5.5.3",
     "prettier": "^2.4.1",
+    "tailwindcss": "^3.4.16",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
