@@ -2,93 +2,92 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Looker Embed SDK Demo</title>
-    <link href="demo.css" rel="stylesheet" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Looker Embed SDK Demo (V2)</title>
+    <link href="components.css" rel="stylesheet" />
+    <style>
+      #embed-container {
+        > iframe {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    </style>
     <script src="demo.js"></script>
   </head>
-  <body>
-    <h1>Looker Embed SDK Demo Page</h1>
-    <div id="controls" class="embeds-header">
-      <div class="embeds-controls">
-        <div class="embed-control">
-          <input type="checkbox" id="showDashboard" checked />
-          <label>Show dashboard</label>
+  <body class="p-5 h-dvh flex flex-col">
+    <h1 class="main-heading">Looker Embed SDK Demo Page (V2)</h1>
+    <div id="controls" class="flex pt-5">
+      <div class="flex-auto flex space-x-5">
+        <div class="pt-1">
+          <input type="checkbox" id="useCookieless" class="form-checkbox" />
+          <label class="form-checkbox-label" for="useCookieless"
+            >Use cookieless</label
+          >
         </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showLook" checked />
-          <label>Show look</label>
+        <div class="pt-1">
+          <input type="checkbox" id="useDynamicHeights" class="form-checkbox" />
+          <label class="form-checkbox-label" for="useDynamicHeights"
+            >Use dynamic heights</label
+          >
         </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showExplore" checked />
-          <label>Show explore</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showExtension" checked />
-          <label>Show extension</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="useCookieless" checked />
-          <label>Use cookieless</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="useDynamicHeights" />
-          <label>Use dynamic heights</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="preventNavigation" />
-          <label>Prevent navigation</label>
+        <div class="pt-1 pb-2">
+          <input type="checkbox" id="preventNavigation" class="form-checkbox" />
+          <label class="form-checkbox-label" for="preventNavigation"
+            >Prevent navigation</label
+          >
         </div>
       </div>
-      <div>
-        <label for="state">State: </label>
-        <select id="state">
-          <option value="">Select...</option>
-          <option value="California" selected>California</option>
-          <option value="Illinois">Illinois</option>
-          <option value="Minnesota">Minnesota</option>
-        </select>
-        <button id="run-all">Run All</button>
-        <button id="reset-config">Reset</button>
-      </div>
-      <div class="demo-link">
-        <a href="message_example.html">Window Message Example</a>
+      <div class="flex-auto flex flex-col text-right">
+        <a href="demo_v1.html" class="link">Embed SDK Demo (V1)</a>
+        <a href="message_example.html" class="link">Window Message Example</a>
       </div>
     </div>
-    <div class="embed-container">
-      <div id="demo-dashboard">
-        <div class="embed-header">
-          <button id="run-dashboard">Run</button>
-          <button id="stop-dashboard">Stop</button>
-          <button id="edit-dashboard">Edit</button>
-          <div id="dashboard-state" class="loading-message">Loading...</div>
+    <div class="tabs-container">
+      <ul class="tabs-list">
+        <li class="tab-item">
+          <a id="preload-tab" class="tab-active">Preload</a>
+        </li>
+        <li class="tab-item">
+          <a id="dashboard-1-tab" class="tab">Dashboard 1</a>
+        </li>
+        <li class="tab-item">
+          <a id="dashboard-2-tab" class="tab">Dashboard 2</a>
+        </li>
+        <li class="tab-item">
+          <a id="explore-tab" class="tab">Explore</a>
+        </li>
+        <li class="tab-item">
+          <a id="look-tab" class="tab">Look</a>
+        </li>
+        <li class="tab-item">
+          <a id="extension-tab" class="tab">Extension</a>
+        </li>
+      </ul>
+    </div>
+    <div id="embed-status" class="pt-5">Loading...</div>
+    <div class="w-full flex pt-5">
+      <div class="flex flex-auto">
+        <div class="flex flex-auto space-x-3">
+          <button id="run-embed" class="btn-primary">Run</button>
+          <button id="stop-embed" class="btn-primary">Stop</button>
+          <button id="edit-embed" class="btn-primary">Edit</button>
         </div>
-        <div id="dashboard"></div>
-      </div>
-      <div id="demo-look">
-        <div class="embed-header">
-          <button id="run-look">Run</button>
-          <div id="look-state" class="loading-message">Loading...</div>
+        <div class="flex-auto flex space-x-5 items-center">
+          <label
+            for="state-filter"
+            class="form-select-label mb-0 whitespace-nowrap"
+            >Select a state to filter by
+          </label>
+          <select id="state-filter" class="form-select">
+            <option value="">Select...</option>
+            <option value="California" selected>California</option>
+            <option value="Illinois">Illinois</option>
+            <option value="Minnesota">Minnesota</option>
+          </select>
         </div>
-        <div id="look"></div>
-      </div>
-      <div id="demo-explore">
-        <div class="embed-header">
-          <button id="run-explore">Run</button>
-          <div id="explore-state" class="loading-message">Loading...</div>
-        </div>
-        <div id="explore"></div>
-      </div>
-      <div id="demo-extension">
-        <div class="embed-header">
-          <div id="extension-state" class="loading-message"></div>
-        </div>
-        <div id="extension"></div>
       </div>
     </div>
+    <div id="embed-container" class="grow w-full"></div>
   </body>
 </html>

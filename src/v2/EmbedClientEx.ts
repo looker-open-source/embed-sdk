@@ -2,7 +2,7 @@
 
  MIT License
 
- Copyright (c) 2019 Looker Data Sciences, Inc.
+ Copyright (c) 2022 Looker Data Sciences, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,42 @@
  SOFTWARE.
 
  */
-
 import type { ChattyHost, ChattyHostBuilder } from '@looker/chatty'
-import { Chatty } from '@looker/chatty'
-import type { LookerEmbedBase } from './embed_base'
-import type { EmbedBuilder } from './embed_builder'
 import type {
   CookielessRequestInit,
   EnvClientDialogEvent,
   LookerEmbedCookielessSessionData,
   PagePropertiesChangedEvent,
-} from './types'
-import { IS_URL } from './utils'
+} from '../types'
+import { IS_URL } from '../utils'
+import type { EmbedBuilderEx } from './EmbedBuilderEx'
+import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
+import { EmbedConnection } from './EmbedConnection'
+import type { IEmbedClient, ILookerConnection } from './types'
 
-/**
- * Wrapper for Looker embedded content. Provides a mechanism for creating the embedded content element,
- * and for establishing two-way communication between the parent window and the embedded content.
- */
-
-export class EmbedClient<T> {
-  private static sessionAcquired = false
-  private static acquireSessionPromise?: Promise<string>
-
+export class EmbedClientEx implements IEmbedClient {
   _hostBuilder: ChattyHostBuilder | null = null
   _host: ChattyHost | null = null
-  _connection: Promise<T> | null = null
-  _client: T | null = null
+  _connection: Promise<EmbedConnection> | null = null
+  _client: EmbedConnection | null = null
   _cookielessInitialized = false
   _cookielessApiToken?: string | null
   _cookielessApiTokenTtl?: number | null
   _cookielessNavigationToken?: string | null
   _cookielessNavigationTokenTtl?: number | null
   _cookielessSessionReferenceTokenTtl?: number | null
+  _pageChangeResolver?: (
+    value: EmbedConnection | PromiseLike<EmbedConnection>
+  ) => void
 
   /**
    * @hidden
    */
 
-  constructor(private _builder: EmbedBuilder<T>) {}
+  constructor(
+    private _sdk: LookerEmbedExSDK,
+    private _builder: EmbedBuilderEx
+  ) {}
 
   /**
    * Returns a promise that resolves to a client that can be used to send messages to the
@@ -87,8 +85,17 @@ export class EmbedClient<T> {
     return IS_URL.test(apiHost) ? apiHost : `https://${apiHost}`
   }
 
-  private async createIframe(url: string) {
-    this._hostBuilder = Chatty.createHost(url)
+  private async createIframe(url: string, waitUntilLoaded: boolean) {
+    this._hostBuilder = this._sdk.chattyHostCreator(url)
+    this._builder.handlers['page:changed'] = [
+      () => {
+        if (this._pageChangeResolver) {
+          const resolve = this._pageChangeResolver
+          this._pageChangeResolver = undefined
+          resolve(this._client as EmbedConnection)
+        }
+      },
+    ]
     if (this._builder.dialogScroll) {
       this._builder.handlers['env:client:dialog'] = [
         ({ open, placement }: EnvClientDialogEvent) => {
@@ -145,8 +152,7 @@ export class EmbedClient<T> {
             } else {
               this._cookielessInitialized = true
             }
-            const client = this._client as unknown as LookerEmbedBase
-            client.send('session:tokens', {
+            this._client.send('session:tokens', {
               api_token: this._cookielessApiToken,
               api_token_ttl: this._cookielessApiTokenTtl,
               navigation_token: this._cookielessNavigationToken,
@@ -187,21 +193,29 @@ export class EmbedClient<T> {
       this.addIframeMonitor(this._host.iframe)
     }
 
-    return this._host.connect().then((host) => {
-      // eslint-disable-next-line new-cap
-      this._client = new this._builder.clientConstructor(host)
+    const connectPromise = this._host.connect().then((host) => {
+      this._client = new EmbedConnection(host, this)
       return this._client
     })
+
+    if (waitUntilLoaded) {
+      return new Promise<EmbedConnection>((resolve) => {
+        this._pageChangeResolver = resolve
+      })
+    }
+
+    return connectPromise
   }
 
   private sendScrollData(iframe: HTMLIFrameElement) {
-    const client = this._client as unknown as LookerEmbedBase
-    client.send('env:host:scroll', {
-      offsetLeft: iframe.offsetLeft,
-      offsetTop: iframe.offsetTop,
-      scrollX: window.scrollX,
-      scrollY: window.scrollY,
-    })
+    if (this._client) {
+      this._client.send('env:host:scroll', {
+        offsetLeft: iframe.offsetLeft,
+        offsetTop: iframe.offsetTop,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+      })
+    }
   }
 
   private addIframeMonitor(iframe: HTMLIFrameElement) {
@@ -214,7 +228,7 @@ export class EmbedClient<T> {
   }
 
   private async createUrl() {
-    const src = this._builder.embedUrl
+    const src = this.appendRequiredParameters(this._builder.embedUrl)
     const auth = this._builder.auth
     if (!auth?.url) return `${this._builder.apiHost}${src}`
 
@@ -254,22 +268,22 @@ export class EmbedClient<T> {
   }
 
   private async acquireCookielessEmbedSession(): Promise<string> {
-    if (EmbedClient.sessionAcquired) {
+    if (this._sdk._sessionAcquired) {
       return this.acquireCookielessEmbedSessionInternal()
     }
-    if (EmbedClient.acquireSessionPromise) {
-      await EmbedClient.acquireSessionPromise
+    if (this._sdk._acquireSessionPromise) {
+      await this._sdk._acquireSessionPromise
       return this.acquireCookielessEmbedSessionInternal()
     }
-    EmbedClient.acquireSessionPromise =
+    this._sdk._acquireSessionPromise =
       this.acquireCookielessEmbedSessionInternal()
-    return EmbedClient.acquireSessionPromise
+    return this._sdk._acquireSessionPromise
       .then((url) => {
-        EmbedClient.sessionAcquired = true
+        this._sdk._sessionAcquired = true
         return url
       })
       .catch((error) => {
-        EmbedClient.acquireSessionPromise = undefined
+        this._sdk._acquireSessionPromise = undefined
         throw error
       })
   }
@@ -301,7 +315,9 @@ export class EmbedClient<T> {
     const apiHost = `https://${this._builder.apiHost}`
     const sep =
       new URL(this._builder.embedUrl, apiHost).search === '' ? '?' : '&'
-    const src = `${this._builder.embedUrl}${sep}embed_navigation_token=${navigation_token}`
+    const src = `${this.appendRequiredParameters(
+      this._builder.embedUrl
+    )}${sep}embed_navigation_token=${navigation_token}`
     const embedPath =
       '/login/embed/' +
       encodeURIComponent(src) +
@@ -378,28 +394,62 @@ export class EmbedClient<T> {
    * client that can be used to send messages to the embedded content.
    */
 
-  async connect(): Promise<T> {
+  async connect(waitUntilLoaded = false): Promise<ILookerConnection> {
     if (this._connection) return this._connection
 
-    if (this._builder.url) {
-      if (this._builder.isCookielessEmbed) {
-        throw new Error('withUrl not supported by cookieless embed')
-      }
-      this._connection = this.createIframe(this._builder.url)
+    if (
+      this._builder.url &&
+      !this._builder.auth &&
+      !this._builder.isCookielessEmbed
+    ) {
+      // Private embedding
+      this._connection = this.createIframe(
+        this.appendRequiredParameters(this._builder.url),
+        waitUntilLoaded
+      )
     } else {
       if (this._builder.isCookielessEmbed) {
+        // Cookieless embedding
         this._connection = this.acquireCookielessEmbedSession()
-          .then(async (url) => this.createIframe(url))
+          .then(async (url) => this.createIframe(url, waitUntilLoaded))
           .catch((_error) => {
             this._connection = null
             throw _error
           })
       } else {
+        // Signed
         this._connection = this.createUrl().then(async (url) =>
-          this.createIframe(url)
+          this.createIframe(url, waitUntilLoaded)
         )
       }
     }
     return this._connection
+  }
+
+  appendRequiredParameters(urlString: string): string {
+    let requiredParams: Record<string, string>
+    if (this._builder.sandboxedHost) {
+      requiredParams = {
+        embed_domain: this._sdk.apiHost,
+        sandboxed_host: 'true',
+        sdk: '2',
+      }
+    } else {
+      const embedDomain = window.location.origin
+      requiredParams = {
+        embed_domain: embedDomain,
+        sdk: '2',
+      }
+    }
+    const tempOrigin = urlString.startsWith('https://') ? '' : 'http://abc'
+    const url = new URL(`${tempOrigin}${urlString}`)
+    for (const key in requiredParams) {
+      if (!url.searchParams.has(key)) {
+        url.searchParams.append(key, requiredParams[key])
+      }
+    }
+    return tempOrigin
+      ? url.toString().replace('http://abc', '')
+      : url.toString()
   }
 }

@@ -2,7 +2,7 @@
 
  MIT License
 
- Copyright (c) 2019 Looker Data Sciences, Inc.
+ Copyright (c) 2022 Looker Data Sciences, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,37 +23,19 @@
  SOFTWARE.
 
  */
-
-import type { ChattyHostConnection, CallbackStore } from '@looker/chatty'
-import { EmbedClient } from './embed'
+import type { CallbackStore } from '@looker/chatty'
+import type { UrlParams } from 'src/embed_builder'
 import type {
   LookerAuthConfig,
   LookerEmbedEventMap,
   LookerEmbedFilterParams,
-  CookielessCallback,
-  CookielessRequestInit,
-} from './types'
-import { stringify, escapeFilterParam } from './utils'
+} from 'src/types'
+import { stringify, escapeFilterParam } from '../utils'
+import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
+import { EmbedClientEx } from './EmbedClientEx'
+import type { IEmbedBuilder, IEmbedClient } from './types'
 
-type EmbedClientConstructor<T> = { new (host: ChattyHostConnection): T }
-
-interface LookerEmbedHostSettings {
-  apiHost: string
-  auth?: LookerAuthConfig
-  acquireSession?: CookielessCallback | string | CookielessRequestInit
-  generateTokens?: CookielessCallback | string | CookielessRequestInit
-}
-
-export interface UrlParams {
-  [key: string]: string | string[]
-}
-
-/**
- * The builder class for [[EmbedClient]]. Contains methods for defining the properties of embedded
- * Looker content.
- */
-
-export class EmbedBuilder<T> {
+export class EmbedBuilderEx implements IEmbedBuilder {
   private _handlers: CallbackStore = {}
   private _appendTo: HTMLElement | null = null
   private _sandboxAttrs: string[] = []
@@ -61,7 +43,7 @@ export class EmbedBuilder<T> {
   private _classNames: string[] = []
   private _frameBorder: string = '0'
   private _id?: number | string
-  private _params: UrlParams
+  private _params: UrlParams = {}
   private _url?: string | null
   private _sandboxedHost?: boolean
   private _scrollMonitor?: boolean
@@ -73,25 +55,10 @@ export class EmbedBuilder<T> {
    */
 
   constructor(
-    private _hostSettings: LookerEmbedHostSettings,
+    private _sdk: LookerEmbedExSDK,
     private _type: string,
-    private _endpoint: string,
-    private _clientConstructor: EmbedClientConstructor<T>
-  ) {
-    if (this.sandboxedHost) {
-      this._params = {
-        embed_domain: this._hostSettings.apiHost,
-        sandboxed_host: 'true',
-        sdk: '2',
-      }
-    } else {
-      const embedDomain = window.location.origin
-      this._params = {
-        embed_domain: embedDomain,
-        sdk: '2',
-      }
-    }
-  }
+    private _endpoint: string
+  ) {}
 
   /**
    * Value for the `frame-border` attribute of an embedded iframe
@@ -104,8 +71,6 @@ export class EmbedBuilder<T> {
 
   /**
    * @hidden
-   *
-   * @param id
    */
 
   withId(id: number | string) {
@@ -133,7 +98,10 @@ export class EmbedBuilder<T> {
    * @filters Filters to apply
    */
 
-  withFilters(filters: LookerEmbedFilterParams, escape = false) {
+  withFilters(
+    filters: LookerEmbedFilterParams,
+    escape: boolean | undefined = false
+  ): IEmbedBuilder {
     if (this.type === 'dashboard') {
       for (const key in filters) {
         this._params[key] = escape
@@ -182,18 +150,6 @@ export class EmbedBuilder<T> {
   }
 
   /**
-   * Allows specifying next generation content
-   *
-   * @param suffix Next generation suffix. Defaults to '-next'.
-   * @deprecated this is now a noop as dashboards next is the default dashboards
-   *             experience and the legacy dashboards have been removed.
-   */
-
-  withNext(_ = '') {
-    return this
-  }
-
-  /**
    * Allows specifying a theme for the content.
    *
    * @param theme Theme name
@@ -215,7 +171,7 @@ export class EmbedBuilder<T> {
    * @param monitor defaults to true
    *
    */
-  withScrollMonitor(monitor = true) {
+  withScrollMonitor(monitor: boolean | undefined = true) {
     this._scrollMonitor = monitor
     return this
   }
@@ -226,7 +182,9 @@ export class EmbedBuilder<T> {
    *
    * @param dynamicIFrameHeight defaults to true
    */
-  withDynamicIFrameHeight(dynamicIFrameHeight = true) {
+  withDynamicIFrameHeight(
+    dynamicIFrameHeight: boolean | undefined = true
+  ): IEmbedBuilder {
     this._dynamicIFrameHeight = dynamicIFrameHeight
     return this
   }
@@ -237,7 +195,7 @@ export class EmbedBuilder<T> {
    *
    * @param dialogScroll defaults to true
    */
-  withDialogScroll(dialogScroll = true) {
+  withDialogScroll(dialogScroll: boolean | undefined = true) {
     this._dialogScroll = dialogScroll
     return this
   }
@@ -249,13 +207,13 @@ export class EmbedBuilder<T> {
    */
 
   withApiHost(apiHost: string) {
-    if (!this._hostSettings.apiHost) {
-      this._hostSettings.apiHost = apiHost
+    if (!this._sdk.apiHost) {
+      this._sdk.apiHost = apiHost
       if (this.sandboxedHost) {
         this._params.embed_domain = apiHost
         this._params.sandboxed_host = 'true'
       }
-    } else if (this._hostSettings.apiHost !== apiHost) {
+    } else if (this._sdk.apiHost !== apiHost) {
       throw new Error('not allowed to change api host')
     }
     return this
@@ -268,9 +226,9 @@ export class EmbedBuilder<T> {
    */
 
   withAuthUrl(authUrl: string) {
-    if (!this._hostSettings.auth?.url) {
-      this._hostSettings.auth = { url: authUrl }
-    } else if (this._hostSettings.auth.url !== authUrl) {
+    if (!this._sdk.auth?.url) {
+      this._sdk.auth = { url: authUrl }
+    } else if (this._sdk.auth.url !== authUrl) {
       throw new Error('not allowed to change auth url')
     }
     return this
@@ -283,10 +241,10 @@ export class EmbedBuilder<T> {
    */
 
   withAuth(auth: LookerAuthConfig) {
-    if (!this._hostSettings.auth) {
-      this._hostSettings.auth = auth
-    } else if (this._hostSettings.auth !== auth) {
-      throw new Error('not allowed to change auth')
+    if (!this._sdk.auth) {
+      this._sdk.auth = { ...auth }
+    } else if (this._sdk.auth !== auth) {
+      throw new Error('not allowed to change auth url')
     }
     return this
   }
@@ -298,9 +256,6 @@ export class EmbedBuilder<T> {
    */
 
   withUrl(url: string) {
-    if (this.isCookielessEmbed) {
-      throw new Error('withUrl not supported by cookieless embed')
-    }
     this._url = url
     return this
   }
@@ -362,7 +317,7 @@ export class EmbedBuilder<T> {
    */
 
   get apiHost() {
-    return this._hostSettings.apiHost
+    return this._sdk.apiHost
   }
 
   /**
@@ -370,21 +325,21 @@ export class EmbedBuilder<T> {
    */
 
   get isCookielessEmbed() {
-    return !!this._hostSettings.acquireSession
+    return !!this._sdk.acquireSession
   }
 
   /**
    * Cookieless embed acquire session
    */
   get acquireSession() {
-    return this._hostSettings.acquireSession
+    return this._sdk.acquireSession
   }
 
   /**
    * Cookieless embed generate tokens
    */
   get generateTokens() {
-    return this._hostSettings.generateTokens
+    return this._sdk.generateTokens
   }
 
   /**
@@ -392,7 +347,7 @@ export class EmbedBuilder<T> {
    */
 
   get url() {
-    return this._url
+    return this._url || ''
   }
 
   /**
@@ -401,7 +356,7 @@ export class EmbedBuilder<T> {
    */
 
   get authUrl() {
-    return this._hostSettings.auth?.url
+    return this._sdk.auth?.url
   }
 
   /**
@@ -409,7 +364,7 @@ export class EmbedBuilder<T> {
    */
 
   get auth() {
-    return this._hostSettings.auth
+    return this._sdk.auth
   }
 
   /**
@@ -417,8 +372,12 @@ export class EmbedBuilder<T> {
    */
 
   get embedUrl() {
-    const params = stringify(this._params)
-    return `${this.endpoint}/${this.id}?${params}`
+    if (this.url && !this.url.startsWith('https://')) {
+      return `${this.endpoint}${this.url}`
+    } else {
+      const params = stringify(this._params)
+      return `${this.endpoint}/${this.id}?${params}`
+    }
   }
 
   /**
@@ -495,14 +454,6 @@ export class EmbedBuilder<T> {
   }
 
   /**
-   * @hidden
-   */
-
-  get clientConstructor() {
-    return this._clientConstructor
-  }
-
-  /**
    * Select an element to append the embedded content to, either a content selector or
    * the DOM element.
    *
@@ -539,7 +490,7 @@ export class EmbedBuilder<T> {
    * Constructs the embedded content, including creating the DOM element that contains the content.
    */
 
-  build(): EmbedClient<T> {
-    return new EmbedClient<T>(this)
+  build(): IEmbedClient {
+    return new EmbedClientEx(this._sdk, this)
   }
 }
