@@ -76,7 +76,7 @@ const lookerHost = 'mycompany.looker.com'
 const dashboardId = '1'
 const dashboardId2 = '2'
 
-// A Look that the user can see. Set to '0' to disable look demo.
+// A Look that the user can see. Set to '-' or '0' to disable look demo.
 // Slugs are NOT supported.
 const lookId = '1'
 

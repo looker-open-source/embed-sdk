@@ -2,7 +2,7 @@
 
  MIT License
 
- Copyright (c) 2022 Looker Data Sciences, Inc.
+ Copyright (c) 2024 Looker Data Sciences, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,6 @@ import type {
   LookerEmbedEventMap,
   LookerEmbedFilterParams,
 } from 'src/types'
-import { EmbedClientEx } from './EmbedClientEx'
 
 export type LoadIdParams = {
   type: 'dashboards' | 'explore' | 'looks' | 'extensions'

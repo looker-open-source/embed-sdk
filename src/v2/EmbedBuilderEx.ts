@@ -2,7 +2,7 @@
 
  MIT License
 
- Copyright (c) 2022 Looker Data Sciences, Inc.
+ Copyright (c) 2024 Looker Data Sciences, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,12 @@
 
  */
 import type { CallbackStore } from '@looker/chatty'
-import type { UrlParams } from 'src/embed_builder'
+import type { UrlParams } from '../embed_builder'
 import type {
   LookerAuthConfig,
   LookerEmbedEventMap,
   LookerEmbedFilterParams,
-} from 'src/types'
+} from '../types'
 import { stringify, escapeFilterParam } from '../utils'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedClientEx } from './EmbedClientEx'
@@ -64,7 +64,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * Value for the `frame-border` attribute of an embedded iframe
    */
 
-  withFrameBorder(attr: string) {
+  withFrameBorder(attr: string): IEmbedBuilder {
     this._frameBorder = attr
     return this
   }
@@ -73,7 +73,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @hidden
    */
 
-  withId(id: number | string) {
+  withId(id: number | string): IEmbedBuilder {
     this._id = id
     return this
   }
@@ -85,7 +85,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * created by ID.
    */
 
-  withParams(params: UrlParams) {
+  withParams(params: UrlParams): IEmbedBuilder {
     for (const key in params) {
       this._params[key] = params[key]
     }
@@ -124,7 +124,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param attr one or more sandbox attributes for an embedded content iframe.
    */
 
-  withSandboxAttr(...attr: string[]) {
+  withSandboxAttr(...attr: string[]): IEmbedBuilder {
     this._sandboxAttrs = this._sandboxAttrs.concat(attr)
     return this
   }
@@ -134,7 +134,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param attr one or more allow attributes for an embedded content iframe.
    */
 
-  withAllowAttr(...attr: string[]) {
+  withAllowAttr(...attr: string[]): IEmbedBuilder {
     this._allowAttrs = this._allowAttrs.concat(attr)
     return this
   }
@@ -144,7 +144,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param className one or more sandbox attributes for an embedded content.
    */
 
-  withClassName(...className: string[]) {
+  withClassName(...className: string[]): IEmbedBuilder {
     this._classNames = this._classNames.concat(className)
     return this
   }
@@ -155,7 +155,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param theme Theme name
    */
 
-  withTheme(theme: string) {
+  withTheme(theme: string): IEmbedBuilder {
     this._params.theme = theme
     return this
   }
@@ -171,7 +171,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param monitor defaults to true
    *
    */
-  withScrollMonitor(monitor: boolean | undefined = true) {
+  withScrollMonitor(monitor: boolean | undefined = true): IEmbedBuilder {
     this._scrollMonitor = monitor
     return this
   }
@@ -195,7 +195,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    *
    * @param dialogScroll defaults to true
    */
-  withDialogScroll(dialogScroll: boolean | undefined = true) {
+  withDialogScroll(dialogScroll: boolean | undefined = true): IEmbedBuilder {
     this._dialogScroll = dialogScroll
     return this
   }
@@ -206,7 +206,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param apiHost
    */
 
-  withApiHost(apiHost: string) {
+  withApiHost(apiHost: string): IEmbedBuilder {
     if (!this._sdk.apiHost) {
       this._sdk.apiHost = apiHost
       if (this.sandboxedHost) {
@@ -225,7 +225,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param authUrl URL to endpoint that can sign Looker SSO URLs
    */
 
-  withAuthUrl(authUrl: string) {
+  withAuthUrl(authUrl: string): IEmbedBuilder {
     if (!this._sdk.auth?.url) {
       this._sdk.auth = { url: authUrl }
     } else if (this._sdk.auth.url !== authUrl) {
@@ -240,7 +240,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param auth
    */
 
-  withAuth(auth: LookerAuthConfig) {
+  withAuth(auth: LookerAuthConfig): IEmbedBuilder {
     if (!this._sdk.auth) {
       this._sdk.auth = { ...auth }
     } else if (this._sdk.auth !== auth) {
@@ -255,7 +255,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param url
    */
 
-  withUrl(url: string) {
+  withUrl(url: string): IEmbedBuilder {
     this._url = url
     return this
   }
@@ -460,7 +460,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    * @param el
    */
 
-  appendTo(el: HTMLElement | string) {
+  appendTo(el: HTMLElement | string): IEmbedBuilder {
     if (typeof el === 'string') {
       this._appendTo = document.querySelector(el)
     } else {
@@ -480,7 +480,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   on<K extends keyof LookerEmbedEventMap>(
     name: K,
     handler: LookerEmbedEventMap[K]
-  ) {
+  ): IEmbedBuilder {
     this._handlers[name] = this._handlers[name] ? this._handlers[name] : []
     this._handlers[name].push(handler)
     return this

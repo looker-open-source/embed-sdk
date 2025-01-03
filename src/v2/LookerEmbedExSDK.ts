@@ -2,7 +2,7 @@
 
  MIT License
 
- Copyright (c) 2022 Looker Data Sciences, Inc.
+ Copyright (c) 2024 Looker Data Sciences, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,14 @@
  SOFTWARE.
 
  */
+import type { ChattyHostBuilder } from '@looker/chatty'
+import { Chatty } from '@looker/chatty'
 import type {
   CookielessCallback,
   CookielessRequestInit,
   LookerAuthConfig,
-} from 'src/types'
-import type { ChattyHostBuilder } from '@looker/chatty'
-import { Chatty } from '@looker/chatty'
-import type { ILookerEmbedSDK } from './types'
+} from '../types'
+import type { ILookerEmbedSDK, IEmbedBuilder } from './types'
 import { EmbedBuilderEx } from './EmbedBuilderEx'
 
 export type ChattyHostBuilderFactory = (url: string) => ChattyHostBuilder
@@ -72,11 +72,11 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     return this.createWithUrl('/embed/preload/')
   }
 
-  createWithUrl(url: string): EmbedBuilderEx {
+  createWithUrl(url: string): IEmbedBuilder {
     return new EmbedBuilderEx(this, '', '').withUrl(url)
   }
 
-  createDashboardWithUrl(url: string): EmbedBuilderEx {
+  createDashboardWithUrl(url: string): IEmbedBuilder {
     return new EmbedBuilderEx(this, 'dashboard', '/embed/dashboards').withUrl(
       url
     )
