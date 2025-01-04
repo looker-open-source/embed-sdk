@@ -87,7 +87,7 @@ export interface ILookerConnection {
 
   asExtensionConnection(): ILookerEmbedExtension
 
-  asLookConnection(): ILookerEmbedExtension
+  asLookConnection(): ILookerEmbedLook
 }
 
 /**

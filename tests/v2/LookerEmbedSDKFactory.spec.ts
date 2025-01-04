@@ -23,26 +23,22 @@
  SOFTWARE.
 
  */
-import type { ILookerEmbedSDKFactory, ILookerEmbedSDK } from './types'
-import { LookerEmbedExSDK } from './LookerEmbedExSDK'
 
-export class LookerEmbedSDKFactory implements ILookerEmbedSDKFactory {
-  private _embedSDK: ILookerEmbedSDK
+import {
+  getSDKFactory,
+  LookerEmbedSDKFactory,
+} from '../../src/v2/LookerEmbedSDKFactory'
+import type { ILookerEmbedSDK } from '../../src/v2/types'
 
-  constructor(embedSDK: ILookerEmbedSDK = new LookerEmbedExSDK()) {
-    this._embedSDK = embedSDK
-  }
+describe('LookerEmbedSDKFactory', () => {
+  it('returns the same factory', () => {
+    const factory = getSDKFactory()
+    expect(factory === getSDKFactory()).toBeTruthy()
+  })
 
-  getSDK() {
-    return this._embedSDK
-  }
-}
-
-let _sdkFactory: LookerEmbedSDKFactory
-
-export const getSDKFactory = () => {
-  if (!_sdkFactory) {
-    _sdkFactory = new LookerEmbedSDKFactory()
-  }
-  return _sdkFactory
-}
+  it('allows an SDK to be injected', () => {
+    const sdk = {} as ILookerEmbedSDK
+    const factory = new LookerEmbedSDKFactory(sdk)
+    expect(sdk === factory.getSDK()).toBeTruthy()
+  })
+})

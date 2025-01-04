@@ -87,17 +87,21 @@ export class EmbedClientEx implements IEmbedClient {
 
   private async createIframe(url: string, waitUntilLoaded: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
-    this._builder.handlers['page:changed'] = [
-      () => {
-        if (this._pageChangeResolver) {
-          const resolve = this._pageChangeResolver
-          this._pageChangeResolver = undefined
-          resolve(this._client as EmbedConnection)
-        }
-      },
-    ]
+    if (!this._builder.handlers['page:changed']) {
+      this._builder.handlers['page:changed'] = []
+    }
+    this._builder.handlers['page:changed'].push(() => {
+      if (this._pageChangeResolver) {
+        const resolve = this._pageChangeResolver
+        this._pageChangeResolver = undefined
+        resolve(this._client as EmbedConnection)
+      }
+    })
     if (this._builder.dialogScroll) {
-      this._builder.handlers['env:client:dialog'] = [
+      if (!this._builder.handlers['env:client:dialog']) {
+        this._builder.handlers['env:client:dialog'] = []
+      }
+      this._builder.handlers['env:client:dialog'].push(
         ({ open, placement }: EnvClientDialogEvent) => {
           // Placement of 'cover' means that the dialog top is close
           // to the top of the IFRAME. The top MAY be scrolled out
@@ -115,54 +119,58 @@ export class EmbedClientEx implements IEmbedClient {
               }
             }, 200)
           }
-        },
-      ]
+        }
+      )
     }
     if (this._builder.dynamicIFrameHeight) {
-      this._builder.handlers['page:properties:changed'] = [
+      if (!this._builder.handlers['page:properties:changed']) {
+        this._builder.handlers['page:properties:changed'] = []
+      }
+      this._builder.handlers['page:properties:changed'].push(
         ({ height }: PagePropertiesChangedEvent) => {
           if (height && height > 100 && this._host) {
             this._host.iframe.style.height = `${height}px`
           }
-        },
-      ]
+        }
+      )
     }
     if (this._builder.isCookielessEmbed) {
-      this._builder.handlers['session:tokens:request'] = [
-        async () => {
-          if (
-            this._client &&
-            this._cookielessApiToken &&
-            this._builder.generateTokens
-          ) {
-            if (this._cookielessInitialized) {
-              const {
-                api_token,
-                api_token_ttl,
-                navigation_token,
-                navigation_token_ttl,
-                session_reference_token_ttl,
-              } = await this.generateTokens()
-              this._cookielessApiToken = api_token
-              this._cookielessApiTokenTtl = api_token_ttl
-              this._cookielessNavigationToken = navigation_token
-              this._cookielessNavigationTokenTtl = navigation_token_ttl
-              this._cookielessSessionReferenceTokenTtl =
-                session_reference_token_ttl
-            } else {
-              this._cookielessInitialized = true
-            }
-            this._client.send('session:tokens', {
-              api_token: this._cookielessApiToken,
-              api_token_ttl: this._cookielessApiTokenTtl,
-              navigation_token: this._cookielessNavigationToken,
-              navigation_token_ttl: this._cookielessNavigationTokenTtl,
-              session_reference_token_ttl:
-                this._cookielessSessionReferenceTokenTtl,
-            })
+      if (!this._builder.handlers['session:tokens:request']) {
+        this._builder.handlers['session:tokens:request'] = []
+      }
+      this._builder.handlers['session:tokens:request'].push(async () => {
+        if (
+          this._client &&
+          this._cookielessApiToken &&
+          this._builder.generateTokens
+        ) {
+          if (this._cookielessInitialized) {
+            const {
+              api_token,
+              api_token_ttl,
+              navigation_token,
+              navigation_token_ttl,
+              session_reference_token_ttl,
+            } = await this.generateTokens()
+            this._cookielessApiToken = api_token
+            this._cookielessApiTokenTtl = api_token_ttl
+            this._cookielessNavigationToken = navigation_token
+            this._cookielessNavigationTokenTtl = navigation_token_ttl
+            this._cookielessSessionReferenceTokenTtl =
+              session_reference_token_ttl
+          } else {
+            this._cookielessInitialized = true
           }
-        },
-      ]
+          this._client.send('session:tokens', {
+            api_token: this._cookielessApiToken,
+            api_token_ttl: this._cookielessApiTokenTtl,
+            navigation_token: this._cookielessNavigationToken,
+            navigation_token_ttl: this._cookielessNavigationTokenTtl,
+            session_reference_token_ttl:
+              this._cookielessSessionReferenceTokenTtl,
+          })
+        }
+      })
     }
     for (const eventType in this._builder.handlers) {
       for (const handler of this._builder.handlers[eventType]) {
@@ -313,11 +321,9 @@ export class EmbedClientEx implements IEmbedClient {
     this._cookielessNavigationTokenTtl = navigation_token_ttl
     this._cookielessSessionReferenceTokenTtl = session_reference_token_ttl
     const apiHost = `https://${this._builder.apiHost}`
-    const sep =
-      new URL(this._builder.embedUrl, apiHost).search === '' ? '?' : '&'
     const src = `${this.appendRequiredParameters(
       this._builder.embedUrl
-    )}${sep}embed_navigation_token=${navigation_token}`
+    )}&embed_navigation_token=${navigation_token}`
     const embedPath =
       '/login/embed/' +
       encodeURIComponent(src) +

@@ -31,6 +31,7 @@ import type {
   ILookerEmbedDashboard,
   ILookerEmbedExplore,
   ILookerEmbedExtension,
+  ILookerEmbedLook,
   LoadIdParams,
   LoadUrlParams,
 } from './types'
@@ -128,7 +129,7 @@ export class EmbedConnection implements ILookerConnection {
   }
 
   async preload(waitUntilLoaded = true) {
-    return this.loadUrl({ url: '/embed/url', waitUntilLoaded })
+    return this.loadUrl({ url: '/embed/preload', waitUntilLoaded })
   }
 
   asDashboardConnection(): ILookerEmbedDashboard {
@@ -143,7 +144,7 @@ export class EmbedConnection implements ILookerConnection {
     return new ExtensionConnection(this)
   }
 
-  asLookConnection(): ILookerEmbedExtension {
+  asLookConnection(): ILookerEmbedLook {
     return new LookConnection(this)
   }
 }

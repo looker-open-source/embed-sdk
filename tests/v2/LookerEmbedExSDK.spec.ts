@@ -23,26 +23,18 @@
  SOFTWARE.
 
  */
-import type { ILookerEmbedSDKFactory, ILookerEmbedSDK } from './types'
-import { LookerEmbedExSDK } from './LookerEmbedExSDK'
 
-export class LookerEmbedSDKFactory implements ILookerEmbedSDKFactory {
-  private _embedSDK: ILookerEmbedSDK
+import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
 
-  constructor(embedSDK: ILookerEmbedSDK = new LookerEmbedExSDK()) {
-    this._embedSDK = embedSDK
-  }
+describe('LookerEmbedExSDK', () => {
+  it('can override chatty builder', () => {
+    const chattyHostCreator = jasmine.createSpy()
+    const sdk = new LookerEmbedExSDK(chattyHostCreator)
+    expect(sdk.chattyHostCreator === chattyHostCreator).toBeTruthy()
+  })
 
-  getSDK() {
-    return this._embedSDK
-  }
-}
-
-let _sdkFactory: LookerEmbedSDKFactory
-
-export const getSDKFactory = () => {
-  if (!_sdkFactory) {
-    _sdkFactory = new LookerEmbedSDKFactory()
-  }
-  return _sdkFactory
-}
+  it('initializes signed URL SDK', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('')
+  })
+})
