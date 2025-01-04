@@ -24,6 +24,7 @@
 
  */
 
+import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
 import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
 
 describe('LookerEmbedExSDK', () => {
@@ -33,8 +34,172 @@ describe('LookerEmbedExSDK', () => {
     expect(sdk.chattyHostCreator === chattyHostCreator).toBeTruthy()
   })
 
-  it('initializes signed URL SDK', () => {
+  it('initializes signed URL SDK with string auth', () => {
     const sdk = new LookerEmbedExSDK()
-    sdk.init('')
+    sdk.init('myhost.com', '/auth')
+    expect(sdk._acquireSession).toBeUndefined()
+    expect(sdk._generateTokens).toBeUndefined()
+    expect(sdk._apiHost).toBe('myhost.com')
+    expect(sdk._auth).toEqual({ url: '/auth' })
+  })
+
+  it('initializes signed URL SDK with auth config', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', { headers: [], url: '/auth' })
+    expect(sdk._acquireSession).toBeUndefined()
+    expect(sdk._generateTokens).toBeUndefined()
+    expect(sdk._apiHost).toBe('myhost.com')
+    expect(sdk._auth).toEqual({ headers: [], url: '/auth' })
+  })
+
+  it('uses withApiHost and withAuthUrl methods to initialize sdk', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.preload().withApiHost('myhost.com').withAuthUrl('/auth')
+    expect(sdk._acquireSession).toBeUndefined()
+    expect(sdk._generateTokens).toBeUndefined()
+    expect(sdk._apiHost).toBe('myhost.com')
+    expect(sdk._auth).toEqual({ url: '/auth' })
+  })
+
+  it('uses withApiHost and withAuth methods to initialize sdk', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.preload().withApiHost('myhost.com').withAuth({ url: '/auth' })
+    expect(sdk._acquireSession).toBeUndefined()
+    expect(sdk._generateTokens).toBeUndefined()
+    expect(sdk._apiHost).toBe('myhost.com')
+    expect(sdk._auth).toEqual({ url: '/auth' })
+  })
+
+  it('initializes cookieless SDK', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.initCookieless('myhost.com', '/acquire', '/generate')
+    expect(sdk._acquireSession).toBe('/acquire')
+    expect(sdk._generateTokens).toBe('/generate')
+    expect(sdk._apiHost).toBe('myhost.com')
+    expect(sdk._auth).toBeUndefined()
+  })
+
+  it('creates preload builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.preload() as EmbedBuilderEx
+    expect(builder.type).toBe('')
+    expect(builder.endpoint).toBe('')
+    expect(builder.url).toBe('/embed/preload/')
+    expect(builder.embedUrl).toBe('/embed/preload/')
+    expect(builder.acquireSession).toBe('')
+    expect(builder.generateTokens).toBe('')
+    expect(builder.isCookielessEmbed).toBeFalsy()
+    expect(builder.apiHost).toBe('myhost.com')
+    expect(builder.auth).toEqual({ url: '/auth' })
+  })
+
+  it('creates dashboard with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createDashboardWithUrl(
+      '/embed/dashboards/42?state=california'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('dashboard')
+    expect(builder.endpoint).toBe('')
+    expect(builder.url).toBe('/embed/dashboards/42?state=california')
+    expect(builder.embedUrl).toBe('/embed/dashboards/42?state=california')
+  })
+
+  it('creates dashboard with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createDashboardWithId('42') as EmbedBuilderEx
+    expect(builder.type).toBe('dashboard')
+    expect(builder.endpoint).toBe('/embed/dashboards')
+    expect(builder.id).toBe('42')
+    expect(builder.url).toBe('')
+    expect(builder.embedUrl).toBe('/embed/dashboards/42')
+  })
+
+  it('creates explore with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createExploreWithUrl(
+      '/embed/explore/mymodel/myview?state=california'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('explore')
+    expect(builder.endpoint).toBe('')
+    expect(builder.url).toBe('/embed/explore/mymodel/myview?state=california')
+    expect(builder.embedUrl).toBe(
+      '/embed/explore/mymodel/myview?state=california'
+    )
+  })
+
+  it('creates explore with id builder and converts legacy id', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createExploreWithId('mymodel::myview') as EmbedBuilderEx
+    expect(builder.type).toBe('explore')
+    expect(builder.endpoint).toBe('/embed/explore')
+    expect(builder.id).toBe('mymodel/myview')
+    expect(builder.url).toBe('')
+    expect(builder.embedUrl).toBe('/embed/explore/mymodel/myview')
+  })
+
+  it('creates explore with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createExploreWithId('mymodel/myview') as EmbedBuilderEx
+    expect(builder.type).toBe('explore')
+    expect(builder.endpoint).toBe('/embed/explore')
+    expect(builder.id).toBe('mymodel/myview')
+    expect(builder.url).toBe('')
+    expect(builder.embedUrl).toBe('/embed/explore/mymodel/myview')
+  })
+
+  it('creates look with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createLookWithUrl(
+      '/embed/looks/42?state=california'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('look')
+    expect(builder.endpoint).toBe('')
+    expect(builder.url).toBe('/embed/looks/42?state=california')
+    expect(builder.embedUrl).toBe('/embed/looks/42?state=california')
+  })
+
+  it('creates look with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createLookWithId('42') as EmbedBuilderEx
+    expect(builder.type).toBe('look')
+    expect(builder.endpoint).toBe('/embed/looks')
+    expect(builder.id).toBe('42')
+    expect(builder.url).toBe('')
+    expect(builder.embedUrl).toBe('/embed/looks/42')
+  })
+
+  it('creates extension with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createExtensionWithUrl(
+      '/embed/extensions/myproj::myext/?state=california'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('extension')
+    expect(builder.endpoint).toBe('')
+    expect(builder.url).toBe(
+      '/embed/extensions/myproj::myext/?state=california'
+    )
+    expect(builder.embedUrl).toBe(
+      '/embed/extensions/myproj::myext/?state=california'
+    )
+  })
+
+  it('creates extension with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createExtensionWithId('myproj::myext') as EmbedBuilderEx
+    expect(builder.type).toBe('extension')
+    expect(builder.endpoint).toBe('/embed/extensions')
+    expect(builder.id).toBe('myproj::myext')
+    expect(builder.url).toBe('')
+    expect(builder.embedUrl).toBe('/embed/extensions/myproj::myext')
   })
 })

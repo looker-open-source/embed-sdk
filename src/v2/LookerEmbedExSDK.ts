@@ -77,9 +77,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createDashboardWithUrl(url: string): IEmbedBuilder {
-    return new EmbedBuilderEx(this, 'dashboard', '/embed/dashboards').withUrl(
-      url
-    )
+    return new EmbedBuilderEx(this, 'dashboard', '').withUrl(url)
   }
 
   createDashboardWithId(id: string | number) {
@@ -89,7 +87,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createExploreWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'explore', '/embed/explore').withUrl(url)
+    return new EmbedBuilderEx(this, 'explore', '').withUrl(url)
   }
 
   createExploreWithId(id: string) {
@@ -98,17 +96,15 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createLookWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'look', '/embed/looks').withUrl(url)
+    return new EmbedBuilderEx(this, 'look', '').withUrl(url)
   }
 
-  createLookWithId(id: number) {
+  createLookWithId(id: number | string) {
     return new EmbedBuilderEx(this, 'look', '/embed/looks').withId(String(id))
   }
 
   createExtensionWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'extension', '/embed/extensions').withUrl(
-      url
-    )
+    return new EmbedBuilderEx(this, 'extension', '').withUrl(url)
   }
 
   createExtensionWithId(id: string) {
@@ -159,28 +155,8 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
    * @hidden
    */
 
-  set acquireSession(
-    acquireSession: string | CookielessRequestInit | CookielessCallback
-  ) {
-    this._acquireSession = acquireSession
-  }
-
-  /**
-   * @hidden
-   */
-
   get generateTokens() {
     return this._generateTokens || ''
-  }
-
-  /**
-   * @hidden
-   */
-
-  set generateTokens(
-    generateTokens: string | CookielessRequestInit | CookielessCallback
-  ) {
-    this._generateTokens = generateTokens
   }
 
   get chattyHostCreator(): ChattyHostBuilderFactory {

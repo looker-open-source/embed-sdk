@@ -74,6 +74,9 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    */
 
   withId(id: number | string): IEmbedBuilder {
+    if (this.type === '' || this.endpoint === '') {
+      throw new Error('withId requires initialization of type and endpoint')
+    }
     this._id = id
     return this
   }
@@ -226,7 +229,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    */
 
   withAuthUrl(authUrl: string): IEmbedBuilder {
-    if (!this._sdk.auth?.url) {
+    if (this._sdk.auth?.url === '') {
       this._sdk.auth = { url: authUrl }
     } else if (this._sdk.auth.url !== authUrl) {
       throw new Error('not allowed to change auth url')
@@ -241,7 +244,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
    */
 
   withAuth(auth: LookerAuthConfig): IEmbedBuilder {
-    if (!this._sdk.auth) {
+    if (this._sdk.auth?.url === '') {
       this._sdk.auth = { ...auth }
     } else if (this._sdk.auth !== auth) {
       throw new Error('not allowed to change auth url')
@@ -351,15 +354,6 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   }
 
   /**
-   * The auth URL of this embedded content, if provided
-   * @deprecated
-   */
-
-  get authUrl() {
-    return this._sdk.auth?.url
-  }
-
-  /**
    * The auth config of this embedded content, if provided
    */
 
@@ -376,7 +370,8 @@ export class EmbedBuilderEx implements IEmbedBuilder {
       return `${this.endpoint}${this.url}`
     } else {
       const params = stringify(this._params)
-      return `${this.endpoint}/${this.id}?${params}`
+      const sep = params.length === 0 ? '' : '?'
+      return `${this.endpoint}/${this.id}${sep}${params}`
     }
   }
 
