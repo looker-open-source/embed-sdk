@@ -64,6 +64,7 @@ module.exports = function (config) {
       compilerOptions: {
         lib: ['es6', 'dom'],
         esModuleInterop: true,
+        baseUrl: './',
       },
     },
   })

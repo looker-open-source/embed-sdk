@@ -43,6 +43,9 @@ export type { LookerEmbedBase } from './embed_base'
 export type { EmbedBuilder, UrlParams } from './embed_builder'
 export type { EmbedClient } from './embed'
 export * from './types'
+export * from './v2/LookerEmbedExSDK'
+export * from './v2/LookerEmbedSDKFactory'
+export * from './v2/types'
 
 export class LookerEmbedSDK {
   /**
