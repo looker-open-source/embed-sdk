@@ -2,7 +2,7 @@
 
  MIT License
 
- Copyright (c) 2024 Looker Data Sciences, Inc.
+ Copyright (c) 2025 Looker Data Sciences, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ describe('LookerEmbedExSDK', () => {
     expect(sdk._auth).toEqual({ headers: [], url: '/auth' })
   })
 
-  it('uses withApiHost and withAuthUrl methods to initialize sdk', () => {
+  it('can use withApiHost and withAuthUrl methods to initialize sdk', () => {
     const sdk = new LookerEmbedExSDK()
     sdk.preload().withApiHost('myhost.com').withAuthUrl('/auth')
     expect(sdk._acquireSession).toBeUndefined()
@@ -61,13 +61,56 @@ describe('LookerEmbedExSDK', () => {
     expect(sdk._auth).toEqual({ url: '/auth' })
   })
 
-  it('uses withApiHost and withAuth methods to initialize sdk', () => {
+  it('can use withApiHost and withAuth methods to initialize sdk', () => {
     const sdk = new LookerEmbedExSDK()
     sdk.preload().withApiHost('myhost.com').withAuth({ url: '/auth' })
     expect(sdk._acquireSession).toBeUndefined()
     expect(sdk._generateTokens).toBeUndefined()
     expect(sdk._apiHost).toBe('myhost.com')
     expect(sdk._auth).toEqual({ url: '/auth' })
+  })
+
+  it('prevents withAuthUrl from being used more than once', () => {
+    const sdk = new LookerEmbedExSDK()
+    expect(() => {
+      sdk
+        .preload()
+        .withApiHost('myhost.com')
+        .withAuthUrl('/auth')
+        .withAuthUrl('/auth2')
+    }).toThrowError('not allowed to change auth url')
+  })
+
+  it('prevents withAuth from being used more than once', () => {
+    const sdk = new LookerEmbedExSDK()
+    expect(() => {
+      sdk
+        .preload()
+        .withApiHost('myhost.com')
+        .withAuth({ url: '/auth' })
+        .withAuth({ url: '/auth2' })
+    }).toThrowError('not allowed to change auth url')
+  })
+
+  it('prevents withApiHost from being used more than once', () => {
+    const sdk = new LookerEmbedExSDK()
+    expect(() => {
+      sdk
+        .preload()
+        .withApiHost('myhost.com')
+        .withAuthUrl('/auth')
+        .withApiHost('anotherhost.com')
+    }).toThrowError('not allowed to change api host')
+  })
+
+  it('adds sandboxed_host to params', () => {
+    const sdk = new LookerEmbedExSDK()
+    const builder = sdk.preload() as EmbedBuilderEx
+    builder.sandboxedHost = true
+    builder.withApiHost('myhost.com').withAuthUrl('/auth')
+    expect(builder.embedUrl).toBe(
+      '/embed/preload/?embed_domain=myhost.com&sandboxed_host=true'
+    )
   })
 
   it('initializes cookieless SDK', () => {

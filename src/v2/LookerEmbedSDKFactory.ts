@@ -27,7 +27,15 @@ import type { ILookerEmbedSDKFactory, ILookerEmbedSDK } from './types'
 import { LookerEmbedExSDK } from './LookerEmbedExSDK'
 
 export class LookerEmbedSDKFactory implements ILookerEmbedSDKFactory {
+  /**
+   * @hidden
+   */
+
   private _embedSDK: ILookerEmbedSDK
+
+  /**
+   * @hidden
+   */
 
   constructor(embedSDK: ILookerEmbedSDK = new LookerEmbedExSDK()) {
     this._embedSDK = embedSDK
