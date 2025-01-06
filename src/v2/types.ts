@@ -26,6 +26,7 @@
 import type { UrlParams } from 'src/embed_builder'
 import type {
   CookielessCallback,
+  GenerateTokensCallback,
   CookielessRequestInit,
   LookerAuthConfig,
   LookerDashboardOptions,
@@ -358,7 +359,7 @@ export interface ILookerEmbedSDK {
   initCookieless(
     apiHost: string,
     acquireSession: string | CookielessRequestInit | CookielessCallback,
-    generateTokens: string | CookielessRequestInit | CookielessCallback
+    generateTokens: string | CookielessRequestInit | GenerateTokensCallback
   ): void
 
   /**

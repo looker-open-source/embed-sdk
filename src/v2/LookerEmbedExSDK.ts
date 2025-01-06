@@ -27,6 +27,7 @@ import type { ChattyHostBuilder } from '@looker/chatty'
 import { Chatty } from '@looker/chatty'
 import type {
   CookielessCallback,
+  GenerateTokensCallback,
   CookielessRequestInit,
   LookerAuthConfig,
 } from '../types'
@@ -80,7 +81,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
    * @hidden
    */
 
-  _generateTokens?: string | CookielessRequestInit | CookielessCallback
+  _generateTokens?: string | CookielessRequestInit | GenerateTokensCallback
 
   /**
    * @hidden

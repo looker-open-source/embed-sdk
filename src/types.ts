@@ -54,18 +54,17 @@ export interface CookielessRequestInit extends RequestInit {
 export type CookielessCallback = () => Promise<LookerEmbedCookielessSessionData>
 
 /**
- * Cookieless session data
- * Looker 23.0+
+ * Cookieless request callback function
  */
-export interface LookerEmbedCookielessSessionData {
-  /**
-   * One time use token used to establish the cookieless embed session.
-   */
-  authentication_token?: string | null
-  /**
-   * Authentication token time to live in seconds.
-   */
-  authentication_token_ttl?: number | null
+
+export type GenerateTokensCallback = (
+  tokens: LookerEmbedCookielessTokenData
+) => Promise<LookerEmbedCookielessSessionData>
+
+/**
+ * Cookieless toke data
+ */
+export interface LookerEmbedCookielessTokenData {
   /**
    * Token used to load and navigate between pages in the embedded session. This token is appended to the embed iframe url.
    */
@@ -86,6 +85,22 @@ export interface LookerEmbedCookielessSessionData {
    * Session time to live in seconds.
    */
   session_reference_token_ttl?: number | null
+}
+
+/**
+ * Cookieless session data
+ * Looker 23.0+
+ */
+export interface LookerEmbedCookielessSessionData
+  extends LookerEmbedCookielessTokenData {
+  /**
+   * One time use token used to establish the cookieless embed session.
+   */
+  authentication_token?: string | null
+  /**
+   * Authentication token time to live in seconds.
+   */
+  authentication_token_ttl?: number | null
 }
 
 /**

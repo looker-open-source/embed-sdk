@@ -345,7 +345,13 @@ export class EmbedClientEx implements IEmbedClient {
   private async generateTokens(): Promise<LookerEmbedCookielessSessionData> {
     const { generateTokens } = this._builder
     if (typeof generateTokens === 'function') {
-      return await generateTokens()
+      return await generateTokens({
+        api_token: this._cookielessApiToken,
+        api_token_ttl: this._cookielessApiTokenTtl,
+        navigation_token: this._cookielessNavigationToken,
+        navigation_token_ttl: this._cookielessNavigationTokenTtl,
+        session_reference_token_ttl: this._cookielessSessionReferenceTokenTtl,
+      })
     }
     try {
       const { url, init: defaultInit } = this.getResource(generateTokens!)
