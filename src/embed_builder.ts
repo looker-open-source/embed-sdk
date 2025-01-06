@@ -63,6 +63,8 @@ export class EmbedBuilder<T> {
   private _id?: number | string
   private _params: UrlParams
   private _url?: string | null
+  // Sandboxed host will be true when running with an origin of null
+  // which is the legacy extension loader.
   private _sandboxedHost?: boolean
   private _scrollMonitor?: boolean
   private _dynamicIFrameHeight?: boolean
@@ -320,6 +322,8 @@ export class EmbedBuilder<T> {
   get sandboxedHost() {
     if (this._sandboxedHost === undefined) {
       const embedHostDomain = window.location.origin
+      // Sandboxed host will be true when running with an origin of null
+      // which is the legacy extension loader.
       this._sandboxedHost = embedHostDomain === 'null' || !embedHostDomain
     }
     return this._sandboxedHost

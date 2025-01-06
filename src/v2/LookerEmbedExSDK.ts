@@ -33,9 +33,17 @@ import type {
 import type { ILookerEmbedSDK, IEmbedBuilder } from './types'
 import { EmbedBuilderEx } from './EmbedBuilderEx'
 
+/**
+ * @hidden
+ */
+
 export type ChattyHostBuilderFactory = (url: string) => ChattyHostBuilder
 
-const createChattyBuilder = (url: string) => Chatty.createHost(url)
+/**
+ * @hidden
+ */
+
+export const createChattyBuilder = (url: string) => Chatty.createHost(url)
 
 export class LookerEmbedExSDK implements ILookerEmbedSDK {
   /**

@@ -235,10 +235,9 @@ export class EmbedClientEx implements IEmbedClient {
     })
   }
 
-  private async createUrl() {
+  private async createSignedUrl() {
     const src = this.appendRequiredParameters(this._builder.embedUrl)
     const auth = this._builder.auth
-    if (!auth?.url) return `${this._builder.apiHost}${src}`
 
     let url = `${auth.url}?src=${encodeURIComponent(src)}`
     if (auth.params) {
@@ -297,13 +296,6 @@ export class EmbedClientEx implements IEmbedClient {
   }
 
   private async acquireCookielessEmbedSessionInternal(): Promise<string> {
-    const { acquireSession, generateTokens } = this._builder
-    if (!acquireSession) {
-      throw new Error('invalid state: acquireSession not defined')
-    }
-    if (!generateTokens) {
-      throw new Error('invalid state: generateTokens not defined')
-    }
     const {
       authentication_token,
       api_token,
@@ -369,16 +361,12 @@ export class EmbedClientEx implements IEmbedClient {
       }
       const resp = await fetch(url, init)
       if (!resp.ok) {
-        if (resp.status === 400) {
-          return { session_reference_token_ttl: 0 }
-        }
-        console.error('generate tokens failed', { resp })
-        throw new Error(`generate tokens failed`)
+        return { session_reference_token_ttl: 0 }
       }
       return (await resp.json()) as LookerEmbedCookielessSessionData
     } catch (error: any) {
       console.error(error)
-      throw new Error(`generate tokens failed`)
+      return { session_reference_token_ttl: 0 }
     }
   }
 
@@ -402,10 +390,9 @@ export class EmbedClientEx implements IEmbedClient {
 
   async connect(waitUntilLoaded = false): Promise<ILookerConnection> {
     if (this._connection) return this._connection
-
     if (
       this._builder.url &&
-      !this._builder.auth &&
+      !this._builder.auth?.url &&
       !this._builder.isCookielessEmbed
     ) {
       // Private embedding
@@ -424,7 +411,7 @@ export class EmbedClientEx implements IEmbedClient {
           })
       } else {
         // Signed
-        this._connection = this.createUrl().then(async (url) =>
+        this._connection = this.createSignedUrl().then(async (url) =>
           this.createIframe(url, waitUntilLoaded)
         )
       }
@@ -435,8 +422,14 @@ export class EmbedClientEx implements IEmbedClient {
   appendRequiredParameters(urlString: string): string {
     let requiredParams: Record<string, string>
     if (this._builder.sandboxedHost) {
+      // Sandboxed host is set when the origin is null which is the legacy
+      // extension framework loader. Typically, the extension framework
+      // prefixes the apiHost with 'https://'. This is incorrect but it
+      // works as the extension framework private embeds. Anyway, handle it
+      // being there or not.
+      const prefix = this._sdk.apiHost.startsWith('https://') ? '' : 'https://'
       requiredParams = {
-        embed_domain: this._sdk.apiHost,
+        embed_domain: `${prefix}${this._sdk.apiHost}`,
         sandboxed_host: 'true',
         sdk: '2',
       }

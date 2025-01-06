@@ -362,7 +362,7 @@ describe('LookerEmbed', () => {
     const embedSdk = LookerEmbedSDK as any
 
     beforeEach(() => {
-      LookerEmbedSDK.init(undefined)
+      LookerEmbedSDK.init(undefined as any)
       spyOn(EmbedBuilder.prototype, 'sandboxedHost').and.returnValue(true)
       spyOn(window, 'fetch')
       spyOn(ChattyHost.prototype, 'connect').and.callFake(async function (

@@ -25,9 +25,16 @@
  */
 
 import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
-import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
+import {
+  LookerEmbedExSDK,
+  createChattyBuilder,
+} from '../../src/v2/LookerEmbedExSDK'
 
 describe('LookerEmbedExSDK', () => {
+  it('creates a chatty host builder', () => {
+    expect(createChattyBuilder('/embed/preload')).toBeDefined()
+  })
+
   it('can override chatty builder', () => {
     const chattyHostCreator = jasmine.createSpy()
     const sdk = new LookerEmbedExSDK(chattyHostCreator)

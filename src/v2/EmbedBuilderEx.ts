@@ -202,7 +202,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   }
 
   get isCookielessEmbed() {
-    return !!this._sdk.acquireSession
+    return !!this._sdk.acquireSession && !!this._sdk.generateTokens
   }
 
   get acquireSession() {
