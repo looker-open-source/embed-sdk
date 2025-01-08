@@ -355,25 +355,37 @@ export class EmbedClientEx implements IEmbedClient {
     }
     try {
       const { url, init: defaultInit } = this.getResource(generateTokens!)
-      const init = defaultInit || {
-        body: JSON.stringify({
-          api_token: this._cookielessApiToken,
-          navigation_token: this._cookielessNavigationToken,
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
-        method: 'PUT',
-      }
+
+      const init = defaultInit
+        ? {
+            headers: {
+              'content-type': 'application/json',
+            },
+            method: 'PUT',
+            ...defaultInit,
+            body: JSON.stringify({
+              api_token: this._cookielessApiToken,
+              navigation_token: this._cookielessNavigationToken,
+            }),
+          }
+        : {
+            body: JSON.stringify({
+              api_token: this._cookielessApiToken,
+              navigation_token: this._cookielessNavigationToken,
+            }),
+            headers: {
+              'content-type': 'application/json',
+            },
+            method: 'PUT',
+          }
       const resp = await fetch(url, init)
-      if (!resp.ok) {
-        return { session_reference_token_ttl: 0 }
+      if (resp.ok) {
+        return (await resp.json()) as LookerEmbedCookielessSessionData
       }
-      return (await resp.json()) as LookerEmbedCookielessSessionData
     } catch (error: any) {
       console.error(error)
-      return { session_reference_token_ttl: 0 }
     }
+    return { session_reference_token_ttl: 0 }
   }
 
   private getResource(resource: string | CookielessRequestInit) {

@@ -29,21 +29,27 @@ import type { Callback, ChattyHostBuilder } from '@looker/chatty'
 import type {
   CookielessCallback,
   CookielessRequestInit,
+  GenerateTokensCallback,
   LookerAuthConfig,
+  LookerEmbedCookielessSessionData,
+  LookerEmbedCookielessTokenData,
 } from '../../src/types'
 import type { EmbedClientEx } from '../../src/v2/EmbedClientEx'
 import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
 import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
 
-const waitFor = (callback: () => boolean) =>
+const waitFor = (callback: () => boolean, options?: { timeout?: number }) =>
   new Promise<void>((resolve, reject) => {
     let count = 5
     setInterval(() => {
       count--
-      if (count === 0 || callback()) {
+      if (callback()) {
         resolve()
       }
-    })
+      if (count === 0) {
+        reject(new Error('waitFor condition not met'))
+      }
+    }, options?.timeout)
   })
 
 class MockChattyHostConnection {
@@ -142,7 +148,7 @@ describe('EmbedClientEx', () => {
       apiHost?: string
       auth?: string | LookerAuthConfig
       acquireSession?: string | CookielessRequestInit | CookielessCallback
-      generateTokens?: string | CookielessRequestInit | CookielessCallback
+      generateTokens?: string | CookielessRequestInit | GenerateTokensCallback
     } = {}
   ) => {
     const {
@@ -360,6 +366,46 @@ describe('EmbedClientEx', () => {
     )
   })
 
+  it('creates a cookieless connection using a CookielessRequestInit type', async () => {
+    const sessionTokens = {
+      api_token: 'abcdef-api',
+      api_token_ttl: 30000,
+      navigation_token: 'abcdef-nav',
+      navigation_token_ttl: 30000,
+      session_reference_token_ttl: 30000,
+    }
+    const authResponse = {
+      authentication_token: 'abcdef-auth',
+      ...sessionTokens,
+    }
+    const fetchSpy = spyOn(window, 'fetch').and.returnValue({
+      json: () => authResponse,
+      ok: true,
+      status: 200,
+    })
+    const client = getClient({
+      acquireSession: { method: 'POST', url: '/acquire-session' },
+      generateTokens: { method: 'POST', url: '/generate-tokens' },
+    })
+    await client.connect()
+    expect(fetchSpy).toHaveBeenCalledWith('/acquire-session', {
+      method: 'POST',
+    })
+    mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
+
+    // generate more tokens
+    fetchSpy.calls.reset()
+    mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
+    expect(fetchSpy).toHaveBeenCalledWith('/generate-tokens', {
+      body: JSON.stringify({
+        api_token: sessionTokens.api_token,
+        navigation_token: sessionTokens.navigation_token,
+      }),
+      headers: { 'content-type': 'application/json' },
+      method: 'POST',
+    })
+  })
+
   it('handles an acquire cookieless connection failure', async () => {
     spyOn(window, 'fetch').and.returnValue({
       ok: false,
@@ -449,5 +495,130 @@ describe('EmbedClientEx', () => {
         session_reference_token_ttl: 0,
       },
     ])
+  })
+
+  it('creates a cookieless connection and generates tokens using callbacks', async () => {
+    const sessionTokens = {
+      api_token: 'abcdef-api',
+      api_token_ttl: 10000,
+      navigation_token: 'abcdef-nav',
+      navigation_token_ttl: 10000,
+      session_reference_token_ttl: 30000,
+    }
+    const generatedTokens = {
+      api_token: 'uvwxyz-api',
+      api_token_ttl: 10000,
+      navigation_token: 'uvwxyz-nav',
+      navigation_token_ttl: 31000,
+      session_reference_token_ttl: 25000,
+    }
+    const authResponse = {
+      authentication_token: 'abcdef-auth',
+      ...sessionTokens,
+    }
+    const acquireSessionCallback = () => Promise.resolve(authResponse)
+    const generateTokensCallback = (
+      tokens: LookerEmbedCookielessTokenData
+    ): Promise<LookerEmbedCookielessSessionData> => {
+      expect(tokens).toEqual(sessionTokens)
+      return Promise.resolve(generatedTokens)
+    }
+    const callbackFunctions = { acquireSessionCallback, generateTokensCallback }
+    const acquireSessionCallbackSpy = spyOn(
+      callbackFunctions,
+      'acquireSessionCallback'
+    ).and.callThrough()
+    const generateTokensCallbackSpy = spyOn(
+      callbackFunctions,
+      'generateTokensCallback'
+    ).and.callThrough()
+    const client = getClient({
+      acquireSession: callbackFunctions.acquireSessionCallback,
+      generateTokens: callbackFunctions.generateTokensCallback,
+    })
+    const connection = await client.connect()
+    const connectionSendSpy = spyOn(connection, 'send')
+    expect(mockHostBuilder._url).toBe(
+      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+    )
+    expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
+      1
+    )
+    expect(mockHostBuilder.countHandlersOfType('page:changed')).toBe(1)
+    expect(mockHostBuilder.countHandlersOfType('env:client:dialog')).toBe(1)
+    expect(mockHostBuilder.countHandlersOfType('page:properties:changed')).toBe(
+      1
+    )
+    expect(mockHostBuilder._sandboxAttributes).toEqual(['allow-popups'])
+    expect(mockHostBuilder._allowAttributes).toEqual(['allowfullscreen'])
+    expect(mockChattyHost.iframe.className).toBe('myiframe-container')
+    expect(client.isConnected).toBeTruthy()
+    expect(client.connection).toBeDefined()
+    mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
+    expect(connectionSendSpy).toHaveBeenCalledWith(
+      'session:tokens',
+      sessionTokens
+    )
+    expect(acquireSessionCallbackSpy).toHaveBeenCalled()
+
+    // generate more tokens
+    connectionSendSpy.calls.reset()
+    mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
+    await waitFor(() => connectionSendSpy.calls.count() > 0)
+    expect(connectionSendSpy).toHaveBeenCalledWith(
+      'session:tokens',
+      generatedTokens
+    )
+    expect(generateTokensCallbackSpy).toHaveBeenCalled()
+  })
+
+  it('handles open dialog events', async () => {
+    const scrollIntoViewSpy = jasmine.createSpy('scrollIntoViewSpy')
+    mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
+    const client = getClient()
+    await client.connect()
+    expect(client.isConnected).toBeTruthy()
+    mockHostBuilder.fireEventForHandler('env:client:dialog', {
+      open: true,
+      placement: 'cover',
+    })
+    await waitFor(() => scrollIntoViewSpy.calls.count() > 0, { timeout: 200 })
+    expect(scrollIntoViewSpy).toHaveBeenCalled()
+  })
+
+  it('dynamically updates the IFRAME height', async () => {
+    const scrollIntoViewSpy = jasmine.createSpy('scrollIntoViewSpy')
+    mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
+    const client = getClient()
+    await client.connect()
+    expect(client.isConnected).toBeTruthy()
+    mockHostBuilder.fireEventForHandler('page:properties:changed', {
+      height: 1042,
+    })
+    expect(mockChattyHost.iframe.style.height).toBe('1042px')
+  })
+
+  it('sends scroll messages', async () => {
+    const scrollIntoViewSpy = jasmine.createSpy('scrollIntoViewSpy')
+    mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
+    const client = getClient()
+    const connection = await client.connect()
+    expect(client.isConnected).toBeTruthy()
+    const connectionSendSpy = spyOn(connection, 'send')
+    document.dispatchEvent(new Event('scroll'))
+    expect(connectionSendSpy).toHaveBeenCalledWith('env:host:scroll', {
+      offsetLeft: mockChattyHost.iframe.offsetLeft,
+      offsetTop: mockChattyHost.iframe.offsetTop,
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    })
+    connectionSendSpy.calls.reset()
+    window.dispatchEvent(new Event('resize'))
+    expect(connectionSendSpy).toHaveBeenCalledWith('env:host:scroll', {
+      offsetLeft: mockChattyHost.iframe.offsetLeft,
+      offsetTop: mockChattyHost.iframe.offsetTop,
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    })
   })
 })

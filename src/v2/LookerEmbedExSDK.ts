@@ -102,7 +102,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   initCookieless(
     apiHost: string,
     acquireSession: string | CookielessRequestInit | CookielessCallback,
-    generateTokens: string | CookielessRequestInit | CookielessCallback
+    generateTokens: string | CookielessRequestInit | GenerateTokensCallback
   ) {
     this._apiHost = apiHost
     this._acquireSession = acquireSession

@@ -111,7 +111,8 @@
           ]
         }
       ],
-      "no-useless-constructor": "off"
+      "no-useless-constructor": "off",
+      "jest-dom/prefer-to-have-style": "off"
     }
   },
   "overrides": {
