@@ -41,6 +41,7 @@ export class ExploreConnection implements ILookerEmbedExplore {
    */
 
   run() {
+    // This is correct!
     this._connection.send('look:run')
   }
 
@@ -51,6 +52,7 @@ export class ExploreConnection implements ILookerEmbedExplore {
    */
 
   updateFilters(params: LookerEmbedFilterParams) {
+    // This is correct!
     this._connection.send('look:filters:update', { filters: params })
   }
 }
