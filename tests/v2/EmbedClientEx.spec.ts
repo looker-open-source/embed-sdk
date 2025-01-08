@@ -37,105 +37,12 @@ import type {
 import type { EmbedClientEx } from '../../src/v2/EmbedClientEx'
 import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
 import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
-
-const waitFor = (callback: () => boolean, options?: { timeout?: number }) =>
-  new Promise<void>((resolve, reject) => {
-    let count = 5
-    setInterval(() => {
-      count--
-      if (callback()) {
-        resolve()
-      }
-      if (count === 0) {
-        reject(new Error('waitFor condition not met'))
-      }
-    }, options?.timeout)
-  })
-
-class MockChattyHostConnection {
-  send() {
-    // noop
-  }
-}
-
-class MockChattyHost {
-  _hostBuilder: MockHostBuilder
-  _hostConnection?: MockChattyHostConnection
-  iframe: HTMLIFrameElement = document.createElement('iframe')
-
-  connect() {
-    return new Promise((resolve) => {
-      resolve(this._hostConnection)
-    })
-  }
-}
-
-class MockHostBuilder {
-  _chattyHost?: MockChattyHost
-  _url?: string
-  _source?: string
-  _frameBorder?: string
-  _handlers: any[] = []
-  _targetOrigin?: string
-  _el: HTMLElement
-  _sandboxAttributes: string[] = []
-  _allowAttributes: string[] = []
-  _classNames: string[] = []
-  _scrollMonitor = false
-
-  frameBorder(border: string) {
-    this._frameBorder = border
-    return this
-  }
-
-  on(name: string, callback: Callback) {
-    this._handlers.push([name, callback])
-    return this
-  }
-
-  withTargetOrigin(targetOrigin: string) {
-    this._targetOrigin = targetOrigin
-    return this
-  }
-
-  withSandboxAttribute(...attr: string[]) {
-    this._sandboxAttributes = this._sandboxAttributes.concat(attr)
-    return this
-  }
-
-  withAllowAttribute(...attr: string[]) {
-    this._allowAttributes = this._allowAttributes.concat(attr)
-    return this
-  }
-
-  withClassName(...classNames: string[]) {
-    this._classNames = this._classNames.concat(classNames)
-    return this
-  }
-
-  withScrollMonitor() {
-    this._scrollMonitor = true
-  }
-
-  appendTo(el: HTMLElement) {
-    this._el = el
-    return this
-  }
-
-  build() {
-    return this._chattyHost
-  }
-
-  countHandlersOfType(type) {
-    return this._handlers.filter(([name]) => type === name).length
-  }
-
-  fireEventForHandler(name: string, event?: any) {
-    this._handlers
-      .filter(([handlerName]) => handlerName === name)
-      .forEach(([_, callback]) => callback(event))
-  }
-}
+import {
+  waitFor,
+  MockChattyHost,
+  MockChattyHostConnection,
+  MockHostBuilder,
+} from './test_utils'
 
 describe('EmbedClientEx', () => {
   let mockChattyHostConnection: MockChattyHostConnection
