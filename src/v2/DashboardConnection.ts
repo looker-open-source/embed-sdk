@@ -54,8 +54,4 @@ export class DashboardConnection implements ILookerEmbedDashboard {
   async openScheduleDialog(): Promise<void> {
     return this._connection.sendAndReceive('dashboard:schedule_modal:open')
   }
-
-  async loadDashboard(id: string, pushHistory = false): Promise<void> {
-    return this._connection.loadId({ id, pushHistory, type: 'dashboards' })
-  }
 }

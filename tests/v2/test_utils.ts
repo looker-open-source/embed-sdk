@@ -47,6 +47,10 @@ export class MockChattyHostConnection {
   send() {
     // noop
   }
+
+  sendAndReceive(): Promise<void> {
+    return Promise.resolve()
+  }
 }
 
 export class MockChattyHost {

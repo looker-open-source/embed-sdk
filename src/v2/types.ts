@@ -136,15 +136,6 @@ export interface ILookerEmbedDashboard {
    */
 
   openScheduleDialog(): Promise<void>
-
-  /**
-   * Convenience method for loading a new dashboard.
-   *
-   * @param id The ID of the dashboard to load
-   * @param pushHistory Whether to push the new page onto history. Default is false.
-   */
-
-  loadDashboard(id: string, pushHistory?: boolean): Promise<void>
 }
 
 /**

@@ -96,8 +96,8 @@ export class EmbedConnection implements ILookerConnection {
   async loadId({
     type,
     id,
-    pushHistory = false,
-    waitUntilLoaded = true,
+    pushHistory,
+    waitUntilLoaded,
   }: LoadIdParams): Promise<void> {
     return this.loadUrl({
       pushHistory,
@@ -106,16 +106,24 @@ export class EmbedConnection implements ILookerConnection {
     })
   }
 
-  async loadDashboard(id: string, pushHistory = false, waitUntilLoaded = true) {
-    return this.loadId({ id, pushHistory, type: 'dashboards' })
+  async loadDashboard(
+    id: string,
+    pushHistory?: boolean,
+    waitUntilLoaded?: boolean
+  ) {
+    return this.loadId({ id, pushHistory, type: 'dashboards', waitUntilLoaded })
   }
 
-  async loadExplore(id: string, pushHistory = false, waitUntilLoaded = true) {
+  async loadExplore(
+    id: string,
+    pushHistory?: boolean,
+    waitUntilLoaded?: boolean
+  ) {
     id = id.replace('::', '/') // Handle old format explore ids.
     return this.loadId({ id, pushHistory, type: 'explore', waitUntilLoaded })
   }
 
-  async loadLook(id: string, pushHistory = false, waitUntilLoaded = true) {
+  async loadLook(id: string, pushHistory?: boolean, waitUntilLoaded?: boolean) {
     return this.loadId({
       id,
       pushHistory,
@@ -124,12 +132,16 @@ export class EmbedConnection implements ILookerConnection {
     })
   }
 
-  async loadExtension(id: string, pushHistory = false, waitUntilLoaded = true) {
+  async loadExtension(
+    id: string,
+    pushHistory?: boolean,
+    waitUntilLoaded?: boolean
+  ) {
     return this.loadId({ id, pushHistory, type: 'extensions', waitUntilLoaded })
   }
 
-  async preload(waitUntilLoaded = true) {
-    return this.loadUrl({ url: '/embed/preload', waitUntilLoaded })
+  async preload(pushHistory?: boolean, waitUntilLoaded?: boolean) {
+    return this.loadUrl({ pushHistory, url: '/embed/preload', waitUntilLoaded })
   }
 
   asDashboardConnection(): ILookerEmbedDashboard {

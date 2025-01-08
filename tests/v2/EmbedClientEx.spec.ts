@@ -98,7 +98,7 @@ describe('EmbedClientEx', () => {
 
   afterEach(() => mock.teardown())
 
-  it('creates a private connection ', async () => {
+  it('creates a private connection', async () => {
     const client = getClient()
     await client.connect()
     expect(mockHostBuilder._url).toBe(
@@ -229,8 +229,11 @@ describe('EmbedClientEx', () => {
       acquireSession: '/acquire-session',
       generateTokens: '/generate-tokens',
     })
-    const connection = await client.connect()
-    const connectionSendSpy = spyOn(connection, 'send')
+    await client.connect()
+    const chattySendSpy = spyOn(
+      mockChattyHostConnection,
+      'send'
+    ).and.callThrough()
     expect(fetchSpy).toHaveBeenCalledWith('/acquire-session', undefined)
     expect(mockHostBuilder._url).toBe(
       'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
@@ -249,14 +252,11 @@ describe('EmbedClientEx', () => {
     expect(client.isConnected).toBeTruthy()
     expect(client.connection).toBeDefined()
     mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
-    expect(connectionSendSpy).toHaveBeenCalledWith(
-      'session:tokens',
-      sessionTokens
-    )
+    expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', sessionTokens)
 
     // generate more tokens
     fetchSpy.calls.reset()
-    connectionSendSpy.calls.reset()
+    chattySendSpy.calls.reset()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
     expect(fetchSpy).toHaveBeenCalledWith('/generate-tokens', {
       body: JSON.stringify({
@@ -266,11 +266,8 @@ describe('EmbedClientEx', () => {
       headers: { 'content-type': 'application/json' },
       method: 'PUT',
     })
-    await waitFor(() => connectionSendSpy.calls.count() > 0)
-    expect(connectionSendSpy).toHaveBeenCalledWith(
-      'session:tokens',
-      sessionTokens
-    )
+    await waitFor(() => chattySendSpy.calls.count() > 0)
+    expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', sessionTokens)
   })
 
   it('creates a cookieless connection using a CookielessRequestInit type', async () => {
@@ -377,8 +374,11 @@ describe('EmbedClientEx', () => {
       acquireSession: '/acquire-session',
       generateTokens: '/generate-tokens',
     })
-    const connection = await client.connect()
-    const connectionSendSpy = spyOn(connection, 'send')
+    await client.connect()
+    const chattySendSpy = spyOn(
+      mockChattyHostConnection,
+      'send'
+    ).and.callThrough()
     mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
 
     // generate more tokens
@@ -391,8 +391,8 @@ describe('EmbedClientEx', () => {
       headers: { 'content-type': 'application/json' },
       method: 'PUT',
     })
-    await waitFor(() => connectionSendSpy.calls.count() > 1)
-    expect(connectionSendSpy.calls.mostRecent().args).toEqual([
+    await waitFor(() => chattySendSpy.calls.count() > 1)
+    expect(chattySendSpy.calls.mostRecent().args).toEqual([
       'session:tokens',
       {
         api_token: undefined,
@@ -443,8 +443,11 @@ describe('EmbedClientEx', () => {
       acquireSession: callbackFunctions.acquireSessionCallback,
       generateTokens: callbackFunctions.generateTokensCallback,
     })
-    const connection = await client.connect()
-    const connectionSendSpy = spyOn(connection, 'send')
+    await client.connect()
+    const chattySendSpy = spyOn(
+      mockChattyHostConnection,
+      'send'
+    ).and.callThrough()
     expect(mockHostBuilder._url).toBe(
       'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
     )
@@ -462,17 +465,14 @@ describe('EmbedClientEx', () => {
     expect(client.isConnected).toBeTruthy()
     expect(client.connection).toBeDefined()
     mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
-    expect(connectionSendSpy).toHaveBeenCalledWith(
-      'session:tokens',
-      sessionTokens
-    )
+    expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', sessionTokens)
     expect(acquireSessionCallbackSpy).toHaveBeenCalled()
 
     // generate more tokens
-    connectionSendSpy.calls.reset()
+    chattySendSpy.calls.reset()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
-    await waitFor(() => connectionSendSpy.calls.count() > 0)
-    expect(connectionSendSpy).toHaveBeenCalledWith(
+    await waitFor(() => chattySendSpy.calls.count() > 0)
+    expect(chattySendSpy).toHaveBeenCalledWith(
       'session:tokens',
       generatedTokens
     )
@@ -509,19 +509,22 @@ describe('EmbedClientEx', () => {
     const scrollIntoViewSpy = jasmine.createSpy('scrollIntoViewSpy')
     mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
     const client = getClient()
-    const connection = await client.connect()
+    await client.connect()
     expect(client.isConnected).toBeTruthy()
-    const connectionSendSpy = spyOn(connection, 'send')
+    const chattySendSpy = spyOn(
+      mockChattyHostConnection,
+      'send'
+    ).and.callThrough()
     document.dispatchEvent(new Event('scroll'))
-    expect(connectionSendSpy).toHaveBeenCalledWith('env:host:scroll', {
+    expect(chattySendSpy).toHaveBeenCalledWith('env:host:scroll', {
       offsetLeft: mockChattyHost.iframe.offsetLeft,
       offsetTop: mockChattyHost.iframe.offsetTop,
       scrollX: window.scrollX,
       scrollY: window.scrollY,
     })
-    connectionSendSpy.calls.reset()
+    chattySendSpy.calls.reset()
     window.dispatchEvent(new Event('resize'))
-    expect(connectionSendSpy).toHaveBeenCalledWith('env:host:scroll', {
+    expect(chattySendSpy).toHaveBeenCalledWith('env:host:scroll', {
       offsetLeft: mockChattyHost.iframe.offsetLeft,
       offsetTop: mockChattyHost.iframe.offsetTop,
       scrollX: window.scrollX,
