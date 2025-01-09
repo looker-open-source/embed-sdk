@@ -34,6 +34,7 @@ import type {
   CookielessCallback,
   CookielessRequestInit,
 } from './types'
+import { getSDKFactory } from './v2/LookerEmbedSDKFactory'
 
 export type { LookerEmbedDashboard } from './dashboard_client'
 export type { LookerEmbedExplore } from './explore_client'
@@ -208,6 +209,20 @@ export class LookerEmbedSDK {
       '/embed/extensions',
       LookerEmbedExtension
     ).withId(id)
+  }
+
+  /**
+   * Create an instance of the new combined connection Embed SDK. The combined
+   * connection Embed SDK allows a developer to create a single connection for
+   * all Looker object types (dashboard, explores, looks, extensions). The
+   * developer can use the connection to navigate to different object types
+   * within Looker without having to recreate the IFRAME.
+   *
+   * Requires Looker version 25.0 or above.
+   */
+
+  static getSDK() {
+    return getSDKFactory().getSDK()
   }
 
   /**

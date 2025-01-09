@@ -10,8 +10,8 @@ var webpackConfig = {
   mode: 'development',
   devtool: 'source-map',
   entry: {
-    demo: './demo/demo.ts',
-    demo_v1: './demo/demo_v1.ts',
+    demo_single_frame: './demo/demo_single_frame.ts',
+    demo_multi_frame: './demo/demo_multi_frame.ts',
     message_example: './demo/message_example.ts',
   },
   output: {

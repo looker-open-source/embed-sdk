@@ -24,6 +24,7 @@
 
  */
 
+import { LookerEmbedSDK } from '../../src'
 import {
   getSDKFactory,
   LookerEmbedSDKFactory,
@@ -40,5 +41,11 @@ describe('LookerEmbedSDKFactory', () => {
     const sdk = {} as ILookerEmbedSDK
     const factory = new LookerEmbedSDKFactory(sdk)
     expect(sdk === factory.getSDK()).toBeTruthy()
+  })
+
+  it('returns an instance of the new SDK from the original SDK', () => {
+    const sdk = LookerEmbedSDK.getSDK()
+    expect(sdk).toBeDefined()
+    expect(LookerEmbedSDK.getSDK()).toBe(sdk)
   })
 })

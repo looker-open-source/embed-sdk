@@ -27,10 +27,11 @@
 // IDs for content to demonstrate are configured in demo_config.ts
 
 import type {
-  LookerEmbedLook,
-  LookerEmbedDashboard,
-  LookerEmbedExplore,
   SessionStatus,
+  ILookerConnection,
+  ILookerEmbedDashboard,
+  ILookerEmbedExplore,
+  ILookerEmbedLook,
 } from '../src/index'
 import { LookerEmbedSDK } from '../src/index'
 import type { RuntimeConfig } from './demo_config'
@@ -41,9 +42,9 @@ import {
   resetConfiguration,
 } from './demo_config'
 
-let currentDashboard: LookerEmbedDashboard | undefined
-let currentLook: LookerEmbedLook | undefined
-let currentExplore: LookerEmbedExplore | undefined
+let currentDashboard: ILookerEmbedDashboard | undefined
+let currentLook: ILookerEmbedLook | undefined
+let currentExplore: ILookerEmbedExplore | undefined
 
 const initializeRunAllButton = () => {
   // Add a listener to the "Run All" button and send 'xxxx:run' messages when clicked
@@ -66,7 +67,8 @@ const initializeRunAllButton = () => {
 /**
  * Set up the dashboard after the SDK connects
  */
-const setupDashboard = (dashboard: LookerEmbedDashboard) => {
+const setupDashboard = (connection: ILookerConnection) => {
+  const dashboard = connection.asDashboardConnection()
   currentDashboard = dashboard
 
   // Add a listener to the dashboard's "Run" button and send a 'dashboard:run' message when clicked
@@ -101,7 +103,8 @@ const setupDashboard = (dashboard: LookerEmbedDashboard) => {
 /**
  * Set up the look after the SDK connects.
  */
-const setupLook = (look: LookerEmbedLook) => {
+const setupLook = (connection: ILookerConnection) => {
+  const look = connection.asLookConnection()
   currentLook = look
 
   // Add a listener to the look's "Run" button and send a 'look:run' message when clicked
@@ -124,7 +127,8 @@ const setupLook = (look: LookerEmbedLook) => {
 /**
  * Set up the explore after the SDK connects.
  */
-const setupExplore = (explore: LookerEmbedExplore) => {
+const setupExplore = (connection: ILookerConnection) => {
+  const explore = connection.asExploreConnection()
   currentExplore = explore
 
   // Add a listener to the explore's "Run" button and send a 'explore:run' message when clicked
@@ -354,7 +358,8 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.showDashboard) {
     document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
       ''
-    LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+    LookerEmbedSDK.getSDK()
+      .createDashboardWithId(runtimeConfig.dashboardId)
       // When true scrolls the top of the IFRAME into view
       .withDialogScroll(runtimeConfig.useDynamicHeights)
       // When true updates the IFRAME height to reflect the height of the
@@ -427,7 +432,8 @@ const renderLook = (runtimeConfig: RuntimeConfig) => {
   // Create an embedded Look
   if (runtimeConfig.showLook) {
     document.querySelector<HTMLDivElement>('#demo-look')!.style.display = ''
-    LookerEmbedSDK.createLookWithId(parseInt(runtimeConfig.lookId, 10))
+    LookerEmbedSDK.getSDK()
+      .createLookWithId(parseInt(runtimeConfig.lookId, 10))
       // Append to the #look element
       .appendTo('#look')
       // Listen to messages to display progress
@@ -469,7 +475,8 @@ const renderExplore = (runtimeConfig: RuntimeConfig) => {
   // Create an embedded Explore
   if (runtimeConfig.showExplore) {
     document.querySelector<HTMLDivElement>('#demo-explore')!.style.display = ''
-    LookerEmbedSDK.createExploreWithId(runtimeConfig.exploreId)
+    LookerEmbedSDK.getSDK()
+      .createExploreWithId(runtimeConfig.exploreId)
       // Append to the #explore element
       .appendTo('#explore')
       // Listen to messages to display progress
@@ -510,7 +517,8 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.showExtension) {
     document.querySelector<HTMLDivElement>('#demo-extension')!.style.display =
       ''
-    LookerEmbedSDK.createExtensionWithId(runtimeConfig.extensionId)
+    LookerEmbedSDK.getSDK()
+      .createExtensionWithId(runtimeConfig.extensionId)
       // Append to the #extension element
       .appendTo('#extension')
       .on('session:status', (event: SessionStatus) => {
@@ -542,14 +550,14 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
 const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.useCookieless) {
     // Use cookieless embed
-    LookerEmbedSDK.initCookieless(
-      runtimeConfig.lookerHost,
+    LookerEmbedSDK.getSDK().initCookieless(
+      runtimeConfig.getSDK().lookerHost,
       '/acquire-embed-session',
       '/generate-embed-tokens'
     )
   } else {
     // Use SSO embed
-    LookerEmbedSDK.init(runtimeConfig.lookerHost, '/auth')
+    LookerEmbedSDK.getSDK().init(runtimeConfig.lookerHost, '/auth')
   }
 }
 
