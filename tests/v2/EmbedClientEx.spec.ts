@@ -109,7 +109,7 @@ describe('EmbedClientEx', () => {
     const client = getClient()
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://myhost.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
     )
     expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
       0
@@ -130,7 +130,7 @@ describe('EmbedClientEx', () => {
     const client = getClient({ sandboxedHost: true })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/preload/?embed_domain=https%3A%2F%2Fmyhost.com&sandboxed_host=true&sdk=2'
+      'https://myhost.com/embed/preload/?embed_domain=https%3A%2F%2Fmyhost.com&sandboxed_host=true&sdk=2'
     )
   })
 
@@ -141,7 +141,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/preload/?embed_domain=https%3A%2F%2Fmylooker.com&sandboxed_host=true&sdk=2'
+      'https://mylooker.com/embed/preload/?embed_domain=https%3A%2F%2Fmylooker.com&sandboxed_host=true&sdk=2'
     )
   })
 
@@ -151,7 +151,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
     )
   })
 
@@ -161,7 +161,7 @@ describe('EmbedClientEx', () => {
     })
     const connectPromise = client.connect(true)
     expect(mockHostBuilder._url).toBe(
-      '/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
     )
     mockHostBuilder.fireEventForHandler('page:changed', {})
     await connectPromise
@@ -174,7 +174,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
     )
   })
 
@@ -186,7 +186,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
+      'https://mylooker.com/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
     )
   })
 
@@ -198,7 +198,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
+      'https://mylooker.com/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
     )
   })
 
@@ -209,7 +209,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
     )
   })
 
@@ -220,7 +220,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      '/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
     )
   })
 

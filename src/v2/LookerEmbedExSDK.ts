@@ -64,6 +64,12 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
    * @hidden
    */
 
+  _acquireSessionPromiseResolver?: (value: string | PromiseLike<string>) => void
+
+  /**
+   * @hidden
+   */
+
   _apiHost?: string
 
   /**

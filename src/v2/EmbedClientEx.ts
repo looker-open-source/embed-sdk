@@ -203,6 +203,18 @@ export class EmbedClientEx implements IEmbedClient {
 
     const connectPromise = this._host.connect().then((host) => {
       this._client = new EmbedConnection(host, this)
+      if (this._sdk._acquireSessionPromiseResolver) {
+        // Resolve the session acquire promise now that the IFRAME
+        // has been loaded.
+        this._sdk._sessionAcquired = true
+        const resolver = this._sdk._acquireSessionPromiseResolver
+        this._sdk._acquireSessionPromiseResolver = undefined
+        // An empty string is used because the same resolver is
+        // used for cookieless which does return a url. Signed url
+        // will use the bare url which is available to the promise
+        // resolution listener.
+        resolver('')
+      }
       return this._client
     })
 
@@ -237,6 +249,29 @@ export class EmbedClientEx implements IEmbedClient {
 
   private async createSignedUrl() {
     const src = this.appendRequiredParameters(this._builder.embedUrl)
+    // If the session exists there is no need to go though
+    // the signing process again so the naked url is used
+    // (prepended by the host).
+    if (this._sdk._sessionAcquired) {
+      return Promise.resolve(this.prependApiHost(src))
+    }
+
+    if (this._sdk._acquireSessionPromise) {
+      // Wait for the session to be acquired and then use
+      // the naked url prepended by the host
+      await this._sdk._acquireSessionPromise
+      return Promise.resolve(this.prependApiHost(src))
+    }
+
+    // Create the session acquire promise and make the resolve
+    // available. The promise will be resolved once the IFRAME
+    // has been created. The auth promise cannot be used as all
+    // it does is create the embed login url. The session does
+    // not exist until the IFRAME is loaded.
+    this._sdk._acquireSessionPromise = new Promise<string>((resolve) => {
+      this._sdk._acquireSessionPromiseResolver = resolve
+    })
+
     const auth = this._builder.auth
 
     let url = `${auth.url}?src=${encodeURIComponent(src)}`
@@ -415,7 +450,7 @@ export class EmbedClientEx implements IEmbedClient {
     ) {
       // Private embedding
       this._connection = this.createIframe(
-        this.appendRequiredParameters(this._builder.url),
+        this.prependApiHost(this.appendRequiredParameters(this._builder.url)),
         waitUntilLoaded
       )
     } else {
@@ -435,6 +470,10 @@ export class EmbedClientEx implements IEmbedClient {
       }
     }
     return this._connection
+  }
+
+  prependApiHost(url: string) {
+    return `https://${this._sdk.apiHost}${url}`
   }
 
   appendRequiredParameters(urlString: string): string {
