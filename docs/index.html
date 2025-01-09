@@ -174,8 +174,7 @@ user to particular domain.</p>
 <a href="#demo" id="demo" style="color: inherit; text-decoration: none;">
   <h2>Demo</h2>
 </a>
-<p>A simple demo is provided in the <code>/demo</code> directory that uses a basic JS frontend and a Python backend. The example backend <code>demo.py</code> uses the Looker API to create a signed URL. The example backend <code>demo_self_signed.py</code> uses the embed secret and a helper function to sign the URL. The instructions below are for the example using the Looker API.</p>
-<p>The python simple demo server does not support cookieless embed but alternative TypeScript backend is available which does support cookieless embed.</p>
+<p>A simple demo is provided in the <code>/demo</code> directory that uses a basic JS frontend and a Node backend. The example backend <code>server/app.js</code> uses the Looker API to create a signed URL. The example backend <code>server/utils/auth_utils.ts</code> uses the embed secret and a helper function to sign the URL. The instructions below are for the example using the Looker API.</p>
 
 <a href="#step-1---enable-embedding-in-your-looker-instance" id="step-1---enable-embedding-in-your-looker-instance" style="color: inherit; text-decoration: none;">
   <h3>Step 1 - Enable Embedding in your Looker instance</h3>
@@ -236,13 +235,6 @@ Enabling cookieless embedding is documented in more detail <a href="https://clou
   <h3>Step 3 - Build and run the demo</h3>
 </a>
 <p>The following applies to SSO embed only. Run the following commands from the top-level embed-sdk directory.</p>
-<ul>
-<li><code>npm install</code></li>
-<li><code>npm run python</code></li>
-<li>The server will print out what host and port it is running on.</li>
-</ul>
-<p>If you want to use the <code>demo_self_signed.py</code> example you will need to update <code>packages.json</code> and replace <code>demo.py</code> with <code>demo_self_signed.py</code>.</p>
-<p>Alternatively run the TypeScript demo server which also supports cookieless embed.</p>
 <ul>
 <li><code>npm install</code></li>
 <li><code>npm run server</code></li>
