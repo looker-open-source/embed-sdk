@@ -25,7 +25,7 @@
  */
 import type { ChattyHostBuilder } from '@looker/chatty'
 import { Chatty } from '@looker/chatty'
-import { sanitizeHostUrl } from '../utils'
+import { sanitizeHostUrl, santizeEmbedUrl } from '../utils'
 import type {
   CookielessCallback,
   GenerateTokensCallback,
@@ -116,7 +116,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createWithUrl(url: string): IEmbedBuilder {
-    return new EmbedBuilderEx(this, '', '').withUrl(url)
+    return new EmbedBuilderEx(this, '', '').withUrl(santizeEmbedUrl(url))
   }
 
   createDashboardWithUrl(url: string): IEmbedBuilder {

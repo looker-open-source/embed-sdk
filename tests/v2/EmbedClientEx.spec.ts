@@ -56,6 +56,7 @@ describe('EmbedClientEx', () => {
       auth?: string | LookerAuthConfig
       acquireSession?: string | CookielessRequestInit | CookielessCallback
       generateTokens?: string | CookielessRequestInit | GenerateTokensCallback
+      createUrl?: string
     } = {}
   ) => {
     const {
@@ -64,6 +65,7 @@ describe('EmbedClientEx', () => {
       auth,
       acquireSession,
       generateTokens,
+      createUrl,
     } = options
     const createChattyBuilder = (url: string) => {
       mockHostBuilder._url = url
@@ -75,14 +77,19 @@ describe('EmbedClientEx', () => {
     } else {
       sdk.init(apiHost, auth)
     }
-    const builder = sdk
-      .preload()
+    let builder: EmbedBuilderEx
+    if (createUrl) {
+      builder = sdk.createWithUrl(createUrl) as EmbedBuilderEx
+    } else {
+      builder = sdk.preload() as EmbedBuilderEx
+    }
+    builder
       .withDialogScroll()
       .withDynamicIFrameHeight()
       .withSandboxAttr('allow-popups')
       .withAllowAttr('allowfullscreen')
       .withClassName('myiframe-container')
-      .withScrollMonitor() as EmbedBuilderEx
+      .withScrollMonitor()
     builder.sandboxedHost = sandboxedHost
     return builder.build() as EmbedClientEx
   }
@@ -158,6 +165,75 @@ describe('EmbedClientEx', () => {
     )
     mockHostBuilder.fireEventForHandler('page:changed', {})
     await connectPromise
+  })
+
+  it('adds embed domain and sdk to URL', async () => {
+    const client = getClient({
+      apiHost: 'https://mylooker.com',
+      createUrl: '/embed/dashboards/42?my_filter=123',
+    })
+    await client.connect()
+    expect(mockHostBuilder._url).toBe(
+      '/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+    )
+  })
+
+  it('does not add embed domain and sdk to URL when they are present', async () => {
+    const client = getClient({
+      apiHost: 'https://mylooker.com',
+      createUrl:
+        '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123',
+    })
+    await client.connect()
+    expect(mockHostBuilder._url).toBe(
+      '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
+    )
+  })
+
+  it('adds /embed to url when missing', async () => {
+    const client = getClient({
+      apiHost: 'https://mylooker.com',
+      createUrl:
+        '/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123',
+    })
+    await client.connect()
+    expect(mockHostBuilder._url).toBe(
+      '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
+    )
+  })
+
+  it('strips host from URL', async () => {
+    const client = getClient({
+      apiHost: 'https://mylooker.com',
+      createUrl: 'https://mylooker.com/embed/dashboards/42?my_filter=123',
+    })
+    await client.connect()
+    expect(mockHostBuilder._url).toBe(
+      '/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+    )
+  })
+
+  it('strips host from URL and adds missing /embed', async () => {
+    const client = getClient({
+      apiHost: 'https://mylooker.com',
+      createUrl: 'https://mylooker.com/dashboards/42?my_filter=123',
+    })
+    await client.connect()
+    expect(mockHostBuilder._url).toBe(
+      '/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+    )
+  })
+
+  it('throws an error if the embed URL is invalod', async () => {
+    expect(() => {
+      getClient({
+        apiHost: 'https://mylooker.com',
+        createUrl:
+          'https://mylooker.com::9999/embed/dashboards/42?my_filter=123',
+      })
+    }).toThrowError(
+      'Invalid embed URL https://mylooker.com::9999/embed/dashboards/42?my_filter=123'
+    )
   })
 
   it('creates a signed url connection', async () => {

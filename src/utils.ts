@@ -52,9 +52,26 @@ export function sanitizeHostUrl(hostUrl: string) {
         ? ''
         : 'https://'
     const url = new URL(`${protocol}${hostUrl}`)
-    return url.hostname
+    return `${url.hostname}${
+      ['', '443', '80'].includes(url.port) ? '' : ':' + url.port
+    }`
   } catch (error: any) {
-    console.error(`Invalid host URL ${hostUrl}`)
-    return hostUrl
+    throw new Error(`Invalid host URL ${hostUrl}`)
   }
+}
+
+export function santizeEmbedUrl(embedUrl: string) {
+  let urlString = embedUrl
+  if (embedUrl.startsWith('https://') || embedUrl.startsWith('http://')) {
+    try {
+      const url = new URL(embedUrl)
+      urlString = `${url.pathname}${url.search}${url.hash}`
+    } catch (error: any) {
+      throw new Error(`Invalid embed URL ${embedUrl}`)
+    }
+  }
+  if (!urlString.startsWith('/embed')) {
+    urlString = `/embed${urlString}`
+  }
+  return urlString
 }

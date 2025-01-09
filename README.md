@@ -1,35 +1,42 @@
 # Looker JavaScript Embed SDK
 
+## Embed SDK version 2.0.0
+
+The following document has been updated to reflect the usage of Embed SDK 2.0.0. The API associated with Embed SDK 1.8.x is still available but in order to take advantage of features added to Embed SDK 2.0.0 an embedding application will need to refactored slightly. See the section [Upgrading to Embed SDK 2.0.0](#upgrading_sdk) for more information.
+
 ## Introduction
 
 The Looker JavaScript Embed SDK is designed to facilitate using Looker embedded content in your web application. The goal is to make communication between a host website and one or more embedded dashboards, looks, explores and extensions easier and more reliable.
 
-The Looker JavaScript Embed SDK typically uses embed SSO to sign an embed url in order to authenticate the user of the embed. This mechanism relies on Looker cookies being available to the embedded IFRAME in order for the application to work. Looker also provides a mechanism that allows embedded Looker IFRAMES to work without the need for cookies. Details can be found [here](#cookieless). Embed SDK functionality that will not work with cookieless embed is identified in this document.
+The Looker JavaScript Embed SDK typically uses embed SSO to sign an embed url in order to authenticate the user of the embed. This mechanism relies on Looker cookies being available to the embedded IFRAME in order for the application to work. Looker also provides a mechanism that allows embedded Looker IFRAMES to work without the need for cookies. Details can be found [here](#cookieless).
 
 A typical setup might look like this. In this case, a dashboard with an id of `11` is created inside a DOM element with the id `dashboard`. The `dashboard:run:start` and `dashboard:run:complete` events are used to update the state of the embedding window's UI, and a button with an id of `run` is scripted to send a `dashboard:run` message to the dashboard.
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com', '/auth')
+getSDKFactory().getSDK().init('looker.example.com', '/auth')
 
-const setupDashboard = (dashboard) => {
+const setupDashboard = (connection) => {
   document.querySelector('#run').addEventListener('click', () => {
-    dashboard.send('dashboard:run')
+    connection.asDashboardConnection().run()
   })
 }
 
-LookerEmbedSDK.createDashboardWithId(11)
-  .appendTo('#dashboard')
-  .on('dashboard:run:start', () => updateState('#dashboard-state', 'Running'))
-  .on('dashboard:run:complete', () => updateState('#dashboard-state', 'Done'))
-  .build()
-  .connect()
-  .then(setupDashboard)
-  .catch((error: Error) => {
-    console.error('An unexpected error occurred', error)
-  })
+try {
+  connection = await getSDKFactory()
+    .getSDK()
+    .createDashboardWithId(11)
+    .appendTo('#embed_container')
+    .on('dashboard:run:start', () => updateStatus('Running'))
+    .on('dashboard:run:complete', () => updateStatus('Done'))
+    .build()
+    .connect()
+  setupDashboard(connection)
+} catch (error) {
+  console.error('An unexpected error occurred', error)
+}
 ```
 
-A more complete example can be found [here](demo/demo.ts). Detailed instructions on how to use it are [here](#demo).
+A more complete example can be found [here](demo/demo_single_frame.ts) and [here](demo/demo_multi_frame.ts). Detailed instructions on how to use the SDK can be found [here](#demo).
 
 ## Details
 
@@ -37,18 +44,18 @@ The Looker Embed SDK uses a fluent interface pattern. The construction of the em
 
 ### Building
 
-First initialize the SDK with address of your Looker server and the endpoint on your server that will perform authentication. (Note: Port must be included if it is required to reach the Looker server from browser clients, e.g. looker.example.com:1919, but the protocol (http/https) should _not_ be included.)
+First initialize the SDK with address of the Looker server and the endpoint of the embedding application server that will create a signed Looker embedded login URL.
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com', '/auth')
+getSDKFactory().getSDK().init('looker.example.com', '/auth')
 ```
 
-In this example, `/auth` is a backend service that you must implement as described in the [Auth](#the-auth-endpoint) section.
+In this example, `/auth` is a backend service that must be implemented as described in the [Auth](#the-auth-endpoint) section.
 
 After the SDK is initialized, begin by creating the builder with an `id`. For example, to create a dashboard embed builder:
 
 ```javascript
-LookerEmbedSDK.createDashboardWithId(id)
+getSDKFactory().getSDK().createDashboardWithId(id)
 ```
 
 You can then add additional attributes to the builder to complete your setup:
@@ -61,10 +68,10 @@ You can add event handlers:
 
 ```javascript
   .on('dashboard:run:start',
-      () => updateState('#dashboard-state', 'Running')
+      () => updateStatus('Running')
   )
   .on('dashboard:run:complete',
-      () => updateState('#dashboard-state', 'Done')
+      () => updateStatus('Done')
   )
 ```
 
@@ -74,34 +81,42 @@ You finish by building the embedded element:
   .build()
 ```
 
-The `createDashboardWithId` function will call your backend `/auth` endpoint when `build` is invoked and requires a signed embed URL in response. Subsequent embeds can be generated using `createDashboardWithUrl` which accepts a partial URL matching [this form](https://docs.looker.com/reference/embedding/sso-embed#building_the_embed_url), for example: `/embed/dashboards/`. The URL create functions will not call your backend `/auth` service. If you are embedding multiple items on a single page, use ID create functions first and then URL create functions subsequently to avoid redundant calls to your auth backend.
+The `createXXX` functions (`Id` and `URL` ) will call your backend `/auth` endpoint when `build` is invoked and requires a signed embed URL in response.
 
-If you want to send and receive messages to the embedded element you need to call `connect()` which returns a Promise that resolves to the communication interface of the given element:
+If you want to send and receive messages to the embedded IFRAME you need to call `connect()` which returns a Promise that resolves to the communication interface of the given embedded IFRAME (the connection):
 
 ```javascript
   .connect()
-  .then(setupDashboard)
+  .then(setupConnection)
   .catch(console.error)
 ```
 
+Embed SDK 2.0.x allows the same IFRAME to be used for all Looker embed types. Once the connection has been established, use the `loadXXX` methods on the connection to load different Looker embed object instances or types.
+
 ## Building URLs for the SDK
 
-This section does not apply to cookieless embed as building URLs in this manner is not supported. See the [cookieless embed](#cookieless) section for details.
+_The Embed SDK 2.0.0 now allows URL building for cookieless embed._
 
-The main documentation for Looker SSO embed URLs is [here](https://docs.looker.com/r/sdk/sso-embed). The only difference when creating URLs for the SDK is that you will need to add an `sdk=2` parameter to the Embed URL alongside other parameters like filters and the `embed_domain` parameter. This parameter allows Looker to identify that the SDK is present and can take advantage of additional features provided by the SDK.
+The main documentation for Looker SSO embed URLs is [here](https://docs.looker.com/r/sdk/sso-embed).
+
+Embed SDK 2.0.0 will sanitize the URL if necessary:
+
+1. It will strip hostname and protocol if present.
+2. It will prefix the URL with `/embed` if missing.
+3. It will add the `sdk` parameter if missing.
+4. It will add the `embed_domain` parameter if missing.
+5. It will throw an error if the URL is invalid.
 
 ```html
 /embed/looks/4?embed_domain=https://mywebsite.com =>
 /embed/looks/4?embed_domain=https://mywebsite.com&sdk=2
 ```
 
-The SDK cannot add this parameter itself because it part of the signed SSO URL.
-
 ## The Auth Endpoint
 
 This section does not apply to cookieless embed as an alternate mechanism for authentication is used. See the [cookieless embed](#cookieless) section for details.
 
-In order to use the embed SDK on the frontend you must supply a backend service that handles authentication. This service is called by the SDK to generate a signed iframe URL that is unique to the requesting user. The backend process can either generate the signed embed URL itself using an embed secret or the backend process can generate the URL by calling the Looker API. Manual URL generation and signing avoids calling the Looker API resulting in decreased latency. Calling the Looker API requires less code and can be easier to maintain.
+In order to use the embed SDK on the frontend you must supply a backend service that handles authentication. This service is called by the SDK to generate a signed iframe URL that is unique to the requesting user. The backend process can either generate the signed embed URL itself using an embed secret or the backend process can generate the URL by calling the [Looker Create Signed Embed URL API](https://cloud.google.com/looker/docs/reference/looker-api/latest/methods/Auth/create_sso_embed_url). Manual URL generation and signing avoids calling the Looker API resulting in decreased latency. Calling the Looker API requires less code and can be easier to maintain.
 
 ### Backend Process
 
@@ -693,3 +708,60 @@ LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
 ```
 
 Note that this functionality is also available to the javascript API. See [here](demo/message_example.ts) for how to add this functionality.
+
+<a name='ugrading_sdk' id='upgrading_sdk'></a>
+
+## Upgrading to Embed SDK 2.0.0
+
+Embed SDK 2.0.0 is not a breaking change as upgrading the package will NOT break an existing embedded application as the version `1.8.x` API still exists in and has not been removed from the package. It will however be removed in a future release.
+
+In order to take advantage of the new features (loading different Looker dashboards, looks and explores without creating a new IFRAME), the embedding application will need to refactored slightly. The section of the document outlines the changes that will need to be made.
+
+### SDK Initialization
+
+```javascript
+// Version 1.8.x
+LookerEmbedSDK.init('looker.example.com', '/auth')
+
+// Version 2.0.x
+getSDKFactory().getSDK().init('looker.example.com', '/auth')
+```
+
+### Creating and interacting with an IFRAME
+
+```javascript
+// Version 1.8.x
+try {
+  const dashboard = await LookerEmbedSDK
+      .createDashboardWithId('42)
+      .withAllowAttr('fullscreen')
+      .appendTo('#dashboard')
+      .on('dashboard:loaded', () => updateStatus('#dashboard-state', 'Loaded'))
+      .build()
+      .connect()
+
+
+   dashboard.run()
+
+} catch(error) {
+  ...
+}
+
+// Version 2.0.x
+try {
+  const connection = getSDKFactory().getSDK()
+      .createDashboardWithId('42)
+      .withAllowAttr('fullscreen')
+      .appendTo('#embed_container')
+      .on('dashboard:loaded', () => updateStatus('#dashboard-state', 'Loaded'))
+      .build()
+      .connect()
+
+
+   connection.asDashboardConnection().run()
+
+} catch(error) {
+  ...
+}
+
+```

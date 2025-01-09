@@ -75,8 +75,6 @@ export class MockHostBuilder {
   _el: HTMLElement
   _sandboxAttributes: string[] = []
   _allowAttributes: string[] = []
-  _classNames: string[] = []
-  _scrollMonitor = false
 
   frameBorder(border: string) {
     this._frameBorder = border
@@ -101,15 +99,6 @@ export class MockHostBuilder {
   withAllowAttribute(...attr: string[]) {
     this._allowAttributes = this._allowAttributes.concat(attr)
     return this
-  }
-
-  withClassName(...classNames: string[]) {
-    this._classNames = this._classNames.concat(classNames)
-    return this
-  }
-
-  withScrollMonitor() {
-    this._scrollMonitor = true
   }
 
   appendTo(el: HTMLElement) {

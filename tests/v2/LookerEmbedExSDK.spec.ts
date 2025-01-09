@@ -47,14 +47,17 @@ describe('LookerEmbedExSDK', () => {
     expect(sdk._apiHost).toBe('myhost.com')
     sdk.init('https://myhost.com')
     expect(sdk._apiHost).toBe('myhost.com')
+    sdk.init('https://myhost.com:9999')
+    expect(sdk._apiHost).toBe('myhost.com:9999')
+    sdk.init('https://myhost.com:443')
+    expect(sdk._apiHost).toBe('myhost.com')
     sdk.init('http://myhost.com')
     expect(sdk._apiHost).toBe('myhost.com')
     sdk.init('http://myhost.com/xxx')
     expect(sdk._apiHost).toBe('myhost.com')
-    const errorSpy = spyOn(console, 'error')
-    sdk.init('myhost.com::9999')
-    expect(errorSpy).toHaveBeenCalledWith('Invalid host URL myhost.com::9999')
-    expect(sdk._apiHost).toBe('myhost.com::9999')
+    expect(() => {
+      sdk.init('myhost.com::9999')
+    }).toThrowError('Invalid host URL myhost.com::9999')
   })
 
   it('initializes signed URL SDK with string auth', () => {
