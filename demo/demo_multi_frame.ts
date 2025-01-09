@@ -557,7 +557,7 @@ const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
     getSDKFactory()
       .getSDK()
       .initCookieless(
-        runtimeConfig.getSDK().lookerHost,
+        runtimeConfig.lookerHost,
         '/acquire-embed-session',
         '/generate-embed-tokens'
       )
