@@ -430,9 +430,7 @@ To add the embed domain to the `acquire_embed_cookieless_session` payload set th
 
 ## Demo
 
-A simple demo is provided in the `/demo` directory that uses a basic JS frontend and a Python backend. The example backend `demo.py` uses the Looker API to create a signed URL. The example backend `demo_self_signed.py` uses the embed secret and a helper function to sign the URL. The instructions below are for the example using the Looker API.
-
-The python simple demo server does not support cookieless embed but alternative TypeScript backend is available which does support cookieless embed.
+A simple demo is provided in the `/demo` directory that uses a basic JS frontend and a Node backend. The example backend `server/app.js` uses the Looker API to create a signed URL. The example backend `server/utils/auth_utils.ts` uses the embed secret and a helper function to sign the URL. The instructions below are for the example using the Looker API.
 
 ### Step 1 - Enable Embedding in your Looker instance
 
@@ -558,14 +556,6 @@ const extensionId = 'extension::my-great-extension'
 ### Step 3 - Build and run the demo
 
 The following applies to SSO embed only. Run the following commands from the top-level embed-sdk directory.
-
-- `npm install`
-- `npm run python`
-- The server will print out what host and port it is running on.
-
-If you want to use the `demo_self_signed.py` example you will need to update `packages.json` and replace `demo.py` with `demo_self_signed.py`.
-
-Alternatively run the TypeScript demo server which also supports cookieless embed.
 
 - `npm install`
 - `npm run server`
