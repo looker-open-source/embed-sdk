@@ -30,6 +30,15 @@ import { LookerEmbedBase } from './embed_base'
 /**
  * Client that communicates with an embedded Looker Look. Messages are documented
  * [here](https://docs.looker.com/r/sdk/events)
+ *
+ * @deprecated Use the following instead
+ * ```typescript
+ *     const connection = await getSDKFactory().getSDK()
+ *       .createLookWithId('42')
+ *       .build()
+ *       .connect()
+ *     const look = connection.asLookConnection()
+ * ```
  */
 
 export class LookerEmbedLook extends LookerEmbedBase {

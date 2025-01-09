@@ -39,6 +39,13 @@ import { IS_URL } from './utils'
 /**
  * Wrapper for Looker embedded content. Provides a mechanism for creating the embedded content element,
  * and for establishing two-way communication between the parent window and the embedded content.
+ *
+ * @deprecated Use the following instead
+ *  * ```typescript
+ *     const client = getSDKFactory().getSDK()
+ *       .createDashboardWithId('42')
+ *       .build()
+ * ```
  */
 
 export class EmbedClient<T> {

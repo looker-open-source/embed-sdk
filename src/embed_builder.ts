@@ -51,6 +51,12 @@ export interface UrlParams {
 /**
  * The builder class for [[EmbedClient]]. Contains methods for defining the properties of embedded
  * Looker content.
+ *
+ * @deprecated Use the following instead
+ * ```typescript
+ *     const builder = await getSDKFactory().getSDK()
+ *       .createDashboardWithId('42')
+ * ```
  */
 
 export class EmbedBuilder<T> {

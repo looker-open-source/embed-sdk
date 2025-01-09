@@ -48,6 +48,9 @@ export * from './v2/LookerEmbedExSDK'
 export * from './v2/LookerEmbedSDKFactory'
 export * from './v2/types'
 
+/**
+ * @deprecated Use <code>getSDKFactory().getSDK()</code> instead.
+ */
 export class LookerEmbedSDK {
   /**
    * Initialize the Embed SDK.
@@ -55,6 +58,8 @@ export class LookerEmbedSDK {
    * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
    *                This is required for verification of messages sent from the embedded content.
    * @param authUrl A server endpoint that will sign SSO embed URLs
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().init(...)</code> instead.
    */
 
   static init(apiHost: string, auth?: string | LookerAuthConfig) {
@@ -78,6 +83,8 @@ export class LookerEmbedSDK {
    * The server endpoint should ultimately call the Looker endpoint `generate_tokens_for_cookieless_session`.
    *
    * Looker 22.20+
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().initCookieless(...)</code> instead.
    */
   static initCookieless(
     apiHost: string,
@@ -94,6 +101,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker dashboard.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createDashboardWithUrl(...)</code> instead.
    */
 
   static createDashboardWithUrl(url: string) {
@@ -109,6 +118,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker dashboard.
    *
    * @param id The numeric ID of a Looker User Defined Dashboard, or LookML Dashboard ID
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createDashboardWithId(...)</code> instead.
    */
 
   static createDashboardWithId(id: string | number) {
@@ -124,6 +135,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker Explore.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createExploreWithUrl(...)</code> instead.
    */
 
   static createExploreWithUrl(url: string) {
@@ -139,6 +152,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker Explore.
    *
    * @param id The ID of a Looker explore
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createExploreWithId(...)</code> instead.
    */
 
   static createExploreWithId(id: string) {
@@ -155,6 +170,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker Look.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createLookWithUrl(...)</code> instead.
    */
 
   static createLookWithUrl(url: string) {
@@ -170,6 +187,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker dashboard.
    *
    * @param id The ID of a Looker Look
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createLookWithId(...)</code> instead.
    */
 
   static createLookWithId(id: number) {
@@ -185,6 +204,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker extension.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createExtensionWithUrl(...)</code> instead.
    */
 
   static createExtensionWithUrl(url: string) {
@@ -200,6 +221,8 @@ export class LookerEmbedSDK {
    * Create an EmbedBuilder for an embedded Looker extension. Requires Looker 7.12
    *
    * @param id The ID of a Looker Look
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK().createExtensionWithId(...)</code> instead.
    */
 
   static createExtensionWithId(id: string) {
@@ -218,7 +241,10 @@ export class LookerEmbedSDK {
    * developer can use the connection to navigate to different object types
    * within Looker without having to recreate the IFRAME.
    *
-   * Requires Looker version 25.0 or above.
+   * Note that connection navigation requires Looker version 25.0 or above.
+   * Everything else will work with existing versions of Looker.
+   *
+   * @deprecated Use <code>getSDKFactory().getSDK()</code> instead.
    */
 
   static getSDK() {

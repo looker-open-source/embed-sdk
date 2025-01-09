@@ -26,6 +26,10 @@
 
 import type { ChattyHostConnection } from '@looker/chatty'
 
+/**
+ * @deprecated
+ */
+
 export class LookerEmbedBase {
   /**
    * @hidden

@@ -30,6 +30,15 @@ import { LookerEmbedBase } from './embed_base'
 /**
  * Client that communicates with an embedded Looker dashboard. Messages are documented
  * [here](https://docs.looker.com/r/sdk/events)
+ *
+ * @deprecated Use the following instead
+ * ```typescript
+ *     const connection = await getSDKFactory().getSDK()
+ *       .createDashboardWithId('42')
+ *       .build()
+ *       .connect()
+ *     const dashboard = connection.asDashboardConnection()
+ * ```
  */
 
 export class LookerEmbedDashboard extends LookerEmbedBase {

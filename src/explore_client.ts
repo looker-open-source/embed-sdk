@@ -30,6 +30,15 @@ import { LookerEmbedBase } from './embed_base'
 /**
  * Client that communicates with an embedded Looker Explore. Messages are documented
  * [here](https://docs.looker.com/r/sdk/events)
+ *
+ * @deprecated Use the following instead
+ * ```typescript
+ *     const connection = await getSDKFactory().getSDK()
+ *       .createExploreWithId('mymodel/myview')
+ *       .build()
+ *       .connect()
+ *     const explore = connection.asExploreConnection()
+ * ```
  */
 
 export class LookerEmbedExplore extends LookerEmbedBase {

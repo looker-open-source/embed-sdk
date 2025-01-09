@@ -62,7 +62,7 @@ export type GenerateTokensCallback = (
 ) => Promise<LookerEmbedCookielessSessionData>
 
 /**
- * Cookieless toke data
+ * Cookieless token data
  */
 export interface LookerEmbedCookielessTokenData {
   /**
