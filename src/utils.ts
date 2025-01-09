@@ -44,3 +44,17 @@ export function escapeFilterParam(param: string) {
 }
 
 export const IS_URL = /^https?:\/\//
+
+export function sanitizeHostUrl(hostUrl: string) {
+  try {
+    const protocol =
+      hostUrl.startsWith('https://') || hostUrl.startsWith('http://')
+        ? ''
+        : 'https://'
+    const url = new URL(`${protocol}${hostUrl}`)
+    return url.hostname
+  } catch (error: any) {
+    console.error(`Invalid host URL ${hostUrl}`)
+    return hostUrl
+  }
+}

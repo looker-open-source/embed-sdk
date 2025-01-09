@@ -25,6 +25,7 @@
  */
 import type { ChattyHostBuilder } from '@looker/chatty'
 import { Chatty } from '@looker/chatty'
+import { sanitizeHostUrl } from '../utils'
 import type {
   CookielessCallback,
   GenerateTokensCallback,
@@ -93,7 +94,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   ) {}
 
   init(apiHost: string, auth?: string | LookerAuthConfig) {
-    this._apiHost = apiHost
+    this._apiHost = sanitizeHostUrl(apiHost)
     this._auth = typeof auth === 'string' ? { url: auth } : auth
     this._acquireSession = undefined
     this._generateTokens = undefined
@@ -104,7 +105,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     acquireSession: string | CookielessRequestInit | CookielessCallback,
     generateTokens: string | CookielessRequestInit | GenerateTokensCallback
   ) {
-    this._apiHost = apiHost
+    this._apiHost = sanitizeHostUrl(apiHost)
     this._acquireSession = acquireSession
     this._generateTokens = generateTokens
     this._auth = undefined
