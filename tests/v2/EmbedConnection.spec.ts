@@ -291,4 +291,24 @@ describe('EmmbedConnection', () => {
     await loadPromise
     expect(chattySendSpy).toHaveBeenCalledWith('dashboard:stop', undefined)
   })
+
+  it('updates the isEditing indicator for dashboards', async () => {
+    const connection = await getConnection()
+    const loadPromise = connection.loadDashboard('42')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    await loadPromise
+    expect(connection.isEditing()).toBe(false)
+    mockHostBuilder.fireEventForHandler('dashboard:edit:start', {})
+    expect(connection.isEditing()).toBe(true)
+    mockHostBuilder.fireEventForHandler('dashboard:edit:cancel', {})
+    expect(connection.isEditing()).toBe(false)
+    mockHostBuilder.fireEventForHandler('dashboard:edit:start', {})
+    expect(connection.isEditing()).toBe(true)
+    mockHostBuilder.fireEventForHandler('dashboard:save:complete', {})
+    expect(connection.isEditing()).toBe(false)
+  })
 })

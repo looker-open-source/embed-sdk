@@ -147,6 +147,12 @@ export interface ILookerConnection {
    */
 
   getPageType(): PageType
+
+  /**
+   * Returns true if the page is currently being edited
+   */
+
+  isEditing(): boolean
 }
 
 /**

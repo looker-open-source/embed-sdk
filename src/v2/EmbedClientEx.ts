@@ -180,6 +180,12 @@ export class EmbedClientEx implements IEmbedClient {
     return `https://${this._sdk.apiHost}${url}`
   }
 
+  private updateEditing(isEditing: boolean) {
+    if (this._connection) {
+      this._connection._isEditing = isEditing
+    }
+  }
+
   private async createIframe(url: string, waitUntilLoaded: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
     if (!this._builder.handlers['page:changed']) {
@@ -193,6 +199,24 @@ export class EmbedClientEx implements IEmbedClient {
       }
       this.identifyPageType(event)
     })
+    if (!this._builder.handlers['dashboard:edit:start']) {
+      this._builder.handlers['dashboard:edit:start'] = []
+    }
+    this._builder.handlers['dashboard:edit:start'].push(() =>
+      this.updateEditing(true)
+    )
+    if (!this._builder.handlers['dashboard:edit:cancel']) {
+      this._builder.handlers['dashboard:edit:cancel'] = []
+    }
+    this._builder.handlers['dashboard:edit:cancel'].push(() =>
+      this.updateEditing(false)
+    )
+    if (!this._builder.handlers['dashboard:save:complete']) {
+      this._builder.handlers['dashboard:save:complete'] = []
+    }
+    this._builder.handlers['dashboard:save:complete'].push(() =>
+      this.updateEditing(false)
+    )
     if (this._builder.dialogScroll) {
       if (!this._builder.handlers['env:client:dialog']) {
         this._builder.handlers['env:client:dialog'] = []
