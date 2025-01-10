@@ -260,4 +260,35 @@ describe('EmmbedConnection', () => {
     mockHostBuilder.fireEventForHandler('page:changed')
     expect(connection.getPageType()).toBe('unknown')
   })
+
+  it('stops running dashboards when loading url', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    ).and.callThrough()
+    const chattySendSpy = spyOn(
+      mockChattyHostConnection,
+      'send'
+    ).and.callThrough()
+    let loadPromise = connection.loadDashboard('42')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    await loadPromise
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+    })
+    loadPromise = connection.loadDashboard('43')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/dashboards/43?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    await loadPromise
+    expect(chattySendSpy).toHaveBeenCalledWith('dashboard:stop', undefined)
+  })
 })

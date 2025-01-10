@@ -78,6 +78,11 @@ export class EmbedConnection implements ILookerConnection {
     pushHistory = false,
     waitUntilLoaded = true,
   }: LoadUrlParams): Promise<void> {
+    switch (this._pageType) {
+      case 'dashboards':
+        this.asDashboardConnection().stop()
+        break
+    }
     const pageChangePromise = waitUntilLoaded
       ? new Promise<EmbedConnection>((resolve) => {
           this._embedClient._pageChangeResolver = resolve
