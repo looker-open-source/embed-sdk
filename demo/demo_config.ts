@@ -110,7 +110,8 @@ let runtimeConfig: RuntimeConfig = {
   exploreId: _exploreId,
   extensionId: _extensionId,
   lookId: _lookId,
-  lookerHost: process.env.LOOKER_EMBED_HOST || lookerHost,
+  lookerHost:
+    process.env.LOOKER_WEB_URL || process.env.LOOKER_EMBED_HOST || lookerHost,
   preventNavigation: true,
   showDashboard: typeof _dashboardId === 'string' && _dashboardId.trim() !== '',
   showExplore: typeof _exploreId === 'string' && _exploreId.trim() !== '',

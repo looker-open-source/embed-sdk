@@ -112,75 +112,86 @@ Embed SDK 2.0.0 will sanitize the URL if necessary:
 /embed/looks/4?embed_domain=https://mywebsite.com&sdk=2
 ```
 
-## The Auth Endpoint
+## Signed URL Auth Endpoint
 
-This section does not apply to cookieless embed as an alternate mechanism for authentication is used. See the [cookieless embed](#cookieless) section for details.
+This section does not apply to cookieless embed. See the [cookieless embed](#cookieless) section for details.
 
 In order to use the embed SDK on the frontend you must supply a backend service that handles authentication. This service is called by the SDK to generate a signed iframe URL that is unique to the requesting user. The backend process can either generate the signed embed URL itself using an embed secret or the backend process can generate the URL by calling the [Looker Create Signed Embed URL API](https://cloud.google.com/looker/docs/reference/looker-api/latest/methods/Auth/create_sso_embed_url). Manual URL generation and signing avoids calling the Looker API resulting in decreased latency. Calling the Looker API requires less code and can be easier to maintain.
 
-### Backend Process
+### Signed URL Backend Process
 
-This section does not apply to cookieless embed but a backend process is still required. See the [cookieless embed](#cookieless) section for details.
+This section does not apply to cookieless embed. See the [cookieless embed](#cookieless) section for details.
 
 The _backend_ process entails hosting a service at an endpoint such as `/auth` which does the following:
 
-1. The backend service initializes the [Looker API SDK](https://cloud.google.com/looker/docs/api-sdk) based on a client API key and secret typically stored in `Looker.ini` file.
+1. Appends information about the embed user to the URL.
 
-2. The Embed SDK calls the backend service and provides a query string containing the desired embedding.
+2. Signs the URL using either an embed secret obtained from the Looker instance OR by calling the [Create Signed Embed URL API](https://cloud.google.com/looker/docs/reference/looker-api/latest/methods/Auth/create_sso_embed_url).
 
-3. The backend service takes the information from the Embed SDK _along with any information about the currently authenticated user_ and generates the signed URL. For example, this Python code represents a partial example of a backend that generates the signed URL by calling the Looker API:
+3.
 
-```python
-# receives a request path that includes /looker_auth
-# as well as the target URL in a query string
-req_parts = urlparse(request_path)
-req_query = parse_qs(req_parts.query)
-embed_url = req_query['src'][0]
-target_url =  'https://' + LOOKER_HOST +  '/login/embed/' + urllib.parse.quote_plus(embed_url)
-target_sso_url = looker_sdk.models.EmbedSsoParams(target_url, ...) # ... corresponds to very important user attributes
-sso_url = looker_api_sdk.create_sso_embed_url(body = target_sso_url) # this is the signed embed URL that is returned
-```
+### Signed URL Frontend Process
 
-### Frontend Process
-
-This section does not apply to cookieless embed but frontend initialization is still required. See the [cookieless embed](#cookieless) section for details.
+This section does not apply to cookieless embed. See the [cookieless embed](#cookieless) section for details.
 
 The _frontend_ process using the Embed SDK entails:
 
-1. The embed SDK is initialized with the Looker host and the backend service:
+1. The embed SDK is initialized with the Looker host and the backend embed login signing endpoint:
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com', '/auth')
+getSDKFactory().getSDK().init('looker.example.com', '/auth')
 ```
 
-2. Anytime you invoke a builder with the ID create function the Embed SDK makes a request to the backend, `/looker_auth`, containing a query string with the desired content embed URL along with any provided parameters:
+2. Build the embed definition
 
 ```javascript
-LookerEmbedSDK.createDashboardWithId(11).build()
-// results in a request that includes a query string with:
-// /embed/dashboards/11?sdk=2&embed_deomain=https://yourhost.example.com&...
+const builder = getSDKFactory()
+  .getSDK()
+  .createDashboardWithId(11)
+  .append('#embed-container')
+  .build()
 ```
 
-3. The Embed SDK inserts an iframe using the signed URL returned from the backend as the src.
+3. Create the IFRAME
 
-### Advanced Auth Configuration
+```javascript
+const connection = await builder.connect()
+```
 
-This section does not apply to cookieless embed as an alternate mechanism for authentication is used. See the [cookieless embed](#cookieless) section for details.
+The call to connect calls the auth endpoint to get a signed embed login URL. This URL is used to construct the IFRAME. The conection returned from the call allows the hosting application to interact with the Looker IFRAME. Embed SDK 2.0.x has a single connection object that can interact will Looker embed object types (dashboards, explores, looks, extensions). This means that it is no longer a requirement to replace an existing IFRAME with another IFRAME to display a different object type or object type instance.
+
+If another IFRAME is required, the SDK will not call the auth endpoint again as the embed session already exists. Instead the IFRAME will be created with the requested embed URL without signing a `login/embed` URL. If multiple IFRAMEs are created on page load (not recommended but it does work), the SDK will wait for the first IFRAME to be created before creating the more IFRAMEs. This is done to reduce contention that can occur when complex embed users are created.
+
+4. Load a different object type.
+
+```javascript
+await connection.loadLook('42')
+
+await connection.loadUrl('/embed/dashboards/84?state=California')
+```
+
+Different looker object types or object type instances can be loaded without recreating the IFRAME.
+
+### Signed URL Advanced Auth Configuration
+
+This section does not apply to cookieless embed. See the [cookieless embed](#cookieless) section for details.
 
 The Auth endpoint can be configured further, allowing custom Request Headers, as well as CORS support by passing an options object to the `init` method
 
 ```javascript
-LookerEmbedSDK.init('looker.example.com', {
-  url: 'https://api.acme.com/looker/auth',
-  headers: [{ name: 'Foo Header', value: 'Foo' }],
-  params: [{ name: 'foo', value: 'bar' }],
-  withCredentials: true, // Needed for CORS requests to Auth endpoint include Http Only cookie headers
-})
+getSDKFactory()
+  .getSDK()
+  .init('looker.example.com', {
+    url: 'https://api.acme.com/looker/auth',
+    headers: [{ name: 'Foo Header', value: 'Foo' }],
+    params: [{ name: 'foo', value: 'bar' }],
+    withCredentials: true, // Needed for CORS requests to Auth endpoint include Http Only cookie headers
+  })
 ```
 
 ### Node helper
 
-This section does not apply to cookieless embed as an alternate mechanism for authentication is used. See the [cookieless embed](#cookieless) section for details.
+This section does not apply to cookieless embed. See the [cookieless embed](#cookieless) section for details.
 
 If you prefer, your backend service can [implement the signature function](https://github.com/looker/looker_embed_sso_examples) instead of calling the Looker API by using a [Looker Embed secret](https://docs.looker.com/r/sdk/sso-embed). Manually generating the signed URL avoids a call to the Looker API but is more error prone.
 
@@ -191,7 +202,7 @@ One example of a helper method that generates a signed URL, `createSignedUrl()`,
 import { createSignedUrl } from './auth_utils'
 
 app.get('/looker_auth', function (req, res) {
-  // Authenticate the request is from a valid user here
+  // The request should be authorized
   const src = req.query.src
   const host = 'looker.example.com'
   const secret = YOUR_EMBED_SECRET
@@ -223,9 +234,9 @@ interface LookerEmbedUser {
 
 ## Cookieless Embed
 
-Note that cookieless embed does not yet support the use of `withUrl`. An attempt to use this functionality will result in an error being thrown.
+_Cookieless embed in Embed SDK 2.0.0 now supports the use of `withUrl`._
 
-Looker cookieless embed allows the Looker application to be embedded by an html page that is served from a different domain than the Looker host. With SSO embed, to avoid third party cookie blocking, the Looker application must be served from a sub domain of the hosting application OR the user must enable third party cookies in the browser. Enabling cookieless embedding is documented in more detail [here](https://cloud.google.com/looker/docs/r/sdk/cookieless-embed). Cookieless embed is available with Looker version 22.20 and above.
+Looker cookieless embed allows the Looker application to be embedded by an html page that is served from a different domain than the Looker host. With signed URL embed, to avoid third party cookie blocking, the Looker application must be served from a sub domain of the hosting application OR the user must enable third party cookies in the browser. Enabling cookieless embedding is documented in more detail [here](https://cloud.google.com/looker/docs/r/sdk/cookieless-embed). Cookieless embed is available with Looker version 22.20 and above.
 
 Cookieless embed works by using short lived tokens that are kept in the browser and are used to reference the actual session in the Looker server. The Looker UI keeps track of the tokens, and before they expire, requests that the hosting application generate new ones. To this end, the host application is required to implement functionality in the client and in the server.
 
@@ -236,7 +247,7 @@ This functionality will:
 
 ### Acquire session backend process
 
-This process will be called every time a Looker embed IFRAME is created. The acquire session backend process requires that the Looker api endpoint `acquire_embed_cookieless_session` be called to create an embed session or attach to an existing embed session. This endpoint accepts an embed user definition and creates or updates it. This is similar behavior to the embed SSO login as they both can create and update embed user data.
+This process will be called every time a Looker embed IFRAME is created. The acquire session backend process requires that the Looker api endpoint `acquire_embed_cookieless_session` be called to create an embed session or attach to an existing embed session. This endpoint accepts an embed user definition and creates or updates it. This is similar behavior to the signed URL embed login as they both can create and update embed user data.
 One major difference in the payloads is that `force_logout_login` is ignored by `acquire_embed_cookieless_session`. Cookieless embed logins ALWAYS force logout login (as there should be no Looker cookies this should be a noop).
 
 Cookieless embed sessions are associated with the user's browser user agent. It is important that that user agent for the browser be set on the request.
@@ -422,68 +433,64 @@ export async function generateEmbedTokens(userAgent, user) {
 
 ### Initializing the Looker SDK in the frontend
 
-Cookieless embed is initialized by calling `LookerEmbedSDK.initCookieless` passing in the Looker host value and the the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
+Cookieless embed is initialized by calling `getSDKFactory().getSDK().initCookieless` passing in the Looker host value and the the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
 
 ```javascript
-LookerEmbedSDK.initCookieless(
-  'looker.example.com',
-  '/acquire-embed-session',
-  '/generate-embed-tokens'
-)
+getSDKFactory()
+  .getSDK()
+  .initCookieless(
+    'looker.example.com',
+    '/acquire-embed-session',
+    '/generate-embed-tokens'
+  )
 ```
 
 ### Embed domain allow list
 
-Looker embed SSO requires that the host application domain be added to an allow list using the Looker configure admin page. Starting with Looker version `23.8`, the embed domain can be specified in the payload of the `acquire_embed_cookieless_session` call. This allows customers to dynamically specify the allowed domains. Note that the allowed domain is associated with the embed session stored in the Looker server. It is NOT persisted to the internal Looker database. This means that the embed domain must be included with every `acquire_embed_cookieless_session` call.
+Looker embed SSO requires that the host application domain be added to an allow list using the Looker configure admin page. Starting with Looker version `23.8`, the embed domain can be specified in the payload of the `acquire_embed_cookieless_session` call. This allows customers to dynamically specify the allowed domains. The allowed domain is associated with the embed session stored in the Looker server and is NOT persisted to the internal Looker database. This means that the embed domain must be included with every `acquire_embed_cookieless_session` call.
 
-When implementing it is HIGHLY recommended that that the implementor
-NOT trust any embed domain sent from the browser (in other words do not
-use the location.origin from the browser). Instead, the embed application should implement a mechanism in the server that maps a
-user to particular domain.
+When implementing it is HIGHLY recommended that that the implementor NOT trust any embed domain sent from the browser (in other words do not use the location.origin from the browser). Instead, the embed application should implement a mechanism in the server that maps a user to particular domain.
 
 To add the embed domain to the `acquire_embed_cookieless_session` payload set the `LOOKER_USE_EMBED_DOMAIN` variable to true in the `.env` file
 
-## Demo
+## Demonstration Application
 
-A simple demo is provided in the `/demo` directory that uses a basic JS frontend and a Node backend. The example backend `server/app.js` uses the Looker API to create a signed URL. The example backend `server/utils/auth_utils.ts` uses the embed secret and a helper function to sign the URL. The instructions below are for the example using the Looker API.
+The `./demo` directory contains the frontend code for an embedded application. The following features can demonstrated:
+
+1. Signed URL embedding using a single IFRAME. Multiple Looker object types and instances can be loaded using a single IFRAME.
+2. Signed URL embedding using multiple IFRAMES. An IFRAME can be created for a dashboard, look, explore and/extension.
+3. Cookieless embedding using a single IFRAME. Multiple Looker object types and instances can be loaded using a single IFRAME.
+4. Cookieless embedding using multiple IFRAMES. An IFRAME can be created for a dashboard, look, explore and/extension.
+5. Embed Message API embedding (this is provided for information purposes only and demonstrates how to embed Looker without using the Embed SDK).
 
 ### Step 1 - Enable Embedding in your Looker instance
 
-Enabling SSO embedding is documented in more detail [here](https://cloud.google.com/looker/docs/single-sign-on-embedding).
+Enabling signed URL embedding is documented in more detail [here](https://cloud.google.com/looker/docs/single-sign-on-embedding).
 Enabling cookieless embedding is documented in more detail [here](https://cloud.google.com/looker/docs/r/sdk/cookieless-embed).
 
 - Navigate to Admin > _Platform_ Embed on your Looker instance. This requires Admin privileges.
 - The demo server runs by default at [http://localhost:8080](http://localhost:8080). By adding that address to "Embedded Domain Whitelist" you can enabled the demo to receive messages from Looker.
 - Turn on "Embed SSO Authentication"
-- In order to use embedding you must generate an "Embed Secret" for SSO embedding and/or a JWT secret for cookieless embedding. Note that a Looker instance can support both types of embedding at the same time.
+- In order to use embedding you must generate an "Embed Secret" for SSO embedding and/or a JWT secret for cookieless embedding. A Looker instance can support signed URL and cookieles embedding simulaneously.
 
-Additional steps for cookieless embed:
+Additional steps to activate cookieless embed:
 
-- Navigate to Admin > _Platform_ Embed on your Looker instance. This requires Admin privileges.
+- Navigate to `Admin > Platform > Embed` on your Looker instance. This requires Admin privileges.
+- Enable Cookieless Embed.
 - Generate an Embed JWT secret. This is used internally and the hosting application does not need to know what it is.
-- Navigate to Admin > _Labs_ Experimental on your Looker instance. This requires Admin privileges.
-- Toggle "Cookieless Embed" on. Note that a Looker instance can support SSO and Cookieless embed clients.
 
 ### Step 2 - Customize the Demo settings for your Looker instance
 
-Note that `demo.py` and `demo_self_signed.py` have NOT been updated to support cookieless embedding. This section ONLY applies to SSO embedding. The cookieless embed demo currently requires the use of the development server.
+Configure the TypeScript demo server.
 
-- If you are using the main `demo.py`, provide your API credentials to the server by updating `demo/looker.ini` following [these instructions](https://community.looker.com/technical-tips-tricks-1021/the-how-to-on-initializing-the-sdk-with-different-profiles-in-your-ini-file-26846), with credentials obtained from [the Users page](https://cloud.google.com/looker/docs/api-auth).
-
-- Alternatively, if you are using `demo_self_signed.py`, provide your embed secret to the server. You can do this a couple ways.
+- Embed secret configuration:
 
   - Set it as `LOOKER_EMBED_SECRET` in your shell environment.
   - Create a file named `.env` in the root of the sdk directory. Add a line to that file: `LOOKER_EMBED_SECRET="YourLookerSecret"`
 
-- Another alternative is to use the TypeScript demo server. The embed secret can be provided in the following way:
+- Looker instance host address configuration:
 
-  - Set it as `LOOKER_EMBED_SECRET` in your shell environment.
-  - Create a file named `.env` in the root of the sdk directory. Add a line to that file: `LOOKER_EMBED_SECRET="YourLookerSecret"`
-
-- Provide your Looker instance host address to the server:
-
-  - Create a `.env` file in the main embed-sdk directory and add `LOOKER_EMBED_HOST="yourinstance.looker.com:yourport"`
-  - **The Looker embed host should not include the protocol!**
+  - Create a `.env` file in the main embed-sdk directory and add `LOOKER_WEB_URL="yourinstance.looker.com:yourport"`
 
 - Edit the `demo/demo_config.ts` file to be appropriate for the pages you want to embed. It is also possible to override the `demo/demo_config.ts` in the `.env` file. See [here](#env) for more details.
 
@@ -495,11 +502,11 @@ const lookerHost = 'mycompany.looker.com'
 
 // A dashboard that the user can see. Set to '-' or '0' to disable dashboard demo.
 // dashboardId can be a numeric id or a slug string.
-const dashboardId = 1
+const dashboardId = '1'
 
-// A Look that the user can see. Set to 0 to disable look demo.
+// A Look that the user can see. Set to '-' or '0' to disable look demo.
 // lookId must be numeric. Slugs are NOT supported.
-const lookId = 1
+const lookId = '1'
 
 // An Explore that the user can see. Set to '-' to disable explore demo.
 const exploreId = 'thelook::orders'
@@ -509,7 +516,7 @@ const exploreId = 'thelook::orders'
 const extensionId = 'extension::my-great-extension'
 ```
 
-- Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application (e.g your customer portal) to inform Looker about important user properties that control data access controls. Note that the `demo/demo_user.json` file is also used for cookieless embedding. The one difference is that cookieless_embed will ignore the value of `force_logout_login` and will ALWAYs treat the value as `true`. See [documentation](https://cloud.google.com/looker/docs/single-sign-on-embedding) for detailed information on the content of the embed user definition.
+- Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application to inform Looker about important user properties that control data access controls. The `demo/demo_user.json` file is also used for cookieless embedding. Remember that cookieless_embed always treast `force_logout_login` as `true`. See [documentation](https://cloud.google.com/looker/docs/single-sign-on-embedding) for detailed information on the content of the embed user definition.
 
 ```javascript
 {
@@ -570,7 +577,7 @@ const extensionId = 'extension::my-great-extension'
 
 ### Step 3 - Build and run the demo
 
-The following applies to SSO embed only. Run the following commands from the top-level embed-sdk directory.
+Run the following commands from the top-level embed-sdk directory.
 
 - `npm install`
 - `npm run server`
@@ -585,10 +592,10 @@ in a browser console with
 localStorage.debug = 'looker:chatty:*'
 ```
 
-Note that both the parent window and the embedded content have separate local storage, so you can enable logging on one, the other or both. You can disable logging with
+The hosting window and the embedded IFRAME have separate local storage, so you can enable logging on one, the other or both. You can disable logging with
 
 ```javascript
-localStorage.debug = ''
+localStorage.debug = undefined
 ```
 
 ### <a name='env' id='env'></a> `.env` setup
@@ -596,8 +603,8 @@ localStorage.debug = ''
 The embed demo environment can be configured using a `.env` file. The following is a template that can be used to create the file (in the root of this repo). The `.env` file should never be stored in your git repo and is included in the repo's `.ignore` file.
 
 ```shell
-LOOKER_EMBED_HOST=mycompany.looker.com
-LOOKER_EMBED_API_URL=https://mycompany.looker.com:19999
+LOOKER_WEB_URL=mycompany.looker.com
+LOOKER_API_URL=https://mycompany.looker.com:19999
 LOOKER_DEMO_HOST=localhost
 LOOKER_DEMO_PORT=8080
 LOOKER_EMBED_SECRET=
@@ -614,7 +621,7 @@ LOOKER_USE_EMBED_DOMAIN=false
 
 ## Embedded Javascript Events
 
-Prior to the release of the Embed SDK, Looker exposed an API that utilized JavaScript `postMessage` events. This API is still available for customers who cannot or do not want to use the Embed SDK (note that using the Embed SDK is highly recommended as it provides additional functionality and is simpler to use). An example application has been created to ensure that cookieless embed also works with JavaScript `postMessage` events. This example can be found [here](demo/message_example.ts).
+Prior to the release of the Embed SDK, Looker exposed an API that utilized JavaScript `postMessage` events. This API is still available for customers who cannot or do not want to use the Embed SDK (using the Embed SDK is highly recommended as it provides additional functionality and is simpler to use). An example application has been created to ensure that cookieless embed also works with JavaScript `postMessage` events. This example can be found [here](demo/message_example.ts).
 
 ## Additional Considerations
 
@@ -638,7 +645,7 @@ const pagePropertiesChangedHandler = (
 }
 
 
-LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+getFactory().getSDK().createDashboardWithId(runtimeConfig.dashboardId)
   .appendTo('#dashboard')
   .on('page:properties:changed', (event: PagePropertiesChangedEvent) => {
     pagePropertiesChangedHandler(event, 'dashboard')
@@ -650,7 +657,9 @@ LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
 The Embed SDK also contains a convenience method to add this functionality for you. Example:
 
 ```javascript
-LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+getFactory()
+  .getSDK()
+  .createDashboardWithId('42')
   .withDynamicIFrameHeight()
   .appendTo('#dashboard')
   .build()
@@ -662,23 +671,17 @@ LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
 Looker has the capability to display individual tile visualizations in full screen mode. This feature works for embedded IFRAMEs but the `fullscreen` feature MUST be added to the containing IFRAME. Version 1.8.2 of the Embed SDK was updated to allow features to be added. The following example shows how to enable support for full screen mode.
 
 ```javascript
-    LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
-      // Allow fullscreen tile visualizations
-      .withAllowAttr('fullscreen')
-      // Append to the #dashboard element
-      .appendTo('#dashboard')
-      ...
-      // Finalize the build
-      .build()
-      // Connect to Looker
-      .connect()
-      // Finish up setup
-      .then((dashboard: LookerEmbedDashboard) => {
-        ...
-      })
-      .catch((error: Error) => {
-        ...
-      })
+const connection = await getFactory()
+  .getSDK()
+  .createDashboardWithId(runtimeConfig.dashboardId)
+  // Allow fullscreen tile visualizations
+  .withAllowAttr('fullscreen')
+  // Append to the #dashboard element
+  .appendTo('#dashboard')
+  // Finalize the build
+  .build()
+  // Connect to Looker
+  .connect()
 ```
 
 ### Tile dialogs
@@ -686,28 +689,22 @@ Looker has the capability to display individual tile visualizations in full scre
 Users have the capability of opening dialogs from a dashboard tile. One downside of opening the dialogs is that unexpected scrolling can occur. With Looker 23.6+ it is now possible to mitigate the scrolling using the Embed SDK. Example:
 
 ```javascript
-LookerEmbedSDK.createDashboardWithId(runtimeConfig.dashboardId)
+const connection = await getFactory()
+  .getSDK()
+  .createDashboardWithId(runtimeConfig.dashboardId)
   // Scrolls the top of the IFRAME into view when drilling
   .withDialogScroll()
   // Ensures that the tile download and tile alert dialogs remain in view
   .withScrollMonitor()
   // Append to the #dashboard element
   .appendTo('#dashboard')
-  ...
   // Finalize the build
   .build()
   // Connect to Looker
   .connect()
-  // Finish up setup
-  .then((dashboard: LookerEmbedDashboard) => {
-    ...
-  })
-  .catch((error: Error) => {
-    ...
-  })
 ```
 
-Note that this functionality is also available to the javascript API. See [here](demo/message_example.ts) for how to add this functionality.
+This functionality is also available to the javascript API. See [here](demo/message_example.ts) for how to add this functionality.
 
 <a name='ugrading_sdk' id='upgrading_sdk'></a>
 

@@ -39,7 +39,8 @@ var webpackConfig = {
   },
   plugins: [
     new webpack.EnvironmentPlugin({
-      LOOKER_EMBED_HOST: null,
+      LOOKER_WEB_URL: null,
+      LOOKER_EMBED_HOST: null, // deprecated - use LOOKER_WEB_URL instead
       LOOKER_DASHBOARD_ID: null,
       LOOKER_DASHBOARD_ID_2: null,
       LOOKER_LOOK_ID: null,

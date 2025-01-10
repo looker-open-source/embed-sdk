@@ -31,7 +31,9 @@ dotenv.config({ path: '../.env' })
 
 export const config: ApplicationConfig = {
   api_url:
-    process.env.LOOKER_EMBED_API_URL || 'https://self-signed.looker.com:19999',
+    process.env.LOOKER_API_URL ||
+    process.env.LOOKER_EMBED_API_URL || // deprecated
+    'https://self-signed.looker.com:19999',
   client_id: process.env.LOOKER_CLIENT_ID!,
   client_secret: process.env.LOOKER_CLIENT_SECRET!,
   cookie_secret: (process.env.COOKIE_SECRET || 'secret').padEnd(
@@ -40,7 +42,10 @@ export const config: ApplicationConfig = {
   ),
   demo_host: process.env.LOOKER_DEMO_HOST || 'localhost',
   demo_port: parseInt(process.env.LOOKER_DEMO_PORT || '8080', 10),
-  host: process.env.LOOKER_EMBED_HOST || 'self-signed.looker.com:9999',
+  host:
+    process.env.LOOKER_WEB_URL ||
+    process.env.LOOKER_EMBED_HOST || // deprecated
+    'self-signed.looker.com:9999',
   secret: process.env.LOOKER_EMBED_SECRET!,
   use_embed_domain: process.env.LOOKER_USE_EMBED_DOMAIN === 'true' || false,
   verify_ssl: process.env.LOOKER_VERIFY_SSL === 'true' || false,
