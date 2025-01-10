@@ -122,13 +122,13 @@ export class EmbedClientEx implements IEmbedClient {
       requiredParams = {
         embed_domain: `${prefix}${this._sdk.apiHost}`,
         sandboxed_host: 'true',
-        sdk: '2',
+        sdk: '3',
       }
     } else {
       const embedDomain = window.location.origin
       requiredParams = {
         embed_domain: embedDomain,
-        sdk: '2',
+        sdk: '3',
       }
     }
     const tempOrigin = urlString.startsWith('https://') ? '' : 'http://abc'

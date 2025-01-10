@@ -92,7 +92,7 @@ describe('EmmbedConnection', () => {
     await connection.loadDashboard('42', false, false)
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -107,7 +107,7 @@ describe('EmmbedConnection', () => {
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -120,7 +120,7 @@ describe('EmmbedConnection', () => {
     await connection.loadExplore('mymodel::myview', false, false)
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/explore/mymodel/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/explore/mymodel/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -135,7 +135,7 @@ describe('EmmbedConnection', () => {
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/explore/mymodel/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/explore/mymodel/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -148,7 +148,7 @@ describe('EmmbedConnection', () => {
     await connection.loadLook('42', false, false)
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -163,7 +163,7 @@ describe('EmmbedConnection', () => {
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -176,7 +176,7 @@ describe('EmmbedConnection', () => {
     await connection.loadExtension('myproj::myext', false, false)
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/extensions/myproj::myext?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/extensions/myproj::myext?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -191,7 +191,7 @@ describe('EmmbedConnection', () => {
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/extensions/myproj::myext?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/extensions/myproj::myext?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -204,7 +204,7 @@ describe('EmmbedConnection', () => {
     await connection.preload(false, false)
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -219,7 +219,7 @@ describe('EmmbedConnection', () => {
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
   })
 
@@ -228,32 +228,32 @@ describe('EmmbedConnection', () => {
     const loadPromise = connection.loadExplore('mymodel/myview')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/explore/mymodel/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/explore/mymodel/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     await loadPromise
     expect(connection.getPageType()).toBe('explore')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     expect(connection.getPageType()).toBe('dashboards')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     expect(connection.getPageType()).toBe('looks')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/extensions/myproj::myapp?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/extensions/myproj::myapp?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     expect(connection.getPageType()).toBe('extensions')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     expect(connection.getPageType()).toBe('preload')
@@ -274,18 +274,18 @@ describe('EmmbedConnection', () => {
     let loadPromise = connection.loadDashboard('42')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
     loadPromise = connection.loadDashboard('43')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/dashboards/43?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/dashboards/43?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     await loadPromise
@@ -297,7 +297,7 @@ describe('EmmbedConnection', () => {
     const loadPromise = connection.loadDashboard('42')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
-        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
       },
     })
     await loadPromise

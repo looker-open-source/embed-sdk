@@ -108,7 +108,7 @@ Embed SDK 2.0.0 will sanitize the URL if necessary:
 
 ```html
 /embed/looks/4?embed_domain=https://mywebsite.com =>
-/embed/looks/4?embed_domain=https://mywebsite.com&sdk=2
+/embed/looks/4?embed_domain=https://mywebsite.com&sdk=3
 ```
 
 ## Signed URL Auth Endpoint

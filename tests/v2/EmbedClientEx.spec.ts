@@ -109,7 +109,7 @@ describe('EmbedClientEx', () => {
     const client = getClient()
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://myhost.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3'
     )
     expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
       0
@@ -130,7 +130,7 @@ describe('EmbedClientEx', () => {
     const client = getClient({ sandboxedHost: true })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/embed/preload/?embed_domain=https%3A%2F%2Fmyhost.com&sandboxed_host=true&sdk=2'
+      'https://myhost.com/embed/preload/?embed_domain=https%3A%2F%2Fmyhost.com&sandboxed_host=true&sdk=3'
     )
   })
 
@@ -141,7 +141,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/preload/?embed_domain=https%3A%2F%2Fmylooker.com&sandboxed_host=true&sdk=2'
+      'https://mylooker.com/embed/preload/?embed_domain=https%3A%2F%2Fmylooker.com&sandboxed_host=true&sdk=3'
     )
   })
 
@@ -151,7 +151,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3'
     )
   })
 
@@ -161,7 +161,7 @@ describe('EmbedClientEx', () => {
     })
     const connectPromise = client.connect(true)
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3'
     )
     mockHostBuilder.fireEventForHandler('page:changed', {})
     await connectPromise
@@ -174,7 +174,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3'
     )
   })
 
@@ -182,11 +182,11 @@ describe('EmbedClientEx', () => {
     const client = getClient({
       apiHost: 'https://mylooker.com',
       createUrl:
-        '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123',
+        '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3&my_filter=123',
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
+      'https://mylooker.com/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3&my_filter=123'
     )
   })
 
@@ -194,11 +194,11 @@ describe('EmbedClientEx', () => {
     const client = getClient({
       apiHost: 'https://mylooker.com',
       createUrl:
-        '/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123',
+        '/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3&my_filter=123',
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2&my_filter=123'
+      'https://mylooker.com/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3&my_filter=123'
     )
   })
 
@@ -209,7 +209,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3'
     )
   })
 
@@ -220,7 +220,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3'
     )
   })
 
@@ -239,12 +239,12 @@ describe('EmbedClientEx', () => {
   it('creates a signed url connection', async () => {
     const authResponse = {
       url: `https://mylooker.com/login/embed${encodeURIComponent(
-        '/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2'
+        '/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3'
       )}?external_user_id=postmanpat&signature=1234567890abcdef`,
     }
     mock.get(/\/auth\?src=/, (req, res) => {
       expect(req.url().toString()).toBe(
-        '/auth?src=%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2&param_1=value_1&param_2=value_2'
+        '/auth?src=%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D3&param_1=value_1&param_2=value_2'
       )
       expect(req.header('Cache-Control')).toEqual('no-cache')
       expect(req.header('header_1')).toEqual('header_value_1')
@@ -312,7 +312,7 @@ describe('EmbedClientEx', () => {
     ).and.callThrough()
     expect(fetchSpy).toHaveBeenCalledWith('/acquire-session', undefined)
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
     )
     expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
       1
@@ -525,7 +525,7 @@ describe('EmbedClientEx', () => {
       'send'
     ).and.callThrough()
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D2%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%253A%252F%252Flocalhost%253A9876%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
     )
     expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
       1
