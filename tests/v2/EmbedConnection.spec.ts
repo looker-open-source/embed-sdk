@@ -222,4 +222,42 @@ describe('EmmbedConnection', () => {
       url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
     })
   })
+
+  it('identfies the pageType correctly', async () => {
+    const connection = await getConnection()
+    const loadPromise = connection.loadExplore('mymodel/myview')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/explore/mymodel/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    await loadPromise
+    expect(connection.getPageType()).toBe('explore')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    expect(connection.getPageType()).toBe('dashboards')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    expect(connection.getPageType()).toBe('looks')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/extensions/myproj::myapp?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    expect(connection.getPageType()).toBe('extensions')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/preload?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=2',
+      },
+    })
+    expect(connection.getPageType()).toBe('preload')
+    mockHostBuilder.fireEventForHandler('page:changed')
+    expect(connection.getPageType()).toBe('unknown')
+  })
 })

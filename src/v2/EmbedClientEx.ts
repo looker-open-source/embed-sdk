@@ -28,19 +28,29 @@ import type {
   CookielessRequestInit,
   EnvClientDialogEvent,
   LookerEmbedCookielessSessionData,
+  PageChangedEvent,
   PagePropertiesChangedEvent,
 } from '../types'
 import { IS_URL } from '../utils'
 import type { EmbedBuilderEx } from './EmbedBuilderEx'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedConnection } from './EmbedConnection'
-import type { IEmbedClient, ILookerConnection } from './types'
+import type { IEmbedClient, ILookerConnection, PageType } from './types'
+
+const validPageTypes = [
+  'dashboards',
+  'explore',
+  'looks',
+  'extensions',
+  'preload',
+]
 
 export class EmbedClientEx implements IEmbedClient {
-  _hostBuilder: ChattyHostBuilder | null = null
-  _host: ChattyHost | null = null
-  _connection: Promise<EmbedConnection> | null = null
-  _client: EmbedConnection | null = null
+  _hostBuilder?: ChattyHostBuilder
+  _host?: ChattyHost
+  _connectionPromise?: Promise<EmbedConnection>
+  _connection?: EmbedConnection
+  _client?: EmbedConnection
   _cookielessInitialized = false
   _cookielessApiToken?: string | null
   _cookielessApiTokenTtl?: number | null
@@ -77,6 +87,10 @@ export class EmbedClientEx implements IEmbedClient {
     return !!this._connection
   }
 
+  /**
+   * Target origin for messages
+   */
+
   get targetOrigin() {
     if (this._builder.sandboxedHost) {
       return '*'
@@ -85,17 +99,99 @@ export class EmbedClientEx implements IEmbedClient {
     return IS_URL.test(apiHost) ? apiHost : `https://${apiHost}`
   }
 
+  /**
+   * Establish two way communication with embedded content. Returns a promise that resolves to a
+   * client that can be used to send messages to the embedded content.
+   */
+  async connect(waitUntilLoaded = false): Promise<ILookerConnection> {
+    return this.connectInternal(waitUntilLoaded).then((connection) => {
+      this._connection = connection as EmbedConnection
+      return connection
+    })
+  }
+
+  appendRequiredParameters(urlString: string): string {
+    let requiredParams: Record<string, string>
+    if (this._builder.sandboxedHost) {
+      // Sandboxed host is set when the origin is null which is the legacy
+      // extension framework loader. Typically, the extension framework
+      // prefixes the apiHost with 'https://'. This is incorrect but it
+      // works as the extension framework private embeds. Anyway, handle it
+      // being there or not.
+      const prefix = this._sdk.apiHost.startsWith('https://') ? '' : 'https://'
+      requiredParams = {
+        embed_domain: `${prefix}${this._sdk.apiHost}`,
+        sandboxed_host: 'true',
+        sdk: '2',
+      }
+    } else {
+      const embedDomain = window.location.origin
+      requiredParams = {
+        embed_domain: embedDomain,
+        sdk: '2',
+      }
+    }
+    const tempOrigin = urlString.startsWith('https://') ? '' : 'http://abc'
+    const url = new URL(`${tempOrigin}${urlString}`)
+    for (const key in requiredParams) {
+      if (!url.searchParams.has(key)) {
+        url.searchParams.append(key, requiredParams[key])
+      }
+    }
+    return tempOrigin
+      ? url.toString().replace('http://abc', '')
+      : url.toString()
+  }
+
+  private async connectInternal(
+    waitUntilLoaded = false
+  ): Promise<ILookerConnection> {
+    if (this._connectionPromise) return this._connectionPromise
+    if (
+      this._builder.url &&
+      !this._builder.auth?.url &&
+      !this._builder.isCookielessEmbed
+    ) {
+      // Private embedding
+      this._connectionPromise = this.createIframe(
+        this.prependApiHost(this.appendRequiredParameters(this._builder.url)),
+        waitUntilLoaded
+      )
+    } else {
+      if (this._builder.isCookielessEmbed) {
+        // Cookieless embedding
+        this._connectionPromise = this.acquireCookielessEmbedSession()
+          .then(async (url) => this.createIframe(url, waitUntilLoaded))
+          .catch((_error) => {
+            this._connectionPromise = undefined
+            throw _error
+          })
+      } else {
+        // Signed
+        this._connectionPromise = this.createSignedUrl().then(async (url) =>
+          this.createIframe(url, waitUntilLoaded)
+        )
+      }
+    }
+    return this._connectionPromise
+  }
+
+  private prependApiHost(url: string) {
+    return `https://${this._sdk.apiHost}${url}`
+  }
+
   private async createIframe(url: string, waitUntilLoaded: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
     if (!this._builder.handlers['page:changed']) {
       this._builder.handlers['page:changed'] = []
     }
-    this._builder.handlers['page:changed'].push(() => {
+    this._builder.handlers['page:changed'].push((event: PageChangedEvent) => {
       if (this._pageChangeResolver) {
         const resolve = this._pageChangeResolver
         this._pageChangeResolver = undefined
         resolve(this._client as EmbedConnection)
       }
+      this.identifyPageType(event)
     })
     if (this._builder.dialogScroll) {
       if (!this._builder.handlers['env:client:dialog']) {
@@ -436,76 +532,13 @@ export class EmbedClientEx implements IEmbedClient {
     return { init, url }
   }
 
-  /**
-   * Establish two way communication with embedded content. Returns a promise that resolves to a
-   * client that can be used to send messages to the embedded content.
-   */
-
-  async connect(waitUntilLoaded = false): Promise<ILookerConnection> {
-    if (this._connection) return this._connection
-    if (
-      this._builder.url &&
-      !this._builder.auth?.url &&
-      !this._builder.isCookielessEmbed
-    ) {
-      // Private embedding
-      this._connection = this.createIframe(
-        this.prependApiHost(this.appendRequiredParameters(this._builder.url)),
-        waitUntilLoaded
-      )
-    } else {
-      if (this._builder.isCookielessEmbed) {
-        // Cookieless embedding
-        this._connection = this.acquireCookielessEmbedSession()
-          .then(async (url) => this.createIframe(url, waitUntilLoaded))
-          .catch((_error) => {
-            this._connection = null
-            throw _error
-          })
-      } else {
-        // Signed
-        this._connection = this.createSignedUrl().then(async (url) =>
-          this.createIframe(url, waitUntilLoaded)
-        )
-      }
+  private identifyPageType(event: PageChangedEvent) {
+    const url = event?.page?.url || ''
+    const pageType = url.split('?')[0]?.split('/')[2]
+    if (this._connection) {
+      this._connection._pageType = validPageTypes.includes(pageType)
+        ? (pageType as PageType)
+        : 'unknown'
     }
-    return this._connection
-  }
-
-  prependApiHost(url: string) {
-    return `https://${this._sdk.apiHost}${url}`
-  }
-
-  appendRequiredParameters(urlString: string): string {
-    let requiredParams: Record<string, string>
-    if (this._builder.sandboxedHost) {
-      // Sandboxed host is set when the origin is null which is the legacy
-      // extension framework loader. Typically, the extension framework
-      // prefixes the apiHost with 'https://'. This is incorrect but it
-      // works as the extension framework private embeds. Anyway, handle it
-      // being there or not.
-      const prefix = this._sdk.apiHost.startsWith('https://') ? '' : 'https://'
-      requiredParams = {
-        embed_domain: `${prefix}${this._sdk.apiHost}`,
-        sandboxed_host: 'true',
-        sdk: '2',
-      }
-    } else {
-      const embedDomain = window.location.origin
-      requiredParams = {
-        embed_domain: embedDomain,
-        sdk: '2',
-      }
-    }
-    const tempOrigin = urlString.startsWith('https://') ? '' : 'http://abc'
-    const url = new URL(`${tempOrigin}${urlString}`)
-    for (const key in requiredParams) {
-      if (!url.searchParams.has(key)) {
-        url.searchParams.append(key, requiredParams[key])
-      }
-    }
-    return tempOrigin
-      ? url.toString().replace('http://abc', '')
-      : url.toString()
   }
 }

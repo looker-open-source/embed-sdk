@@ -34,6 +34,7 @@ import type {
   ILookerEmbedLook,
   LoadIdParams,
   LoadUrlParams,
+  PageType,
 } from './types'
 import { ExploreConnection } from './ExploreConnection'
 import { ExtensionConnection } from './ExtensionConnection'
@@ -41,11 +42,8 @@ import { LookConnection } from './LookConnection'
 import type { EmbedClientEx } from './EmbedClientEx'
 
 export class EmbedConnection implements ILookerConnection {
-  /**
-   * @hidden
-   *
-   * @param _host
-   */
+  _pageType: PageType = 'unknown'
+
   constructor(
     private _host: ChattyHostConnection,
     private _embedClient: EmbedClientEx
@@ -158,5 +156,9 @@ export class EmbedConnection implements ILookerConnection {
 
   asLookConnection(): ILookerEmbedLook {
     return new LookConnection(this)
+  }
+
+  getPageType() {
+    return this._pageType
   }
 }

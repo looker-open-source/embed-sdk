@@ -34,8 +34,12 @@ import type {
   LookerEmbedFilterParams,
 } from 'src/types'
 
+export type ObjectType = 'dashboards' | 'explore' | 'looks' | 'extensions'
+
+export type PageType = ObjectType | 'preload' | 'unknown'
+
 export type LoadIdParams = {
-  type: 'dashboards' | 'explore' | 'looks' | 'extensions'
+  type: ObjectType
   id: string
   pushHistory?: boolean
   waitUntilLoaded?: boolean
@@ -46,6 +50,10 @@ export type LoadUrlParams = {
   pushHistory?: boolean
   waitUntilLoaded?: boolean
 }
+
+/**
+ * Looker embedded connection
+ */
 
 export interface ILookerConnection {
   /**
@@ -68,27 +76,77 @@ export interface ILookerConnection {
 
   sendAndReceive(message: string, params?: any): Promise<any>
 
+  /**
+   * @hidden
+   */
+
   loadId(params: LoadIdParams): Promise<void>
+
+  /**
+   * Load Looker object using a URL. This does not recreate the IFRAME.
+   */
 
   loadUrl(params: LoadUrlParams): Promise<void>
 
+  /**
+   * Load Looker dashboard. This does not recreate the IFRAME.
+   */
+
   loadDashboard(id: string, pushHistory?: boolean): Promise<void>
+
+  /**
+   * Load Looker explore. This does not recreate the IFRAME.
+   */
 
   loadExplore(id: string, pushHistory?: boolean): Promise<void>
 
+  /**
+   * Load Looker look. This does not recreate the IFRAME.
+   */
+
   loadLook(id: string, pushHistory?: boolean): Promise<void>
+
+  /**
+   * Load Looker extension. This does not recreate the IFRAME.
+   */
 
   loadExtension(id: string, pushHistory?: boolean): Promise<void>
 
+  /**
+   * Render the preload page. This does not recreate the IFRAME.
+   */
+
   preload(): Promise<void>
+
+  /**
+   * Get the connection as a dashboard
+   */
 
   asDashboardConnection(): ILookerEmbedDashboard
 
+  /**
+   * Get the connection as an explore
+   */
+
   asExploreConnection(): ILookerEmbedExplore
+
+  /**
+   * Get the connection as an extension
+   */
 
   asExtensionConnection(): ILookerEmbedExtension
 
+  /**
+   * Get the connection as an look
+   */
+
   asLookConnection(): ILookerEmbedLook
+
+  /**
+   * Get the current page type
+   */
+
+  getPageType(): PageType
 }
 
 /**
