@@ -431,6 +431,3 @@ export interface ILookerEmbedSDK {
 
   createExtensionWithId(id: string): IEmbedBuilder
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ILookerEmbedSDKFactory {}

@@ -13,7 +13,7 @@ The Looker JavaScript Embed SDK typically uses embed SSO to sign an embed url in
 A typical setup might look like this. In this case, a dashboard with an id of `11` is created inside a DOM element with the id `dashboard`. The `dashboard:run:start` and `dashboard:run:complete` events are used to update the state of the embedding window's UI, and a button with an id of `run` is scripted to send a `dashboard:run` message to the dashboard.
 
 ```javascript
-getSDKFactory().getSDK().init('looker.example.com', '/auth')
+getEmbedSDK().init('looker.example.com', '/auth')
 
 const setupDashboard = (connection) => {
   document.querySelector('#run').addEventListener('click', () => {
@@ -22,8 +22,7 @@ const setupDashboard = (connection) => {
 }
 
 try {
-  connection = await getSDKFactory()
-    .getSDK()
+  connection = await getEmbedSDK()
     .createDashboardWithId(11)
     .appendTo('#embed_container')
     .on('dashboard:run:start', () => updateStatus('Running'))
@@ -47,7 +46,7 @@ The Looker Embed SDK uses a fluent interface pattern. The construction of the em
 First initialize the SDK with address of the Looker server and the endpoint of the embedding application server that will create a signed Looker embedded login URL.
 
 ```javascript
-getSDKFactory().getSDK().init('looker.example.com', '/auth')
+getEmbedSDK().init('looker.example.com', '/auth')
 ```
 
 In this example, `/auth` is a backend service that must be implemented as described in the [Auth](#the-auth-endpoint) section.
@@ -55,7 +54,7 @@ In this example, `/auth` is a backend service that must be implemented as descri
 After the SDK is initialized, begin by creating the builder with an `id`. For example, to create a dashboard embed builder:
 
 ```javascript
-getSDKFactory().getSDK().createDashboardWithId(id)
+getEmbedSDK().createDashboardWithId(id)
 ```
 
 You can then add additional attributes to the builder to complete your setup:
@@ -139,14 +138,13 @@ The _frontend_ process using the Embed SDK entails:
 1. The embed SDK is initialized with the Looker host and the backend embed login signing endpoint:
 
 ```javascript
-getSDKFactory().getSDK().init('looker.example.com', '/auth')
+getEmbedSDK().init('looker.example.com', '/auth')
 ```
 
 2. Build the embed definition
 
 ```javascript
-const builder = getSDKFactory()
-  .getSDK()
+const builder = getEmbedSDK()
   .createDashboardWithId(11)
   .append('#embed-container')
   .build()
@@ -179,14 +177,12 @@ This section does not apply to cookieless embed. See the [cookieless embed](#coo
 The Auth endpoint can be configured further, allowing custom Request Headers, as well as CORS support by passing an options object to the `init` method
 
 ```javascript
-getSDKFactory()
-  .getSDK()
-  .init('looker.example.com', {
-    url: 'https://api.acme.com/looker/auth',
-    headers: [{ name: 'Foo Header', value: 'Foo' }],
-    params: [{ name: 'foo', value: 'bar' }],
-    withCredentials: true, // Needed for CORS requests to Auth endpoint include Http Only cookie headers
-  })
+getEmbedSDK().init('looker.example.com', {
+  url: 'https://api.acme.com/looker/auth',
+  headers: [{ name: 'Foo Header', value: 'Foo' }],
+  params: [{ name: 'foo', value: 'bar' }],
+  withCredentials: true, // Needed for CORS requests to Auth endpoint include Http Only cookie headers
+})
 ```
 
 ### Node helper
@@ -433,16 +429,14 @@ export async function generateEmbedTokens(userAgent, user) {
 
 ### Initializing the Looker SDK in the frontend
 
-Cookieless embed is initialized by calling `getSDKFactory().getSDK().initCookieless` passing in the Looker host value and the the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
+Cookieless embed is initialized by calling `getEmbedSDK().initCookieless` passing in the Looker host value and the the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
 
 ```javascript
-getSDKFactory()
-  .getSDK()
-  .initCookieless(
-    'looker.example.com',
-    '/acquire-embed-session',
-    '/generate-embed-tokens'
-  )
+getEmbedSDK().initCookieless(
+  'looker.example.com',
+  '/acquire-embed-session',
+  '/generate-embed-tokens'
+)
 ```
 
 ### Embed domain allow list
@@ -645,7 +639,7 @@ const pagePropertiesChangedHandler = (
 }
 
 
-getFactory().getSDK().createDashboardWithId(runtimeConfig.dashboardId)
+getEmbedSDK().createDashboardWithId(runtimeConfig.dashboardId)
   .appendTo('#dashboard')
   .on('page:properties:changed', (event: PagePropertiesChangedEvent) => {
     pagePropertiesChangedHandler(event, 'dashboard')
@@ -657,8 +651,7 @@ getFactory().getSDK().createDashboardWithId(runtimeConfig.dashboardId)
 The Embed SDK also contains a convenience method to add this functionality for you. Example:
 
 ```javascript
-getFactory()
-  .getSDK()
+getEmbedSDK()
   .createDashboardWithId('42')
   .withDynamicIFrameHeight()
   .appendTo('#dashboard')
@@ -671,8 +664,7 @@ getFactory()
 Looker has the capability to display individual tile visualizations in full screen mode. This feature works for embedded IFRAMEs but the `fullscreen` feature MUST be added to the containing IFRAME. Version 1.8.2 of the Embed SDK was updated to allow features to be added. The following example shows how to enable support for full screen mode.
 
 ```javascript
-const connection = await getFactory()
-  .getSDK()
+const connection = await getEmbedSDK()
   .createDashboardWithId(runtimeConfig.dashboardId)
   // Allow fullscreen tile visualizations
   .withAllowAttr('fullscreen')
@@ -689,8 +681,7 @@ const connection = await getFactory()
 Users have the capability of opening dialogs from a dashboard tile. One downside of opening the dialogs is that unexpected scrolling can occur. With Looker 23.6+ it is now possible to mitigate the scrolling using the Embed SDK. Example:
 
 ```javascript
-const connection = await getFactory()
-  .getSDK()
+const connection = await getEmbedSDK()
   .createDashboardWithId(runtimeConfig.dashboardId)
   // Scrolls the top of the IFRAME into view when drilling
   .withDialogScroll()
@@ -721,7 +712,7 @@ In order to take advantage of the new features (loading different Looker dashboa
 LookerEmbedSDK.init('looker.example.com', '/auth')
 
 // Version 2.0.x
-getSDKFactory().getSDK().init('looker.example.com', '/auth')
+getEmbedSDK().init('looker.example.com', '/auth')
 ```
 
 ### Creating and interacting with an IFRAME
@@ -733,32 +724,25 @@ try {
       .createDashboardWithId('42)
       .withAllowAttr('fullscreen')
       .appendTo('#dashboard')
-      .on('dashboard:loaded', () => updateStatus('#dashboard-state', 'Loaded'))
+      .on('dashboard:loaded', () => updateStatus('Loaded'))
       .build()
       .connect()
-
-
    dashboard.run()
-
 } catch(error) {
-  ...
+  // Error handling
 }
 
 // Version 2.0.x
 try {
-  const connection = getSDKFactory().getSDK()
+  const connection = getEmbedSDK()
       .createDashboardWithId('42)
       .withAllowAttr('fullscreen')
       .appendTo('#embed_container')
-      .on('dashboard:loaded', () => updateStatus('#dashboard-state', 'Loaded'))
+      .on('dashboard:loaded', () => updateStatus('Loaded'))
       .build()
       .connect()
-
-
    connection.asDashboardConnection().run()
-
 } catch(error) {
-  ...
+  // Error handling
 }
-
 ```

@@ -32,7 +32,7 @@ import type {
   PageChangedEvent,
   SessionStatus,
 } from '../src/index'
-import { getSDKFactory } from '../src/index'
+import { getEmbedSDK } from '../src/index'
 import type { RuntimeConfig } from './demo_config'
 import {
   getConfiguration,
@@ -441,7 +441,7 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
  * document to the embedded content. The auth endpoint is documented in README.md.
  */
 const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
-  const sdk: ILookerEmbedSDK = getSDKFactory().getSDK()
+  const sdk: ILookerEmbedSDK = getEmbedSDK()
   if (runtimeConfig.useCookieless) {
     // Use cookieless embed
     sdk.initCookieless(

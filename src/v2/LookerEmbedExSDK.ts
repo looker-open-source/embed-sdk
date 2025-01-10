@@ -216,3 +216,23 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     return this._chattyHostCreator
   }
 }
+
+let _embedSdk: LookerEmbedExSDK
+
+/**
+ * Get the Embed SDK
+ */
+
+export const getEmbedSDK = (
+  /**
+   * @hidden
+   */
+  embedSdk?: LookerEmbedExSDK
+) => {
+  if (embedSdk) {
+    _embedSdk = embedSdk
+  } else if (!_embedSdk) {
+    _embedSdk = new LookerEmbedExSDK()
+  }
+  return _embedSdk
+}

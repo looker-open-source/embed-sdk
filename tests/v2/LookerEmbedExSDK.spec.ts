@@ -27,10 +27,18 @@
 import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
 import {
   LookerEmbedExSDK,
+  getEmbedSDK,
   createChattyBuilder,
 } from '../../src/v2/LookerEmbedExSDK'
 
 describe('LookerEmbedExSDK', () => {
+  it('returns the same instance of the embed SDK and that it can be overridden', () => {
+    const sdk = getEmbedSDK()
+    expect(getEmbedSDK()).toBe(sdk)
+    const overrideSdk = new LookerEmbedExSDK()
+    expect(getEmbedSDK(overrideSdk)).toBe(overrideSdk)
+  })
+
   it('creates a chatty host builder', () => {
     expect(createChattyBuilder('/embed/preload')).toBeDefined()
   })

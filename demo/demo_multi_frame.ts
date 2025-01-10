@@ -33,7 +33,7 @@ import type {
   ILookerEmbedExplore,
   ILookerEmbedLook,
 } from '../src/index'
-import { getSDKFactory } from '../src/index'
+import { getEmbedSDK } from '../src/index'
 import type { RuntimeConfig } from './demo_config'
 import {
   getConfiguration,
@@ -358,8 +358,7 @@ const renderDashboard = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.showDashboard) {
     document.querySelector<HTMLDivElement>('#demo-dashboard')!.style.display =
       ''
-    getSDKFactory()
-      .getSDK()
+    getEmbedSDK()
       .createDashboardWithId(runtimeConfig.dashboardId)
       // When true scrolls the top of the IFRAME into view
       .withDialogScroll(runtimeConfig.useDynamicHeights)
@@ -433,8 +432,7 @@ const renderLook = (runtimeConfig: RuntimeConfig) => {
   // Create an embedded Look
   if (runtimeConfig.showLook) {
     document.querySelector<HTMLDivElement>('#demo-look')!.style.display = ''
-    getSDKFactory()
-      .getSDK()
+    getEmbedSDK()
       .createLookWithId(parseInt(runtimeConfig.lookId, 10))
       // Append to the #look element
       .appendTo('#look')
@@ -477,8 +475,7 @@ const renderExplore = (runtimeConfig: RuntimeConfig) => {
   // Create an embedded Explore
   if (runtimeConfig.showExplore) {
     document.querySelector<HTMLDivElement>('#demo-explore')!.style.display = ''
-    getSDKFactory()
-      .getSDK()
+    getEmbedSDK()
       .createExploreWithId(runtimeConfig.exploreId)
       // Append to the #explore element
       .appendTo('#explore')
@@ -520,8 +517,7 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.showExtension) {
     document.querySelector<HTMLDivElement>('#demo-extension')!.style.display =
       ''
-    getSDKFactory()
-      .getSDK()
+    getEmbedSDK()
       .createExtensionWithId(runtimeConfig.extensionId)
       // Append to the #extension element
       .appendTo('#extension')
@@ -554,16 +550,14 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
 const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.useCookieless) {
     // Use cookieless embed
-    getSDKFactory()
-      .getSDK()
-      .initCookieless(
-        runtimeConfig.lookerHost,
-        '/acquire-embed-session',
-        '/generate-embed-tokens'
-      )
+    getEmbedSDK().initCookieless(
+      runtimeConfig.lookerHost,
+      '/acquire-embed-session',
+      '/generate-embed-tokens'
+    )
   } else {
     // Use SSO embed
-    getSDKFactory().getSDK().init(runtimeConfig.lookerHost, '/auth')
+    getEmbedSDK().init(runtimeConfig.lookerHost, '/auth')
   }
 }
 

@@ -42,7 +42,7 @@ import { IS_URL } from './utils'
  *
  * @deprecated Use the following instead
  *  * ```typescript
- *     const client = getSDKFactory().getSDK()
+ *     const client = getEmbedSDK()
  *       .createDashboardWithId('42')
  *       .build()
  * ```

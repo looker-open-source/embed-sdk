@@ -54,7 +54,7 @@ export interface UrlParams {
  *
  * @deprecated Use the following instead
  * ```typescript
- *     const builder = await getSDKFactory().getSDK()
+ *     const builder = await getEmbedSDK()
  *       .createDashboardWithId('42')
  * ```
  */

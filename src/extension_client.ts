@@ -32,7 +32,7 @@ import { LookerEmbedBase } from './embed_base'
  *
  * @deprecated Use the following instead
  * ```typescript
- *     const connection = await getSDKFactory().getSDK()
+ *     const connection = await getEmbedSDK()
  *       .createExtensionWithId('myproj::myext')
  *       .build()
  *       .connect()
