@@ -40,7 +40,7 @@ import {
   MockHostBuilder,
 } from './test_utils'
 
-describe('EmmbedConnection', () => {
+describe('EmbedConnection', () => {
   let mockChattyHostConnection: MockChattyHostConnection
   let mockChattyHost: MockChattyHost
   let mockHostBuilder: MockHostBuilder
@@ -51,6 +51,7 @@ describe('EmmbedConnection', () => {
       auth?: string | LookerAuthConfig
       acquireSession?: string | CookielessRequestInit | CookielessCallback
       generateTokens?: string | CookielessRequestInit | GenerateTokensCallback
+      dashboardId?: string
     } = {}
   ) => {
     const {
@@ -58,6 +59,7 @@ describe('EmmbedConnection', () => {
       auth,
       acquireSession,
       generateTokens,
+      dashboardId,
     } = options
     const createChattyBuilder = (url: string) => {
       mockHostBuilder._url = url
@@ -68,6 +70,12 @@ describe('EmmbedConnection', () => {
       sdk.initCookieless(apiHost, acquireSession, generateTokens)
     } else {
       sdk.init(apiHost, auth)
+    }
+    if (dashboardId) {
+      return sdk
+        .createDashboardWithId(dashboardId)
+        .build()
+        .connect() as Promise<EmbedConnection>
     }
     return sdk.preload().build().connect() as Promise<EmbedConnection>
   }
@@ -89,7 +97,7 @@ describe('EmmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     ).and.callThrough()
-    await connection.loadDashboard('42', false, false)
+    await connection.loadDashboard2('42', false, false)
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
@@ -102,7 +110,7 @@ describe('EmmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     ).and.callThrough()
-    const loadPromise = connection.loadDashboard('42')
+    const loadPromise = connection.loadDashboard2('42')
     mockHostBuilder.fireEventForHandler('page:changed', {})
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
@@ -271,7 +279,7 @@ describe('EmmbedConnection', () => {
       mockChattyHostConnection,
       'send'
     ).and.callThrough()
-    let loadPromise = connection.loadDashboard('42')
+    let loadPromise = connection.loadDashboard2('42')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
@@ -282,7 +290,7 @@ describe('EmmbedConnection', () => {
       pushHistory: false,
       url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
     })
-    loadPromise = connection.loadDashboard('43')
+    loadPromise = connection.loadDashboard2('43')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         url: '/embed/dashboards/43?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
@@ -294,7 +302,7 @@ describe('EmmbedConnection', () => {
 
   it('updates the isEditing indicator for dashboards', async () => {
     const connection = await getConnection()
-    const loadPromise = connection.loadDashboard('42')
+    const loadPromise = connection.loadDashboard2('42')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
@@ -310,5 +318,165 @@ describe('EmmbedConnection', () => {
     expect(connection.isEditing()).toBe(true)
     mockHostBuilder.fireEventForHandler('dashboard:save:complete', {})
     expect(connection.isEditing()).toBe(false)
+  })
+
+  describe('legacy api', () => {
+    it('fires legacy dashboard:load event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendAndReceiveSpy = spyOn(
+        mockChattyHostConnection,
+        'sendAndReceive'
+      ).and.callThrough()
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      connection.loadDashboard('43')
+      expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('dashboard:load', {
+        id: '43',
+        pushHistory: false,
+      })
+    })
+
+    it('fires legacy run event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendSpy = spyOn(
+        mockChattyHostConnection,
+        'send'
+      ).and.callThrough()
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      connection.run()
+      expect(chattySendSpy).toHaveBeenCalledWith('dashboard:run', undefined)
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/explore/myexplore/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      chattySendSpy.calls.reset()
+      connection.run()
+      expect(chattySendSpy).toHaveBeenCalledWith('look:run', undefined)
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      chattySendSpy.calls.reset()
+      connection.run()
+      expect(chattySendSpy).toHaveBeenCalledWith('look:run', undefined)
+    })
+
+    it('fires legacy stop event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendSpy = spyOn(
+        mockChattyHostConnection,
+        'send'
+      ).and.callThrough()
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      connection.stop()
+      expect(chattySendSpy).toHaveBeenCalledWith('dashboard:stop', undefined)
+    })
+
+    it('fires legacy edit event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendSpy = spyOn(
+        mockChattyHostConnection,
+        'send'
+      ).and.callThrough()
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      connection.edit()
+      expect(chattySendSpy).toHaveBeenCalledWith('dashboard:edit', undefined)
+    })
+
+    it('fires legacy update filter event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendSpy = spyOn(
+        mockChattyHostConnection,
+        'send'
+      ).and.callThrough()
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      connection.updateFilters({ state: 'CA' })
+      expect(chattySendSpy).toHaveBeenCalledWith('dashboard:filters:update', {
+        filters: {
+          state: 'CA',
+        },
+      })
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/explore/myexplore/myview?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      chattySendSpy.calls.reset()
+      connection.updateFilters({ state: 'CA' })
+      expect(chattySendSpy).toHaveBeenCalledWith('look:filters:update', {
+        filters: {
+          state: 'CA',
+        },
+      })
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/looks/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      chattySendSpy.calls.reset()
+      connection.updateFilters({ state: 'CA' })
+      expect(chattySendSpy).toHaveBeenCalledWith('look:filters:update', {
+        filters: {
+          state: 'CA',
+        },
+      })
+    })
+
+    it('fires legacy set options event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendSpy = spyOn(
+        mockChattyHostConnection,
+        'send'
+      ).and.callThrough()
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      connection.setOptions({ elements: {}, layouts: [] })
+      expect(chattySendSpy).toHaveBeenCalledWith('dashboard:options:set', {
+        elements: {},
+        layouts: [],
+      })
+    })
+
+    it('fires legacy set open schedule dialog event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendAndReceiveSpy = spyOn(
+        mockChattyHostConnection,
+        'sendAndReceive'
+      ).and.callThrough()
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3',
+        },
+      })
+      connection.openScheduleDialog()
+      expect(chattySendAndReceiveSpy).toHaveBeenCalledWith(
+        'dashboard:schedule_modal:open',
+        undefined
+      )
+    })
   })
 })

@@ -150,14 +150,12 @@ export class EmbedClientEx implements IEmbedClient {
     waitUntilLoaded = false
   ): Promise<ILookerConnection> {
     if (this._connectionPromise) return this._connectionPromise
-    if (
-      this._builder.url &&
-      !this._builder.auth?.url &&
-      !this._builder.isCookielessEmbed
-    ) {
+    if (!this._builder.auth?.url && !this._builder.isCookielessEmbed) {
       // Private embedding
       this._connectionPromise = this.createIframe(
-        this.prependApiHost(this.appendRequiredParameters(this._builder.url)),
+        this.prependApiHost(
+          this.appendRequiredParameters(this._builder.embedUrl)
+        ),
         waitUntilLoaded
       )
     } else {

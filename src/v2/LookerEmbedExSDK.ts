@@ -126,7 +126,9 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createDashboardWithUrl(url: string): IEmbedBuilder {
-    return new EmbedBuilderEx(this, 'dashboard', '').withUrl(url)
+    return new EmbedBuilderEx(this, 'dashboard', '').withUrl(
+      santizeEmbedUrl(url)
+    )
   }
 
   createDashboardWithId(id: string | number) {
@@ -136,7 +138,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createExploreWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'explore', '').withUrl(url)
+    return new EmbedBuilderEx(this, 'explore', '').withUrl(santizeEmbedUrl(url))
   }
 
   createExploreWithId(id: string) {
@@ -145,7 +147,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createLookWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'look', '').withUrl(url)
+    return new EmbedBuilderEx(this, 'look', '').withUrl(santizeEmbedUrl(url))
   }
 
   createLookWithId(id: number | string) {
@@ -153,7 +155,9 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createExtensionWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'extension', '').withUrl(url)
+    return new EmbedBuilderEx(this, 'extension', '').withUrl(
+      santizeEmbedUrl(url)
+    )
   }
 
   createExtensionWithId(id: string) {

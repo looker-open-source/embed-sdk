@@ -92,7 +92,7 @@ export interface ILookerConnection {
    * Load Looker dashboard. This does not recreate the IFRAME.
    */
 
-  loadDashboard(id: string, pushHistory?: boolean): Promise<void>
+  loadDashboard2(id: string, pushHistory?: boolean): Promise<void>
 
   /**
    * Load Looker explore. This does not recreate the IFRAME.
@@ -153,6 +153,50 @@ export interface ILookerConnection {
    */
 
   isEditing(): boolean
+
+  /**
+   * @deprecated use asXXXConnection().run() instead
+   */
+
+  run(): void
+
+  /**
+   * @deprecated use asDashboardConnection().stop() instead
+   */
+
+  stop(): void
+
+  /**
+   * @deprecated use asDashboardConnection().edit() instead
+   */
+
+  edit(): void
+
+  /**
+   * @deprecated use asXXXConnection().updateFilters(params) instead
+   */
+
+  updateFilters(params: LookerEmbedFilterParams): void
+
+  /**
+   * @deprecated use asDashboardConnection().setOptions(options) instead
+   */
+
+  setOptions(options: LookerDashboardOptions): void
+  /**
+   * @deprecated use asDashboardConnection().openScheduleDialog() instead
+   */
+
+  openScheduleDialog(): Promise<void>
+
+  /**
+   * This fires the legacy loadDashboard method which is only available
+   * when a dashboard is currently loaded.
+   *
+   * @deprecated use.loadDashboard(id) instead unless Looker version < 25.0
+   */
+
+  loadDashboard(id: string, pushHistory: boolean): Promise<void>
 }
 
 /**

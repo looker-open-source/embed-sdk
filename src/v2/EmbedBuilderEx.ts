@@ -219,22 +219,18 @@ export class EmbedBuilderEx implements IEmbedBuilder {
     return this._sdk.generateTokens
   }
 
-  get url() {
-    return this._url || ''
-  }
-
   get auth() {
     return this._sdk.auth
   }
 
   get embedUrl() {
     const params = stringify(this._params)
-    if (this.url) {
+    if (this._url) {
       let sep = ''
       if (params.length > 0) {
-        sep = this.url.includes('?') ? '&' : '?'
+        sep = this._url.includes('?') ? '&' : '?'
       }
-      return `${this.endpoint}${this.url}${sep}${params}`
+      return `${this.endpoint}${this._url}${sep}${params}`
     } else {
       const sep = params.length === 0 ? '' : '?'
       return `${this.endpoint}/${this.id}${sep}${params}`

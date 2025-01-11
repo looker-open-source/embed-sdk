@@ -238,7 +238,7 @@ const loadDashboard1 = () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.dashboardId) {
-      embedConnection.loadDashboard(config.dashboardId)
+      embedConnection.loadDashboard2(config.dashboardId)
     }
   }
 }
@@ -250,7 +250,7 @@ const loadDashboard2 = () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.dashboardId2) {
-      embedConnection.loadDashboard(config.dashboardId2)
+      embedConnection.loadDashboard2(config.dashboardId2)
     }
   }
 }

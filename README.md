@@ -727,6 +727,7 @@ try {
       .on('dashboard:loaded', () => updateStatus('Loaded'))
       .build()
       .connect()
+
    dashboard.run()
 } catch(error) {
   // Error handling
@@ -741,7 +742,15 @@ try {
       .on('dashboard:loaded', () => updateStatus('Loaded'))
       .build()
       .connect()
-   connection.asDashboardConnection().run()
+
+  // The following still works but is deprecated and will be
+  // removed if a future release
+  connection.run()
+
+  // The following is the preferred mechanism running a dashboard.
+  // There are equivalent methods for explores (asExploreConnection)
+  // and looks (asLookConnection).
+  connection.asDashboardConnection().run()
 } catch(error) {
   // Error handling
 }

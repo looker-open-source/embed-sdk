@@ -162,7 +162,6 @@ describe('LookerEmbedExSDK', () => {
     const builder = sdk.preload() as EmbedBuilderEx
     expect(builder.type).toBe('')
     expect(builder.endpoint).toBe('')
-    expect(builder.url).toBe('/embed/preload/')
     expect(builder.embedUrl).toBe('/embed/preload/')
     expect(builder.acquireSession).toBe('')
     expect(builder.generateTokens).toBe('')
@@ -179,7 +178,6 @@ describe('LookerEmbedExSDK', () => {
     ) as EmbedBuilderEx
     expect(builder.type).toBe('dashboard')
     expect(builder.endpoint).toBe('')
-    expect(builder.url).toBe('/embed/dashboards/42?state=california')
     expect(builder.embedUrl).toBe('/embed/dashboards/42?state=california')
   })
 
@@ -190,7 +188,6 @@ describe('LookerEmbedExSDK', () => {
     expect(builder.type).toBe('dashboard')
     expect(builder.endpoint).toBe('/embed/dashboards')
     expect(builder.id).toBe('42')
-    expect(builder.url).toBe('')
     expect(builder.embedUrl).toBe('/embed/dashboards/42')
   })
 
@@ -202,7 +199,6 @@ describe('LookerEmbedExSDK', () => {
     ) as EmbedBuilderEx
     expect(builder.type).toBe('explore')
     expect(builder.endpoint).toBe('')
-    expect(builder.url).toBe('/embed/explore/mymodel/myview?state=california')
     expect(builder.embedUrl).toBe(
       '/embed/explore/mymodel/myview?state=california'
     )
@@ -215,7 +211,6 @@ describe('LookerEmbedExSDK', () => {
     expect(builder.type).toBe('explore')
     expect(builder.endpoint).toBe('/embed/explore')
     expect(builder.id).toBe('mymodel/myview')
-    expect(builder.url).toBe('')
     expect(builder.embedUrl).toBe('/embed/explore/mymodel/myview')
   })
 
@@ -226,7 +221,6 @@ describe('LookerEmbedExSDK', () => {
     expect(builder.type).toBe('explore')
     expect(builder.endpoint).toBe('/embed/explore')
     expect(builder.id).toBe('mymodel/myview')
-    expect(builder.url).toBe('')
     expect(builder.embedUrl).toBe('/embed/explore/mymodel/myview')
   })
 
@@ -238,7 +232,6 @@ describe('LookerEmbedExSDK', () => {
     ) as EmbedBuilderEx
     expect(builder.type).toBe('look')
     expect(builder.endpoint).toBe('')
-    expect(builder.url).toBe('/embed/looks/42?state=california')
     expect(builder.embedUrl).toBe('/embed/looks/42?state=california')
   })
 
@@ -249,7 +242,6 @@ describe('LookerEmbedExSDK', () => {
     expect(builder.type).toBe('look')
     expect(builder.endpoint).toBe('/embed/looks')
     expect(builder.id).toBe('42')
-    expect(builder.url).toBe('')
     expect(builder.embedUrl).toBe('/embed/looks/42')
   })
 
@@ -261,9 +253,6 @@ describe('LookerEmbedExSDK', () => {
     ) as EmbedBuilderEx
     expect(builder.type).toBe('extension')
     expect(builder.endpoint).toBe('')
-    expect(builder.url).toBe(
-      '/embed/extensions/myproj::myext/?state=california'
-    )
     expect(builder.embedUrl).toBe(
       '/embed/extensions/myproj::myext/?state=california'
     )
@@ -276,7 +265,6 @@ describe('LookerEmbedExSDK', () => {
     expect(builder.type).toBe('extension')
     expect(builder.endpoint).toBe('/embed/extensions')
     expect(builder.id).toBe('myproj::myext')
-    expect(builder.url).toBe('')
     expect(builder.embedUrl).toBe('/embed/extensions/myproj::myext')
   })
 })

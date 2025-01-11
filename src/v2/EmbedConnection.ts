@@ -25,6 +25,7 @@
  */
 
 import type { ChattyHostConnection } from '@looker/chatty'
+import type { LookerDashboardOptions, LookerEmbedFilterParams } from '../types'
 import { DashboardConnection } from './DashboardConnection'
 import type {
   ILookerConnection,
@@ -110,7 +111,7 @@ export class EmbedConnection implements ILookerConnection {
     })
   }
 
-  async loadDashboard(
+  async loadDashboard2(
     id: string,
     pushHistory?: boolean,
     waitUntilLoaded?: boolean
@@ -170,5 +171,102 @@ export class EmbedConnection implements ILookerConnection {
 
   isEditing() {
     return this._isEditing
+  }
+
+  // deprecated methods to support migration from 1.18.x to 2.0.0
+
+  /**
+   * @deprecated use asXXXConnection().run() instead
+   */
+
+  run() {
+    switch (this._pageType) {
+      case 'dashboards':
+        this.asDashboardConnection().run()
+        break
+      case 'looks':
+        this.asLookConnection().run()
+        break
+      case 'explore':
+        this.asLookConnection().run()
+        break
+    }
+  }
+
+  /**
+   * @deprecated use asDashboardConnection().stop() instead
+   */
+
+  stop() {
+    switch (this._pageType) {
+      case 'dashboards':
+        this.asDashboardConnection().stop()
+        break
+    }
+  }
+
+  /**
+   * @deprecated use asDashboardConnection().edit() instead
+   */
+
+  edit() {
+    switch (this._pageType) {
+      case 'dashboards':
+        this.asDashboardConnection().edit()
+        break
+    }
+  }
+
+  /**
+   * @deprecated use asXXXConnection().updateFilters(params) instead
+   */
+
+  updateFilters(params: LookerEmbedFilterParams) {
+    switch (this._pageType) {
+      case 'dashboards':
+        this.asDashboardConnection().updateFilters(params)
+        break
+      case 'looks':
+        this.asLookConnection().updateFilters(params)
+        break
+      case 'explore':
+        this.asLookConnection().updateFilters(params)
+        break
+    }
+  }
+
+  /**
+   * @deprecated use asDashboardConnection().setOptions(options) instead
+   */
+
+  setOptions(options: LookerDashboardOptions) {
+    switch (this._pageType) {
+      case 'dashboards':
+        this.asDashboardConnection().setOptions(options)
+        break
+    }
+  }
+
+  /**
+   * @deprecated use asDashboardConnection().openScheduleDialog() instead
+   */
+
+  async openScheduleDialog(): Promise<void> {
+    switch (this._pageType) {
+      case 'dashboards':
+        return this.asDashboardConnection().openScheduleDialog()
+    }
+  }
+
+  /**
+   * @deprecated use.loadDashboard(id) instead unless Looker version < 25.0
+   *
+   */
+
+  async loadDashboard(id: string, pushHistory = false): Promise<void> {
+    switch (this._pageType) {
+      case 'dashboards':
+        return this.sendAndReceive('dashboard:load', { id, pushHistory })
+    }
   }
 }
