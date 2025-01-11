@@ -186,11 +186,11 @@ const initializeShowLookCheckbox = () => {
 const initializeUseCookielessCheckbox = () => {
   const cb = document.getElementById('useCookieless') as HTMLInputElement
   if (cb) {
-    const { useCookieless } = getConfiguration()
-    cb.checked = useCookieless
+    const { embedType } = getConfiguration()
+    cb.checked = embedType === 'cookieless'
     cb.addEventListener('change', (event: any) => {
       const runtimeConfig = getConfiguration()
-      runtimeConfig.useCookieless = event.target.checked
+      runtimeConfig.embedType = event.target.checked ? 'cookieless' : 'signed'
       updateConfiguration(runtimeConfig)
       location.reload()
     })
@@ -474,7 +474,7 @@ const initializeLookControls = (runtimeConfig: RuntimeConfig) => {
  * document to the embedded content. The auth endpoint is documented in README.md.
  */
 const initializeLookerEmbed = (runtimeConfig: RuntimeConfig) => {
-  if (runtimeConfig.useCookieless) {
+  if (runtimeConfig.embedType === 'cookieless') {
     // Use cookieless embed
     initCookielessEmbed(
       runtimeConfig.lookerHost,
@@ -509,7 +509,7 @@ const initializeErrorControls = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.showDashboard) {
     const controls = document.querySelector('.error-controls') as HTMLDivElement
     if (controls) {
-      if (runtimeConfig.useCookieless) {
+      if (runtimeConfig.embedType === 'cookieless') {
         // Test unrecoverable initial connection
         const error1 = document.getElementById('error-1') as HTMLButtonElement
         if (error1) {

@@ -265,11 +265,11 @@ const initializeShowExtensionCheckbox = () => {
 const initializeUseCookielessCheckbox = () => {
   const cb = document.getElementById('useCookieless') as HTMLInputElement
   if (cb) {
-    const { useCookieless } = getConfiguration()
-    cb.checked = useCookieless
+    const { embedType } = getConfiguration()
+    cb.checked = embedType === 'cookieless'
     cb.addEventListener('change', (event: any) => {
       const runtimeConfig = getConfiguration()
-      runtimeConfig.useCookieless = event.target.checked
+      runtimeConfig.embedType = event.target.checked ? 'cookieless' : 'signed'
       updateConfiguration(runtimeConfig)
       location.reload()
     })
@@ -548,7 +548,7 @@ const renderExtension = (runtimeConfig: RuntimeConfig) => {
  * document to the embedded content. The auth endpoint is documented in README.md.
  */
 const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
-  if (runtimeConfig.useCookieless) {
+  if (runtimeConfig.embedType === 'cookieless') {
     // Use cookieless embed
     getEmbedSDK().initCookieless(
       runtimeConfig.lookerHost,
