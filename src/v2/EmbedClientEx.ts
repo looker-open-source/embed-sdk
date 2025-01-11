@@ -51,12 +51,6 @@ export class EmbedClientEx implements IEmbedClient {
   _connectionPromise?: Promise<EmbedConnection>
   _connection?: EmbedConnection
   _client?: EmbedConnection
-  _cookielessInitialized = false
-  _cookielessApiToken?: string | null
-  _cookielessApiTokenTtl?: number | null
-  _cookielessNavigationToken?: string | null
-  _cookielessNavigationTokenTtl?: number | null
-  _cookielessSessionReferenceTokenTtl?: number | null
   _pageChangeResolver?: (
     value: EmbedConnection | PromiseLike<EmbedConnection>
   ) => void
@@ -260,12 +254,13 @@ export class EmbedClientEx implements IEmbedClient {
         this._builder.handlers['session:tokens:request'] = []
       }
       this._builder.handlers['session:tokens:request'].push(async () => {
+        const cookielessSession = this._sdk._cookielessSession
         if (
           this._client &&
-          this._cookielessApiToken &&
-          this._builder.generateTokens
+          cookielessSession &&
+          cookielessSession.cookielessApiToken
         ) {
-          if (this._cookielessInitialized) {
+          if (cookielessSession?.cookielessInitialized) {
             const {
               api_token,
               api_token_ttl,
@@ -273,22 +268,24 @@ export class EmbedClientEx implements IEmbedClient {
               navigation_token_ttl,
               session_reference_token_ttl,
             } = await this.generateTokens()
-            this._cookielessApiToken = api_token
-            this._cookielessApiTokenTtl = api_token_ttl
-            this._cookielessNavigationToken = navigation_token
-            this._cookielessNavigationTokenTtl = navigation_token_ttl
-            this._cookielessSessionReferenceTokenTtl =
+            cookielessSession.cookielessApiToken = api_token
+            cookielessSession.cookielessApiTokenTtl = api_token_ttl
+            cookielessSession.cookielessNavigationToken = navigation_token
+            cookielessSession.cookielessNavigationTokenTtl =
+              navigation_token_ttl
+            cookielessSession.cookielessSessionReferenceTokenTtl =
               session_reference_token_ttl
           } else {
-            this._cookielessInitialized = true
+            cookielessSession.cookielessInitialized = true
           }
           this._client.send('session:tokens', {
-            api_token: this._cookielessApiToken,
-            api_token_ttl: this._cookielessApiTokenTtl,
-            navigation_token: this._cookielessNavigationToken,
-            navigation_token_ttl: this._cookielessNavigationTokenTtl,
+            api_token: cookielessSession.cookielessApiToken,
+            api_token_ttl: cookielessSession.cookielessApiTokenTtl,
+            navigation_token: cookielessSession.cookielessNavigationToken,
+            navigation_token_ttl:
+              cookielessSession.cookielessNavigationTokenTtl,
             session_reference_token_ttl:
-              this._cookielessSessionReferenceTokenTtl,
+              cookielessSession.cookielessSessionReferenceTokenTtl,
           })
         }
       })
@@ -432,10 +429,16 @@ export class EmbedClientEx implements IEmbedClient {
 
   private async acquireCookielessEmbedSession(): Promise<string> {
     if (this._sdk._sessionAcquired) {
+      if (this._sdk._cookielessSession?.cookielessNavigationToken) {
+        return this.getCookielessEmbedUrl()
+      }
       return this.acquireCookielessEmbedSessionInternal()
     }
     if (this._sdk._acquireSessionPromise) {
       await this._sdk._acquireSessionPromise
+      if (this._sdk._cookielessSession?.cookielessNavigationToken) {
+        return this.getCookielessEmbedUrl()
+      }
       return this.acquireCookielessEmbedSessionInternal()
     }
     this._sdk._acquireSessionPromise =
@@ -463,11 +466,15 @@ export class EmbedClientEx implements IEmbedClient {
     if (!authentication_token || !navigation_token || !api_token) {
       throw new Error('failed to prepare cookieless embed session')
     }
-    this._cookielessApiToken = api_token
-    this._cookielessApiTokenTtl = api_token_ttl
-    this._cookielessNavigationToken = navigation_token
-    this._cookielessNavigationTokenTtl = navigation_token_ttl
-    this._cookielessSessionReferenceTokenTtl = session_reference_token_ttl
+    if (this._sdk._cookielessSession) {
+      const cookielessSession = this._sdk._cookielessSession
+      cookielessSession.cookielessApiToken = api_token
+      cookielessSession.cookielessApiTokenTtl = api_token_ttl
+      cookielessSession.cookielessNavigationToken = navigation_token
+      cookielessSession.cookielessNavigationTokenTtl = navigation_token_ttl
+      cookielessSession.cookielessSessionReferenceTokenTtl =
+        session_reference_token_ttl
+    }
     const apiHost = `https://${this._builder.apiHost}`
     const src = `${this.appendRequiredParameters(
       this._builder.embedUrl
@@ -476,6 +483,16 @@ export class EmbedClientEx implements IEmbedClient {
       '/login/embed/' +
       encodeURIComponent(src) +
       `?embed_authentication_token=${authentication_token}`
+    return `${apiHost}${embedPath}`
+  }
+
+  private getCookielessEmbedUrl() {
+    const apiHost = `https://${this._builder.apiHost}`
+    const embedPath = `${this.appendRequiredParameters(
+      this._builder.embedUrl
+    )}&embed_navigation_token=${
+      this._sdk._cookielessSession?.cookielessNavigationToken || ''
+    }`
     return `${apiHost}${embedPath}`
   }
 
@@ -499,48 +516,58 @@ export class EmbedClientEx implements IEmbedClient {
   }
 
   private async generateTokens(): Promise<LookerEmbedCookielessSessionData> {
-    const { generateTokens } = this._builder
-    if (typeof generateTokens === 'function') {
-      return await generateTokens({
-        api_token: this._cookielessApiToken,
-        api_token_ttl: this._cookielessApiTokenTtl,
-        navigation_token: this._cookielessNavigationToken,
-        navigation_token_ttl: this._cookielessNavigationTokenTtl,
-        session_reference_token_ttl: this._cookielessSessionReferenceTokenTtl,
-      })
-    }
-    try {
-      const { url, init: defaultInit } = this.getResource(generateTokens!)
-
-      const init = defaultInit
-        ? {
-            headers: {
-              'content-type': 'application/json',
-            },
-            method: 'PUT',
-            ...defaultInit,
-            body: JSON.stringify({
-              api_token: this._cookielessApiToken,
-              navigation_token: this._cookielessNavigationToken,
-            }),
-          }
-        : {
-            body: JSON.stringify({
-              api_token: this._cookielessApiToken,
-              navigation_token: this._cookielessNavigationToken,
-            }),
-            headers: {
-              'content-type': 'application/json',
-            },
-            method: 'PUT',
-          }
-      const resp = await fetch(url, init)
-      if (resp.ok) {
-        return (await resp.json()) as LookerEmbedCookielessSessionData
+    if (this._sdk._cookielessSession) {
+      const {
+        cookielessApiToken,
+        cookielessApiTokenTtl,
+        cookielessNavigationToken,
+        cookielessNavigationTokenTtl,
+        cookielessSessionReferenceTokenTtl,
+      } = this._sdk._cookielessSession
+      const { generateTokens } = this._builder
+      if (typeof generateTokens === 'function') {
+        return await generateTokens({
+          api_token: cookielessApiToken,
+          api_token_ttl: cookielessApiTokenTtl,
+          navigation_token: cookielessNavigationToken,
+          navigation_token_ttl: cookielessNavigationTokenTtl,
+          session_reference_token_ttl: cookielessSessionReferenceTokenTtl,
+        })
       }
-    } catch (error: any) {
-      console.error(error)
+      try {
+        const { url, init: defaultInit } = this.getResource(generateTokens!)
+
+        const init = defaultInit
+          ? {
+              headers: {
+                'content-type': 'application/json',
+              },
+              method: 'PUT',
+              ...defaultInit,
+              body: JSON.stringify({
+                api_token: cookielessApiToken,
+                navigation_token: cookielessNavigationToken,
+              }),
+            }
+          : {
+              body: JSON.stringify({
+                api_token: cookielessApiToken,
+                navigation_token: cookielessNavigationToken,
+              }),
+              headers: {
+                'content-type': 'application/json',
+              },
+              method: 'PUT',
+            }
+        const resp = await fetch(url, init)
+        if (resp.ok) {
+          return (await resp.json()) as LookerEmbedCookielessSessionData
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
     }
+
     return { session_reference_token_ttl: 0 }
   }
 

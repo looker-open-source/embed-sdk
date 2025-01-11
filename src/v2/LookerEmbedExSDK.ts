@@ -47,6 +47,18 @@ export type ChattyHostBuilderFactory = (url: string) => ChattyHostBuilder
 
 export const createChattyBuilder = (url: string) => Chatty.createHost(url)
 
+/**
+ * @hidden
+ */
+export interface ICookielessEmbedSession {
+  cookielessInitialized: boolean
+  cookielessApiToken?: string | null
+  cookielessApiTokenTtl?: number | null
+  cookielessNavigationToken?: string | null
+  cookielessNavigationTokenTtl?: number | null
+  cookielessSessionReferenceTokenTtl?: number | null
+}
+
 export class LookerEmbedExSDK implements ILookerEmbedSDK {
   /**
    * @hidden
@@ -93,6 +105,11 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   /**
    * @hidden
    */
+  _cookielessSession?: ICookielessEmbedSession
+
+  /**
+   * @hidden
+   */
 
   constructor(
     // Allow tests to inject their own chatty implementation
@@ -104,6 +121,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     this._auth = typeof auth === 'string' ? { url: auth } : auth
     this._acquireSession = undefined
     this._generateTokens = undefined
+    this._cookielessSession = undefined
   }
 
   initCookieless(
@@ -115,6 +133,9 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     this._acquireSession = acquireSession
     this._generateTokens = generateTokens
     this._auth = undefined
+    this._cookielessSession = {
+      cookielessInitialized: false,
+    }
   }
 
   preload() {
