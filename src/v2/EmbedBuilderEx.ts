@@ -49,6 +49,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   private _scrollMonitor?: boolean
   private _dynamicIFrameHeight?: boolean
   private _dialogScroll?: boolean
+  private _allowLoginScreen?: boolean
 
   constructor(
     private _sdk: LookerEmbedExSDK,
@@ -169,6 +170,11 @@ export class EmbedBuilderEx implements IEmbedBuilder {
     return this
   }
 
+  withAllowLoginScreen(): IEmbedBuilder {
+    this._allowLoginScreen = true
+    return this
+  }
+
   set sandboxedHost(sandboxedHost: boolean) {
     this._sandboxedHost = sandboxedHost
   }
@@ -265,6 +271,12 @@ export class EmbedBuilderEx implements IEmbedBuilder {
 
   get dialogScroll() {
     return this._dialogScroll
+  }
+
+  get allowLoginScreen() {
+    return (
+      this._allowLoginScreen && !this.isCookielessEmbed && !this._sdk.auth?.url
+    )
   }
 
   appendTo(el: HTMLElement | string): IEmbedBuilder {

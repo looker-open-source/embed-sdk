@@ -18,24 +18,66 @@
   <body class="p-5 h-dvh flex flex-col">
     <h1 class="main-heading">Looker Embed SDK Single Frame Demo</h1>
     <div id="controls" class="flex pt-5">
-      <div class="flex-auto flex space-x-5">
-        <div class="pt-1">
-          <input type="checkbox" id="useCookieless" class="form-checkbox" />
-          <label class="form-checkbox-label" for="useCookieless"
-            >Use cookieless</label
-          >
+      <div class="flex-col">
+        <div class="flex-auto flex space-x-5">
+          <div class="flex items-center mb-4">
+            <input
+              id="useSigned"
+              type="radio"
+              value="signed"
+              name="embedType"
+              class="form-radio"
+            />
+            <label for="useSigned" class="form-checkbox-label"
+              >Use signed URL</label
+            >
+          </div>
+          <div class="flex items-center mb-4">
+            <input
+              id="useCookieless"
+              type="radio"
+              value="cookieless"
+              name="embedType"
+              class="form-radio"
+            />
+            <label for="useCookieless" class="form-checkbox-label"
+              >Use cookieless</label
+            >
+          </div>
+          <div class="flex items-center mb-4">
+            <input
+              id="usePrivate"
+              type="radio"
+              value="private"
+              name="embedType"
+              class="form-radio"
+            />
+            <label for="usePrivate" class="form-checkbox-label"
+              >Use private</label
+            >
+          </div>
         </div>
-        <div class="pt-1">
-          <input type="checkbox" id="useDynamicHeights" class="form-checkbox" />
-          <label class="form-checkbox-label" for="useDynamicHeights"
-            >Use dynamic heights</label
-          >
-        </div>
-        <div class="pt-1 pb-2">
-          <input type="checkbox" id="preventNavigation" class="form-checkbox" />
-          <label class="form-checkbox-label" for="preventNavigation"
-            >Prevent navigation</label
-          >
+        <div class="flex-auto flex space-x-5">
+          <div class="pt-1">
+            <input
+              type="checkbox"
+              id="useDynamicHeights"
+              class="form-checkbox"
+            />
+            <label class="form-checkbox-label" for="useDynamicHeights"
+              >Use dynamic heights</label
+            >
+          </div>
+          <div class="pt-1 pb-2">
+            <input
+              type="checkbox"
+              id="preventNavigation"
+              class="form-checkbox"
+            />
+            <label class="form-checkbox-label" for="preventNavigation"
+              >Prevent navigation</label
+            >
+          </div>
         </div>
       </div>
       <div class="flex-auto flex flex-col text-right">

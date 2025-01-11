@@ -116,19 +116,40 @@ const preventNavigation = (event: any): any => {
 }
 
 /**
- * Initialize the use cookieless configuration checkbox.
+ * Update embed demo type
  */
-const initializeUseCookielessCheckbox = () => {
-  const cb = document.getElementById('useCookieless') as HTMLInputElement
-  if (cb) {
-    const { useCookieless } = getConfiguration()
-    cb.checked = useCookieless
-    cb.addEventListener('change', (event: any) => {
-      const runtimeConfig = getConfiguration()
-      runtimeConfig.useCookieless = event.target.checked
-      updateConfiguration(runtimeConfig)
-      location.reload()
-    })
+const updateEmbedType = (event: any) => {
+  const runtimeConfig = getConfiguration()
+  runtimeConfig.embedType = event.target.value
+  updateConfiguration(runtimeConfig)
+  location.reload()
+}
+
+/**
+ * Initialize the embed type configuration radio buttons.
+ */
+const initializeEmbedTypeRadioButtons = () => {
+  const signedRb = document.getElementById('useSigned') as HTMLInputElement
+  const cookielessRb = document.getElementById(
+    'useCookieless'
+  ) as HTMLInputElement
+  const privateRb = document.getElementById('usePrivate') as HTMLInputElement
+  if (signedRb && cookielessRb && privateRb) {
+    const { embedType } = getConfiguration()
+    switch (embedType) {
+      case 'cookieless':
+        cookielessRb.checked = true
+        break
+      case 'private':
+        privateRb.checked = true
+        break
+      default:
+        signedRb.checked = true
+        break
+    }
+    signedRb.addEventListener('change', updateEmbedType)
+    cookielessRb.addEventListener('change', updateEmbedType)
+    privateRb.addEventListener('change', updateEmbedType)
   }
 }
 
@@ -349,7 +370,7 @@ const initializeContentControls = () => {
 const initializeControls = () => {
   updateContentControls()
   initializePreventNavigationCheckbox()
-  initializeUseCookielessCheckbox()
+  initializeEmbedTypeRadioButtons()
   initializeUseDynamicHeightsCheckbox()
   initializeTabs()
   initializeContentControls()
@@ -385,6 +406,10 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     .withScrollMonitor(runtimeConfig.useDynamicHeights)
     // Allow fullscreen tile visualizations
     .withAllowAttr('fullscreen')
+    // Applicable to private embed only. If the user is not logged in,
+    // the Looker login page will be displayed. Note that this will not
+    // in Looker core.
+    .withAllowLoginScreen()
     // Append to the #dashboard element
     .appendTo('#embed-container')
     .on('page:changed', (event: PageChangedEvent) => {
@@ -442,13 +467,16 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
  */
 const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
   const sdk: ILookerEmbedSDK = getEmbedSDK()
-  if (runtimeConfig.useCookieless) {
+  if (runtimeConfig.embedType === 'cookieless') {
     // Use cookieless embed
     sdk.initCookieless(
       runtimeConfig.lookerHost,
       '/acquire-embed-session',
       '/generate-embed-tokens'
     )
+  } else if (runtimeConfig.embedType === 'private') {
+    // Use private embedding
+    sdk.init(runtimeConfig.lookerHost)
   } else {
     // Use SSO embed
     sdk.init(runtimeConfig.lookerHost, '/auth')

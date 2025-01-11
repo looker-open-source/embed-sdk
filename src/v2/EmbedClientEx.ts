@@ -131,6 +131,9 @@ export class EmbedClientEx implements IEmbedClient {
         sdk: '3',
       }
     }
+    if (this._builder.allowLoginScreen && !this._builder.sandboxedHost) {
+      requiredParams.allow_login_screen = 'true'
+    }
     const tempOrigin = urlString.startsWith('https://') ? '' : 'http://abc'
     const url = new URL(`${tempOrigin}${urlString}`)
     for (const key in requiredParams) {

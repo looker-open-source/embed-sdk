@@ -58,15 +58,14 @@ export interface RuntimeConfig {
    */
   showExtension: boolean
   /**
-   * When true will use cookieless embed. When false will use
-   * SSO signing.
-   */
-  useCookieless: boolean
-  /**
    * Dashboards only. When true, will dynamically change height of
    * dashboard IFRAME.
    */
   useDynamicHeights: boolean
+  /**
+   * Type of embedding to demonstrate
+   */
+  embedType: string
 }
 
 const lookerHost = 'mycompany.looker.com'
@@ -107,6 +106,7 @@ const _lookId = getId(lookId, process.env.LOOKER_LOOK_ID)
 let runtimeConfig: RuntimeConfig = {
   dashboardId: _dashboardId,
   dashboardId2: _dashboardId2,
+  embedType: process.env.LOOKER_EMBED_TYPE || 'signed',
   exploreId: _exploreId,
   extensionId: _extensionId,
   lookId: _lookId,
@@ -117,8 +117,6 @@ let runtimeConfig: RuntimeConfig = {
   showExplore: typeof _exploreId === 'string' && _exploreId.trim() !== '',
   showExtension: typeof _extensionId === 'string' && _extensionId.trim() !== '',
   showLook: _lookId === 'string' && _lookId.trim() !== '',
-  useCookieless:
-    process.env.LOOKER_COOKIELESS_ENABLED === 'true' ? true : cookielessEmbedV2,
   useDynamicHeights: false,
 }
 

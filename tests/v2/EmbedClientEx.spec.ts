@@ -57,6 +57,7 @@ describe('EmbedClientEx', () => {
       acquireSession?: string | CookielessRequestInit | CookielessCallback
       generateTokens?: string | CookielessRequestInit | GenerateTokensCallback
       createUrl?: string
+      allowLoginScreen?: boolean
     } = {}
   ) => {
     const {
@@ -66,6 +67,7 @@ describe('EmbedClientEx', () => {
       acquireSession,
       generateTokens,
       createUrl,
+      allowLoginScreen,
     } = options
     const createChattyBuilder = (url: string) => {
       mockHostBuilder._url = url
@@ -82,6 +84,9 @@ describe('EmbedClientEx', () => {
       builder = sdk.createWithUrl(createUrl) as EmbedBuilderEx
     } else {
       builder = sdk.preload() as EmbedBuilderEx
+    }
+    if (allowLoginScreen) {
+      builder.withAllowLoginScreen()
     }
     builder
       .withDialogScroll()
@@ -126,8 +131,24 @@ describe('EmbedClientEx', () => {
     expect(client.connection).toBeDefined()
   })
 
+  it('creates a private connection with the allow login screen', async () => {
+    const client = getClient({ allowLoginScreen: true })
+    await client.connect()
+    expect(mockHostBuilder._url).toBe(
+      'https://myhost.com/embed/preload/?embed_domain=http%3A%2F%2Flocalhost%3A9876&sdk=3&allow_login_screen=true'
+    )
+  })
+
   it('creates a sandbox hosted private connection', async () => {
     const client = getClient({ sandboxedHost: true })
+    await client.connect()
+    expect(mockHostBuilder._url).toBe(
+      'https://myhost.com/embed/preload/?embed_domain=https%3A%2F%2Fmyhost.com&sandboxed_host=true&sdk=3'
+    )
+  })
+
+  it('ignores with allow_login_screen for a sandbox hosted private connection', async () => {
+    const client = getClient({ allowLoginScreen: true, sandboxedHost: true })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
       'https://myhost.com/embed/preload/?embed_domain=https%3A%2F%2Fmyhost.com&sandboxed_host=true&sdk=3'

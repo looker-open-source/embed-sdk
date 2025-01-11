@@ -28,7 +28,7 @@ import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
 import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
 
 describe('EmbedBuilderEx', () => {
-  let preloadBuilder: EmbedBuilderEx
+  let builder: EmbedBuilderEx
   let dashboardUrlBuilder: EmbedBuilderEx
   let dashboardIdBuilder: EmbedBuilderEx
   let lookIdBuilder: EmbedBuilderEx
@@ -36,7 +36,7 @@ describe('EmbedBuilderEx', () => {
   beforeEach(() => {
     const sdk = new LookerEmbedExSDK()
     sdk.init('myhost.com', '/auth')
-    preloadBuilder = sdk.preload() as EmbedBuilderEx
+    builder = sdk.preload() as EmbedBuilderEx
     dashboardUrlBuilder = sdk.createDashboardWithUrl(
       '/embed/dashboards/42'
     ) as EmbedBuilderEx
@@ -114,73 +114,94 @@ describe('EmbedBuilderEx', () => {
   })
 
   it('can specify a frame border', () => {
-    preloadBuilder.withFrameBorder('1')
-    expect(preloadBuilder.frameBorder).toBe('1')
+    builder.withFrameBorder('1')
+    expect(builder.frameBorder).toBe('1')
   })
 
   it('can add sandbox attributes', () => {
-    preloadBuilder.withSandboxAttr('att1', 'att2')
-    preloadBuilder.withSandboxAttr('att3')
-    expect(preloadBuilder.sandboxAttrs).toEqual(['att1', 'att2', 'att3'])
+    builder.withSandboxAttr('att1', 'att2')
+    builder.withSandboxAttr('att3')
+    expect(builder.sandboxAttrs).toEqual(['att1', 'att2', 'att3'])
   })
 
   it('can add allow attributes', () => {
-    preloadBuilder.withAllowAttr('att1', 'att2')
-    preloadBuilder.withAllowAttr('att3')
-    expect(preloadBuilder.allowAttrs).toEqual(['att1', 'att2', 'att3'])
+    builder.withAllowAttr('att1', 'att2')
+    builder.withAllowAttr('att3')
+    expect(builder.allowAttrs).toEqual(['att1', 'att2', 'att3'])
   })
 
   it('can add class names', () => {
-    preloadBuilder.withClassName('class1', 'class2')
-    preloadBuilder.withClassName('class3')
-    expect(preloadBuilder.classNames).toEqual(['class1', 'class2', 'class3'])
+    builder.withClassName('class1', 'class2')
+    builder.withClassName('class3')
+    expect(builder.classNames).toEqual(['class1', 'class2', 'class3'])
   })
 
   it('can add a scroll monitor', () => {
-    preloadBuilder.withScrollMonitor()
-    expect(preloadBuilder.scrollMonitor).toBeTruthy()
+    builder.withScrollMonitor()
+    expect(builder.scrollMonitor).toBeTruthy()
   })
 
   it('can request dynamic heights', () => {
-    preloadBuilder.withDynamicIFrameHeight()
-    expect(preloadBuilder.dynamicIFrameHeight).toBeTruthy()
+    builder.withDynamicIFrameHeight()
+    expect(builder.dynamicIFrameHeight).toBeTruthy()
   })
 
   it('can request that dialogs be scrolled into view', () => {
-    preloadBuilder.withDialogScroll()
-    expect(preloadBuilder.dialogScroll).toBeTruthy()
+    builder.withDialogScroll()
+    expect(builder.dialogScroll).toBeTruthy()
+  })
+
+  it('ignores allow login screen when signed url', () => {
+    builder.withAllowLoginScreen()
+    expect(builder.allowLoginScreen).toBeFalsy()
+  })
+
+  it('ignores allow login screen when cookieless', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.initCookieless('myhost.com', '/aqcuire', '/generate')
+    builder = sdk.preload() as EmbedBuilderEx
+    builder.withAllowLoginScreen()
+    expect(builder.allowLoginScreen).toBeFalsy()
+  })
+
+  it('accepts allow login screen when private', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com')
+    builder = sdk.preload() as EmbedBuilderEx
+    builder.withAllowLoginScreen()
+    expect(builder.allowLoginScreen).toBeTruthy()
   })
 
   it('identifies the appendTo element using a selector', () => {
     const el = document.createElement('div')
     el.id = 'the-element'
     document.body.append(el)
-    preloadBuilder.appendTo('#the-element')
-    expect(preloadBuilder.el).toBe(el)
+    builder.appendTo('#the-element')
+    expect(builder.el).toBe(el)
     document.body.removeChild(el)
   })
 
   it('accepts an element as the appendTo element', () => {
     const el = document.createElement('div')
     document.body.append(el)
-    preloadBuilder.appendTo(el)
-    expect(preloadBuilder.el).toBe(el)
+    builder.appendTo(el)
+    expect(builder.el).toBe(el)
     document.body.removeChild(el)
   })
 
   it('stores on handlers correctly', () => {
     const pageHandler1 = jasmine.createSpy()
     const pageHandler2 = jasmine.createSpy()
-    preloadBuilder.on('page:changed', pageHandler1)
-    preloadBuilder.on('page:changed', pageHandler2)
-    expect(preloadBuilder.handlers).toEqual({
+    builder.on('page:changed', pageHandler1)
+    builder.on('page:changed', pageHandler2)
+    expect(builder.handlers).toEqual({
       'page:changed': [pageHandler1, pageHandler2],
     })
   })
 
   it('builds', () => {
-    const client = preloadBuilder.build()
+    const client = builder.build()
     expect(client).toBeDefined()
-    expect(client).not.toBe(preloadBuilder as any)
+    expect(client).not.toBe(builder as any)
   })
 })

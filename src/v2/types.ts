@@ -358,6 +358,15 @@ export interface IEmbedBuilder {
   withAuth(auth: LookerAuthConfig): IEmbedBuilder
 
   /**
+   * If private embed, appends allow_login_screen=true to the URL. This will
+   * be ignored if the SDK is initialized with auth or cookieless.
+   * willAllowLoginScreen does NOT work with Looker Core.
+   */
+
+  withAllowLoginScreen(): IEmbedBuilder
+
+  /**
+   *
    * Select an element to append the embedded content to, either a content selector or
    * the DOM element.
    *
