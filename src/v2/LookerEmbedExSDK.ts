@@ -31,6 +31,7 @@ import type {
   GenerateTokensCallback,
   CookielessRequestInit,
   LookerAuthConfig,
+  LookerEmbedCookielessSessionData,
 } from '../types'
 import type { ILookerEmbedSDK, IEmbedBuilder } from './types'
 import { EmbedBuilderEx } from './EmbedBuilderEx'
@@ -51,7 +52,7 @@ export const createChattyBuilder = (url: string) => Chatty.createHost(url)
  * @hidden
  */
 export interface ICookielessEmbedSession {
-  cookielessInitialized: boolean
+  generateTokensTime: number
   cookielessApiToken?: string | null
   cookielessApiTokenTtl?: number | null
   cookielessNavigationToken?: string | null
@@ -64,19 +65,27 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
    * @hidden
    */
 
-  _sessionAcquired = false
+  _sessionCreated = false
 
   /**
    * @hidden
    */
 
-  _acquireSessionPromise?: Promise<string>
+  _createEmbedSessionPromise?: Promise<string>
 
   /**
    * @hidden
    */
 
-  _acquireSessionPromiseResolver?: (value: string | PromiseLike<string>) => void
+  _createEmbedSessionPromiseResolver?: (
+    value: string | PromiseLike<string>
+  ) => void
+
+  /**
+   * @hidden
+   */
+
+  _generateTokensPromise?: Promise<LookerEmbedCookielessSessionData>
 
   /**
    * @hidden
@@ -134,7 +143,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     this._generateTokens = generateTokens
     this._auth = undefined
     this._cookielessSession = {
-      cookielessInitialized: false,
+      generateTokensTime: 0,
     }
   }
 

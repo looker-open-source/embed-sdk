@@ -30,6 +30,7 @@ import type {
   LookerEmbedCookielessSessionData,
   PageChangedEvent,
   PagePropertiesChangedEvent,
+  SessionStatus,
 } from '../types'
 import { IS_URL } from '../utils'
 import type { EmbedBuilderEx } from './EmbedBuilderEx'
@@ -54,6 +55,9 @@ export class EmbedClientEx implements IEmbedClient {
   _pageChangeResolver?: (
     value: EmbedConnection | PromiseLike<EmbedConnection>
   ) => void
+
+  _cookielessInitialized = false
+  _cookielessSessionExpired = false
 
   /**
    * @hidden
@@ -130,14 +134,24 @@ export class EmbedClientEx implements IEmbedClient {
     }
     const tempOrigin = urlString.startsWith('https://') ? '' : 'http://abc'
     const url = new URL(`${tempOrigin}${urlString}`)
+    const replaceEmbedDomain = !url.searchParams.has('embed_domain')
     for (const key in requiredParams) {
       if (!url.searchParams.has(key)) {
         url.searchParams.append(key, requiredParams[key])
       }
     }
-    return tempOrigin
-      ? url.toString().replace('http://abc', '')
-      : url.toString()
+    let embedString = url.toString()
+    // For backwards compatibility unencode embed domain
+    if (replaceEmbedDomain) {
+      embedString = embedString.replace(
+        `embed_domain=${encodeURIComponent(requiredParams.embed_domain)}`,
+        `embed_domain=${requiredParams.embed_domain}`
+      )
+    }
+    if (tempOrigin) {
+      embedString = embedString.replace('http://abc', '')
+    }
+    return embedString
   }
 
   private async connectInternal(
@@ -250,44 +264,143 @@ export class EmbedClientEx implements IEmbedClient {
       )
     }
     if (this._builder.isCookielessEmbed) {
+      if (!this._builder.handlers['session:status']) {
+        this._builder.handlers['session:status'] = []
+      }
+      this._builder.handlers['session:status'].push((event: SessionStatus) => {
+        if (event?.expired) {
+          this._cookielessSessionExpired = true
+        }
+      })
       if (!this._builder.handlers['session:tokens:request']) {
         this._builder.handlers['session:tokens:request'] = []
       }
       this._builder.handlers['session:tokens:request'].push(async () => {
         const cookielessSession = this._sdk._cookielessSession
-        if (
-          this._client &&
-          cookielessSession &&
-          cookielessSession.cookielessApiToken
-        ) {
-          if (cookielessSession?.cookielessInitialized) {
-            const {
-              api_token,
-              api_token_ttl,
-              navigation_token,
-              navigation_token_ttl,
-              session_reference_token_ttl,
-            } = await this.generateTokens()
-            cookielessSession.cookielessApiToken = api_token
-            cookielessSession.cookielessApiTokenTtl = api_token_ttl
-            cookielessSession.cookielessNavigationToken = navigation_token
-            cookielessSession.cookielessNavigationTokenTtl =
-              navigation_token_ttl
-            cookielessSession.cookielessSessionReferenceTokenTtl =
-              session_reference_token_ttl
-          } else {
-            cookielessSession.cookielessInitialized = true
-          }
-          this._client.send('session:tokens', {
-            api_token: cookielessSession.cookielessApiToken,
-            api_token_ttl: cookielessSession.cookielessApiTokenTtl,
-            navigation_token: cookielessSession.cookielessNavigationToken,
-            navigation_token_ttl:
-              cookielessSession.cookielessNavigationTokenTtl,
-            session_reference_token_ttl:
-              cookielessSession.cookielessSessionReferenceTokenTtl,
-          })
+        // Make typescript happy. This should not happen
+        if (!cookielessSession || !this._client) {
+          throw new Error('Invalid state')
         }
+        let updateGenerateTokensTime =
+          cookielessSession.generateTokensTime === 0
+        if (!this._cookielessSessionExpired) {
+          if (this._cookielessInitialized) {
+            if (Date.now() > cookielessSession.generateTokensTime) {
+              updateGenerateTokensTime = true
+              try {
+                const {
+                  api_token,
+                  api_token_ttl,
+                  navigation_token,
+                  navigation_token_ttl,
+                  session_reference_token_ttl,
+                } = await this.generateTokens()
+                if (
+                  session_reference_token_ttl === 0 ||
+                  (api_token &&
+                    Number(api_token_ttl) > 0 &&
+                    navigation_token &&
+                    Number(navigation_token_ttl) > 0 &&
+                    typeof session_reference_token_ttl === 'number')
+                ) {
+                  // Valid looking tokens
+                  cookielessSession.cookielessApiToken = api_token
+                  cookielessSession.cookielessApiTokenTtl = api_token_ttl
+                  cookielessSession.cookielessNavigationToken = navigation_token
+                  cookielessSession.cookielessNavigationTokenTtl =
+                    navigation_token_ttl
+                  cookielessSession.cookielessSessionReferenceTokenTtl =
+                    session_reference_token_ttl
+                } else {
+                  // cookielessSessionReferenceTokenTtl of null means we did not
+                  // get valid tokens
+                  cookielessSession.cookielessSessionReferenceTokenTtl = null
+                }
+              } catch (error) {
+                // cookielessSessionReferenceTokenTtl of null means we did not
+                // get valid tokens
+                cookielessSession.cookielessSessionReferenceTokenTtl = null
+              }
+            }
+          } else {
+            // Perhaps mark as initialized. If cookielessSessionReferenceTokenTtl is
+            // not a mumber the acquire session failed.
+            this._cookielessInitialized =
+              !!cookielessSession.cookielessSessionReferenceTokenTtl
+          }
+        }
+
+        // We did not get valid tokens. Looker will display interrupted screen
+        if (
+          typeof cookielessSession.cookielessSessionReferenceTokenTtl !==
+          'number'
+        ) {
+          this._client.send('session:tokens', {
+            api_token: undefined,
+            api_token_ttl: undefined,
+            navigation_token: undefined,
+            navigation_token_ttl: undefined,
+            session_reference_token_ttl: undefined,
+          })
+          return
+        }
+
+        // Session has expired. Need to send valid tokens for backwards
+        // compatibility
+        if (cookielessSession.cookielessSessionReferenceTokenTtl === 0) {
+          this._client.send('session:tokens', {
+            api_token: 'session expired',
+            api_token_ttl: 240,
+            navigation_token: 'session expired',
+            navigation_token_ttl: 240,
+            session_reference_token_ttl: 0,
+          })
+          return
+        }
+
+        if (updateGenerateTokensTime) {
+          // At this point we have valid tokens. Use the same tokens until
+          // 2 minutes before expiry time. This prevents multiple IFRAMEs
+          // from hammering the generate token endpoint
+          if (cookielessSession.cookielessSessionReferenceTokenTtl === 0) {
+            this._cookielessSessionExpired = true
+            cookielessSession.generateTokensTime = 0
+          } else {
+            let newGenerateTokensTime = Date.now()
+            const {
+              cookielessSessionReferenceTokenTtl,
+              cookielessApiTokenTtl,
+              cookielessNavigationTokenTtl,
+            } = cookielessSession
+            const ttl = Math.min(
+              cookielessSessionReferenceTokenTtl,
+              Number(cookielessApiTokenTtl),
+              Number(cookielessNavigationTokenTtl)
+            )
+            if (ttl < 60) {
+              newGenerateTokensTime = Date.now()
+            } else if (ttl < 120) {
+              newGenerateTokensTime = Date.now() + 60 * 1000
+            } else {
+              newGenerateTokensTime = Date.now() + (ttl - 120) * 1000
+            }
+            cookielessSession.generateTokensTime = newGenerateTokensTime
+          }
+        }
+
+        // Send good tokens
+        this._client.send('session:tokens', {
+          api_token: cookielessSession.cookielessApiToken,
+          api_token_ttl: cookielessSession.cookielessApiTokenTtl,
+          navigation_token: cookielessSession.cookielessNavigationToken,
+          navigation_token_ttl: cookielessSession.cookielessNavigationTokenTtl,
+          session_reference_token_ttl:
+            cookielessSession.cookielessSessionReferenceTokenTtl,
+        })
+
+        // Clear the generateTokensPromise. All IFRAMEs will queue up
+        // on the same promise
+        this._sdk._generateTokensPromise = undefined
       })
     }
     for (const eventType in this._builder.handlers) {
@@ -321,12 +434,12 @@ export class EmbedClientEx implements IEmbedClient {
 
     const connectPromise = this._host.connect().then((host) => {
       this._client = new EmbedConnection(host, this)
-      if (this._sdk._acquireSessionPromiseResolver) {
-        // Resolve the session acquire promise now that the IFRAME
+      if (this._sdk._createEmbedSessionPromiseResolver) {
+        // Resolve the create session promise now that the IFRAME
         // has been loaded.
-        this._sdk._sessionAcquired = true
-        const resolver = this._sdk._acquireSessionPromiseResolver
-        this._sdk._acquireSessionPromiseResolver = undefined
+        this._sdk._sessionCreated = true
+        const resolver = this._sdk._createEmbedSessionPromiseResolver
+        this._sdk._createEmbedSessionPromiseResolver = undefined
         // An empty string is used because the same resolver is
         // used for cookieless which does return a url. Signed url
         // will use the bare url which is available to the promise
@@ -370,14 +483,14 @@ export class EmbedClientEx implements IEmbedClient {
     // If the session exists there is no need to go though
     // the signing process again so the naked url is used
     // (prepended by the host).
-    if (this._sdk._sessionAcquired) {
+    if (this._sdk._sessionCreated) {
       return Promise.resolve(this.prependApiHost(src))
     }
 
-    if (this._sdk._acquireSessionPromise) {
-      // Wait for the session to be acquired and then use
+    if (this._sdk._createEmbedSessionPromise) {
+      // Wait for the session to be created and then use
       // the naked url prepended by the host
-      await this._sdk._acquireSessionPromise
+      await this._sdk._createEmbedSessionPromise
       return Promise.resolve(this.prependApiHost(src))
     }
 
@@ -386,8 +499,8 @@ export class EmbedClientEx implements IEmbedClient {
     // has been created. The auth promise cannot be used as all
     // it does is create the embed login url. The session does
     // not exist until the IFRAME is loaded.
-    this._sdk._acquireSessionPromise = new Promise<string>((resolve) => {
-      this._sdk._acquireSessionPromiseResolver = resolve
+    this._sdk._createEmbedSessionPromise = new Promise<string>((resolve) => {
+      this._sdk._createEmbedSessionPromiseResolver = resolve
     })
 
     const auth = this._builder.auth
@@ -428,33 +541,42 @@ export class EmbedClientEx implements IEmbedClient {
   }
 
   private async acquireCookielessEmbedSession(): Promise<string> {
-    if (this._sdk._sessionAcquired) {
+    if (this._sdk._sessionCreated) {
       if (this._sdk._cookielessSession?.cookielessNavigationToken) {
         return this.getCookielessEmbedUrl()
       }
       return this.acquireCookielessEmbedSessionInternal()
     }
-    if (this._sdk._acquireSessionPromise) {
-      await this._sdk._acquireSessionPromise
+    if (this._sdk._createEmbedSessionPromise) {
+      await this._sdk._createEmbedSessionPromise
       if (this._sdk._cookielessSession?.cookielessNavigationToken) {
         return this.getCookielessEmbedUrl()
       }
       return this.acquireCookielessEmbedSessionInternal()
     }
-    this._sdk._acquireSessionPromise =
-      this.acquireCookielessEmbedSessionInternal()
-    return this._sdk._acquireSessionPromise
+
+    // Create the session acquire promise and make the resolve
+    // available. The promise will be resolved once the IFRAME
+    // has been created. The auth promise cannot be used as all
+    // it does is create the embed login url. The session does
+    // not exist until the IFRAME is loaded.
+    this._sdk._createEmbedSessionPromise = new Promise<string>((resolve) => {
+      this._sdk._createEmbedSessionPromiseResolver = resolve
+    })
+
+    return this.acquireCookielessEmbedSessionInternal()
       .then((url) => {
-        this._sdk._sessionAcquired = true
+        this._sdk._sessionCreated = true
         return url
       })
       .catch((error) => {
-        this._sdk._acquireSessionPromise = undefined
+        this._sdk._createEmbedSessionPromise = undefined
         throw error
       })
   }
 
   private async acquireCookielessEmbedSessionInternal(): Promise<string> {
+    const tokens = await this.acquireSession()
     const {
       authentication_token,
       api_token,
@@ -462,8 +584,15 @@ export class EmbedClientEx implements IEmbedClient {
       navigation_token,
       navigation_token_ttl,
       session_reference_token_ttl,
-    } = await this.acquireSession()
-    if (!authentication_token || !navigation_token || !api_token) {
+    } = tokens
+    if (
+      !authentication_token ||
+      !navigation_token ||
+      typeof navigation_token_ttl !== 'number' ||
+      !api_token ||
+      typeof api_token_ttl !== 'number' ||
+      typeof session_reference_token_ttl !== 'number'
+    ) {
       throw new Error('failed to prepare cookieless embed session')
     }
     if (this._sdk._cookielessSession) {
@@ -515,60 +644,70 @@ export class EmbedClientEx implements IEmbedClient {
     }
   }
 
-  private async generateTokens(): Promise<LookerEmbedCookielessSessionData> {
-    if (this._sdk._cookielessSession) {
-      const {
-        cookielessApiToken,
-        cookielessApiTokenTtl,
-        cookielessNavigationToken,
-        cookielessNavigationTokenTtl,
-        cookielessSessionReferenceTokenTtl,
-      } = this._sdk._cookielessSession
-      const { generateTokens } = this._builder
-      if (typeof generateTokens === 'function') {
-        return await generateTokens({
-          api_token: cookielessApiToken,
-          api_token_ttl: cookielessApiTokenTtl,
-          navigation_token: cookielessNavigationToken,
-          navigation_token_ttl: cookielessNavigationTokenTtl,
-          session_reference_token_ttl: cookielessSessionReferenceTokenTtl,
-        })
-      }
-      try {
-        const { url, init: defaultInit } = this.getResource(generateTokens!)
-
-        const init = defaultInit
-          ? {
-              headers: {
-                'content-type': 'application/json',
-              },
-              method: 'PUT',
-              ...defaultInit,
-              body: JSON.stringify({
-                api_token: cookielessApiToken,
-                navigation_token: cookielessNavigationToken,
-              }),
-            }
-          : {
-              body: JSON.stringify({
-                api_token: cookielessApiToken,
-                navigation_token: cookielessNavigationToken,
-              }),
-              headers: {
-                'content-type': 'application/json',
-              },
-              method: 'PUT',
-            }
-        const resp = await fetch(url, init)
-        if (resp.ok) {
-          return (await resp.json()) as LookerEmbedCookielessSessionData
-        }
-      } catch (error: any) {
-        console.error(error)
-      }
+  private generateTokens(): Promise<LookerEmbedCookielessSessionData> {
+    if (this._sdk._generateTokensPromise) {
+      return this._sdk._generateTokensPromise
     }
+    if (!this._sdk._cookielessSession) {
+      // This should never happen. Added to make typescript happy
+      throw new Error(
+        'Invalid state. generateTokens called but cookielessSession not present'
+      )
+    }
+    const {
+      cookielessApiToken,
+      cookielessApiTokenTtl,
+      cookielessNavigationToken,
+      cookielessNavigationTokenTtl,
+      cookielessSessionReferenceTokenTtl,
+    } = this._sdk._cookielessSession
+    const { generateTokens } = this._builder
+    if (typeof generateTokens === 'function') {
+      this._sdk._generateTokensPromise = generateTokens({
+        api_token: cookielessApiToken,
+        api_token_ttl: cookielessApiTokenTtl,
+        navigation_token: cookielessNavigationToken,
+        navigation_token_ttl: cookielessNavigationTokenTtl,
+        session_reference_token_ttl: cookielessSessionReferenceTokenTtl,
+      })
+      return this._sdk._generateTokensPromise
+    }
+    const { url, init: defaultInit } = this.getResource(
+      generateTokens as string | CookielessRequestInit
+    )
 
-    return { session_reference_token_ttl: 0 }
+    const init = defaultInit
+      ? {
+          headers: {
+            'content-type': 'application/json',
+          },
+          method: 'PUT',
+          ...defaultInit,
+          body: JSON.stringify({
+            api_token: cookielessApiToken,
+            navigation_token: cookielessNavigationToken,
+          }),
+        }
+      : {
+          body: JSON.stringify({
+            api_token: cookielessApiToken,
+            navigation_token: cookielessNavigationToken,
+          }),
+          headers: {
+            'content-type': 'application/json',
+          },
+          method: 'PUT',
+        }
+
+    this._sdk._generateTokensPromise = fetch(url, init).then((resp) => {
+      if (resp.ok) {
+        return resp.json()
+      } else {
+        throw new Error('Failed to generate tokens')
+      }
+    })
+
+    return this._sdk._generateTokensPromise
   }
 
   private getResource(resource: string | CookielessRequestInit) {
