@@ -648,6 +648,11 @@ export interface LookerEmbedEventMap {
     this: LookerEmbedBase,
     event: EnvClientDialogEvent
   ) => void
+  /**
+   * Session expired event.
+   * Looker 25.2+
+   */
+  'session:expired': (this: LookerEmbedBase) => void
 
   [key: string]: any
 }

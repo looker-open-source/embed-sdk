@@ -443,6 +443,8 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     // Listen to messages that change Look
     .on('look:save:complete', () => updateStatus('Saved'))
     .on('look:delete:complete', () => updateStatus('Deleted'))
+    // Session expired
+    .on('session:expired', () => updateStatus('Session Expired'))
     // Give the embedded content a class for styling purposes
     .withClassName('looker-embed')
     // Set the initial filters
