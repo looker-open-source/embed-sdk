@@ -248,6 +248,36 @@ export interface ILookerConnection {
 }
 
 /**
+ * Convenience type to aid migration from Looker 1.8.x to 2.0.0.
+ * In 1.8 this is a class that is treated as a type.
+ *
+ * @deprecated use ILookerConnection
+ */
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface LookerEmbedDashboard extends ILookerConnection {}
+
+/**
+ * Convenience type to aid migration from Looker 1.8.x to 2.0.0.
+ * In 1.8 this is a class that is treated as a type.
+ *
+ * @deprecated use ILookerConnection
+ */
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface LookerEmbedExplore extends ILookerConnection {}
+
+/**
+ * Convenience type to aid migration from Looker 1.8.x to 2.0.0.
+ * In 1.8 this is a class that is treated as a type.
+ *
+ * @deprecated use ILookerConnection
+ */
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface LookerEmbedLook extends ILookerConnection {}
+
+/**
  * Client that communicates with an embedded Looker dashboard. Messages are documented
  * [here](https://docs.looker.com/r/sdk/events)
  */
