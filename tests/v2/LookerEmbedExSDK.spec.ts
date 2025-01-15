@@ -160,7 +160,7 @@ describe('LookerEmbedExSDK', () => {
     const sdk = new LookerEmbedExSDK()
     sdk.init('myhost.com', '/auth')
     const builder = sdk.preload() as EmbedBuilderEx
-    expect(builder.type).toBe('')
+    expect(builder.type).toBe('preload')
     expect(builder.endpoint).toBe('')
     expect(builder.embedUrl).toBe('/embed/preload/')
     expect(builder.acquireSession).toBe('')
@@ -176,7 +176,7 @@ describe('LookerEmbedExSDK', () => {
     const builder = sdk.createDashboardWithUrl(
       '/embed/dashboards/42?state=california'
     ) as EmbedBuilderEx
-    expect(builder.type).toBe('dashboard')
+    expect(builder.type).toBe('dashboards')
     expect(builder.endpoint).toBe('')
     expect(builder.embedUrl).toBe('/embed/dashboards/42?state=california')
   })
@@ -185,7 +185,7 @@ describe('LookerEmbedExSDK', () => {
     const sdk = new LookerEmbedExSDK()
     sdk.init('myhost.com', '/auth')
     const builder = sdk.createDashboardWithId('42') as EmbedBuilderEx
-    expect(builder.type).toBe('dashboard')
+    expect(builder.type).toBe('dashboards')
     expect(builder.endpoint).toBe('/embed/dashboards')
     expect(builder.id).toBe('42')
     expect(builder.embedUrl).toBe('/embed/dashboards/42')
@@ -230,7 +230,7 @@ describe('LookerEmbedExSDK', () => {
     const builder = sdk.createLookWithUrl(
       '/embed/looks/42?state=california'
     ) as EmbedBuilderEx
-    expect(builder.type).toBe('look')
+    expect(builder.type).toBe('looks')
     expect(builder.endpoint).toBe('')
     expect(builder.embedUrl).toBe('/embed/looks/42?state=california')
   })
@@ -239,7 +239,7 @@ describe('LookerEmbedExSDK', () => {
     const sdk = new LookerEmbedExSDK()
     sdk.init('myhost.com', '/auth')
     const builder = sdk.createLookWithId('42') as EmbedBuilderEx
-    expect(builder.type).toBe('look')
+    expect(builder.type).toBe('looks')
     expect(builder.endpoint).toBe('/embed/looks')
     expect(builder.id).toBe('42')
     expect(builder.embedUrl).toBe('/embed/looks/42')
@@ -251,7 +251,7 @@ describe('LookerEmbedExSDK', () => {
     const builder = sdk.createExtensionWithUrl(
       '/embed/extensions/myproj::myext/?state=california'
     ) as EmbedBuilderEx
-    expect(builder.type).toBe('extension')
+    expect(builder.type).toBe('extensions')
     expect(builder.endpoint).toBe('')
     expect(builder.embedUrl).toBe(
       '/embed/extensions/myproj::myext/?state=california'
@@ -262,7 +262,7 @@ describe('LookerEmbedExSDK', () => {
     const sdk = new LookerEmbedExSDK()
     sdk.init('myhost.com', '/auth')
     const builder = sdk.createExtensionWithId('myproj::myext') as EmbedBuilderEx
-    expect(builder.type).toBe('extension')
+    expect(builder.type).toBe('extensions')
     expect(builder.endpoint).toBe('/embed/extensions')
     expect(builder.id).toBe('myproj::myext')
     expect(builder.embedUrl).toBe('/embed/extensions/myproj::myext')

@@ -34,12 +34,18 @@ import type {
   LookerEmbedFilterParams,
 } from 'src/types'
 
-export type ObjectType = 'dashboards' | 'explore' | 'looks' | 'extensions'
-
-export type PageType = ObjectType | 'preload' | 'unknown'
+export type PageType =
+  | 'dashboards'
+  | 'explore'
+  | 'looks'
+  | 'extensions'
+  | 'query-visualization'
+  | 'reports'
+  | 'preload'
+  | 'unknown'
 
 export type LoadIdParams = {
-  type: ObjectType
+  type: PageType
   id: string
   pushHistory?: boolean
   waitUntilLoaded?: boolean
@@ -77,6 +83,17 @@ export interface ILookerConnection {
   sendAndReceive(message: string, params?: any): Promise<any>
 
   /**
+   * Returns a decimal representation of the major and minor version of the Looker instance
+   * that has been embedded. The patch version is ignored.
+   *
+   * The value returned is -1 for Looker versions < 25.2.
+   *
+   * The value returned for 25.2.45 is 25.2
+   */
+
+  getLookerVersion(): number
+
+  /**
    * @hidden
    */
 
@@ -84,36 +101,72 @@ export interface ILookerConnection {
 
   /**
    * Load Looker object using a URL. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
    */
 
   loadUrl(params: LoadUrlParams): Promise<void>
 
   /**
    * Load Looker dashboard. This does not recreate the IFRAME.
+   *
+   * For Looker 25.2 or greater it fires the new page:load event.
+   * For Looker < 25.2 it fires the legacy dashboard:load event.
    */
 
-  loadDashboard2(id: string, pushHistory?: boolean): Promise<void>
+  loadDashboard(id: string, pushHistory?: boolean): Promise<void>
 
   /**
    * Load Looker explore. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
    */
 
   loadExplore(id: string, pushHistory?: boolean): Promise<void>
 
   /**
    * Load Looker look. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
    */
 
   loadLook(id: string, pushHistory?: boolean): Promise<void>
 
   /**
    * Load Looker extension. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
    */
 
   loadExtension(id: string, pushHistory?: boolean): Promise<void>
 
   /**
+   * Load Looker query visualization. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadQueryVisualization(id: string, pushHistory?: boolean): Promise<void>
+
+  /**
+   * Load Looker report. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadReport(id: string, pushHistory?: boolean): Promise<void>
+
+  /**
    * Render the preload page. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
    */
 
   preload(): Promise<void>
@@ -188,15 +241,6 @@ export interface ILookerConnection {
    */
 
   openScheduleDialog(): Promise<void>
-
-  /**
-   * This fires the legacy loadDashboard method which is only available
-   * when a dashboard is currently loaded.
-   *
-   * @deprecated use.loadDashboard(id) instead unless Looker version < 25.0
-   */
-
-  loadDashboard(id: string, pushHistory: boolean): Promise<void>
 }
 
 /**
@@ -296,9 +340,11 @@ export interface ILookerEmbedLook {
   updateFilters(params: LookerEmbedFilterParams): void
 }
 
-export type ILookerEmbedVisualization = ILookerConnection
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ILookerEmbedQueryVisualization {}
 
-export type ILookerEmbedReport = ILookerConnection
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ILookerEmbedReport {}
 
 export interface IEmbedClient {
   connect(waitUntilLoaded?: boolean): Promise<ILookerConnection>
@@ -525,7 +571,7 @@ export interface ILookerEmbedSDK {
   createLookWithUrl(url: string): IEmbedBuilder
 
   /**
-   * Create an EmbedBuilder for an embedded Looker dashboard.
+   * Create an EmbedBuilder for an embedded Looker look.
    *
    * @param id The ID of a Looker Look
    */
@@ -547,4 +593,36 @@ export interface ILookerEmbedSDK {
    */
 
   createExtensionWithId(id: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker query visualization.
+   *
+   * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   */
+
+  createQueryVisualizationWithUrl(url: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker  query visualization.
+   *
+   * @param id The ID of a Looker query visualization
+   */
+
+  createQueryVisualizationWithId(id: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker re[prt].
+   *
+   * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   */
+
+  createReportWithUrl(url: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker report.
+   *
+   * @param id The ID of a Looker report
+   */
+
+  createReportWithId(id: string): IEmbedBuilder
 }

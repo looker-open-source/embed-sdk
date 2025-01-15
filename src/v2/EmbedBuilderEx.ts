@@ -33,7 +33,7 @@ import type {
 import { stringify, escapeFilterParam } from '../utils'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedClientEx } from './EmbedClientEx'
-import type { IEmbedBuilder, IEmbedClient } from './types'
+import type { IEmbedBuilder, IEmbedClient, PageType } from './types'
 
 export class EmbedBuilderEx implements IEmbedBuilder {
   private _handlers: CallbackStore = {}
@@ -53,7 +53,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
 
   constructor(
     private _sdk: LookerEmbedExSDK,
-    private _type: string,
+    private _type: PageType,
     private _endpoint: string
   ) {}
 
@@ -63,8 +63,8 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   }
 
   withId(id: number | string): IEmbedBuilder {
-    if (this.type === '' || this.endpoint === '') {
-      throw new Error('withId requires initialization of type and endpoint')
+    if (this.endpoint === '') {
+      throw new Error('withId requires initialization of endpoint')
     }
     this._id = id
     return this
@@ -81,7 +81,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
     filters: LookerEmbedFilterParams,
     escape: boolean | undefined = false
   ): IEmbedBuilder {
-    if (this.type === 'dashboard') {
+    if (this.type === 'dashboards') {
       for (const key in filters) {
         this._params[key] = escape
           ? escapeFilterParam(filters[key])

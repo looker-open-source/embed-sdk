@@ -59,7 +59,12 @@ const embedConnected = (connection: ILookerConnection) => {
  */
 const updateContentControls = (type = 'preload') => {
   currentPageType = type
-  if (type === 'preload' || type === 'extensions') {
+  if (
+    type === 'preload' ||
+    type === 'extensions' ||
+    type === 'query-visualization' ||
+    type === 'reports'
+  ) {
     document.getElementById('content-controls')?.classList.add('invisible')
   } else {
     document.getElementById('content-controls')?.classList.remove('invisible')
@@ -206,6 +211,16 @@ const setActiveTab = (e: HTMLElement) => {
 }
 
 /**
+ * Set a tab active
+ */
+const hideTab = (id: string) => {
+  const e = document.getElementById(id)
+  if (e) {
+    e.classList.add('collapse')
+  }
+}
+
+/**
  * Add a listener for a tab. The load function controls what
  * data will be displayed when the tab is clicked.
  */
@@ -238,7 +253,8 @@ const loadDashboard1 = () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.dashboardId) {
-      embedConnection.loadDashboard2(config.dashboardId)
+      // loadDashboard falls back to legacy "dashboard:load" embed action
+      embedConnection.loadDashboard(config.dashboardId)
     }
   }
 }
@@ -250,7 +266,8 @@ const loadDashboard2 = () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.dashboardId2) {
-      embedConnection.loadDashboard2(config.dashboardId2)
+      // loadDashboard falls back to legacy "dashboard:load" embed action
+      embedConnection.loadDashboard(config.dashboardId2)
     }
   }
 }
@@ -258,11 +275,17 @@ const loadDashboard2 = () => {
 /**
  * Load explore tab function
  */
-const loadExplore = () => {
+const loadExplore = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.exploreId) {
-      embedConnection.loadExplore(config.exploreId)
+      try {
+        await embedConnection.loadExplore(config.exploreId)
+      } catch (error) {
+        updateStatus(
+          'Connection loadExplore functionality requires Looker version >= 25.2.0'
+        )
+      }
     }
   }
 }
@@ -270,11 +293,17 @@ const loadExplore = () => {
 /**
  * Load look tab function
  */
-const loadLook = () => {
+const loadLook = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.lookId) {
-      embedConnection.loadLook(config.lookId)
+      try {
+        await embedConnection.loadLook(config.lookId)
+      } catch (error) {
+        updateStatus(
+          'Connection loadLook functionality requires Looker version >= 25.2.0'
+        )
+      }
     }
   }
 }
@@ -282,11 +311,55 @@ const loadLook = () => {
 /**
  * Load extension tab function
  */
-const loadExtension = () => {
+const loadExtension = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.extensionId) {
-      embedConnection.loadExtension(config.extensionId)
+      try {
+        await embedConnection.loadExtension(config.extensionId)
+      } catch (error) {
+        updateStatus(
+          'Connection loadExtension functionality requires requires Looker version >= 25.2.0'
+        )
+      }
+    }
+  }
+}
+
+/**
+ * Load query visualization tab function
+ */
+const loadQueryVisualization = async () => {
+  if (embedConnection) {
+    const config = getConfiguration()
+    if (config.queryVisualizationId) {
+      try {
+        await embedConnection.loadQueryVisualization(
+          config.queryVisualizationId
+        )
+      } catch (error) {
+        updateStatus(
+          'Connection loadQueryVisualization functionality requires Looker version >= 25.2.0'
+        )
+      }
+    }
+  }
+}
+
+/**
+ * Load query visualization tab function
+ */
+const loadReport = async () => {
+  if (embedConnection) {
+    const config = getConfiguration()
+    if (config.reportId) {
+      try {
+        await embedConnection.loadReport(config.reportId)
+      } catch (error) {
+        updateStatus(
+          'Connection loadReport functionality requires Looker version >= 25.2.0'
+        )
+      }
     }
   }
 }
@@ -296,11 +369,42 @@ const loadExtension = () => {
  */
 const initializeTabs = () => {
   addTabListener('preload-tab', preload)
-  addTabListener('dashboard-1-tab', loadDashboard1)
-  addTabListener('dashboard-2-tab', loadDashboard2)
-  addTabListener('explore-tab', loadExplore)
-  addTabListener('look-tab', loadLook)
-  addTabListener('extension-tab', loadExtension)
+  const config = getConfiguration()
+  if (config.dashboardId) {
+    addTabListener('dashboard-1-tab', loadDashboard1)
+  } else {
+    hideTab('dashboard-1-tab')
+  }
+  if (config.dashboardId2) {
+    addTabListener('dashboard-2-tab', loadDashboard2)
+  } else {
+    hideTab('dashboard-2-tab')
+  }
+  if (config.exploreId) {
+    addTabListener('explore-tab', loadExplore)
+  } else {
+    hideTab('explore-tab')
+  }
+  if (config.lookId) {
+    addTabListener('look-tab', loadLook)
+  } else {
+    hideTab('look-tab')
+  }
+  if (config.extensionId) {
+    addTabListener('extension-tab', loadExtension)
+  } else {
+    hideTab('extension-tab')
+  }
+  if (config.queryVisualizationId) {
+    addTabListener('query-visualization-tab', loadQueryVisualization)
+  } else {
+    hideTab('query-visualization-tab')
+  }
+  if (config.reportId) {
+    addTabListener('report-tab', loadReport)
+  } else {
+    hideTab('report-tab')
+  }
 }
 
 /**

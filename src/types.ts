@@ -459,6 +459,7 @@ export interface PageChangedEventDetail extends EventDetail {
   type: string
   url: string
   absoluteUrl: string
+  lookerVersion?: string
 }
 
 /**

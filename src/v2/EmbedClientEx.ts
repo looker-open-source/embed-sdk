@@ -32,19 +32,11 @@ import type {
   PagePropertiesChangedEvent,
   SessionStatus,
 } from '../types'
-import { IS_URL } from '../utils'
+import { IS_URL, extractPageTypeFromUrl } from '../utils'
 import type { EmbedBuilderEx } from './EmbedBuilderEx'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedConnection } from './EmbedConnection'
 import type { IEmbedClient, ILookerConnection, PageType } from './types'
-
-const validPageTypes = [
-  'dashboards',
-  'explore',
-  'looks',
-  'extensions',
-  'preload',
-]
 
 export class EmbedClientEx implements IEmbedClient {
   _hostBuilder?: ChattyHostBuilder
@@ -56,6 +48,7 @@ export class EmbedClientEx implements IEmbedClient {
     value: EmbedConnection | PromiseLike<EmbedConnection>
   ) => void
 
+  _lookerVersion?: number
   _cookielessInitialized = false
   _cookielessSessionExpired = false
 
@@ -95,6 +88,14 @@ export class EmbedClientEx implements IEmbedClient {
     }
     const apiHost = this._builder.apiHost
     return IS_URL.test(apiHost) ? apiHost : `https://${apiHost}`
+  }
+
+  /**
+   * Indicates in the page:load event is supported by the version of Looker being embedded
+   */
+
+  get isPageLoadEventSupported() {
+    return this._lookerVersion !== undefined && this._lookerVersion >= 25.1
   }
 
   /**
@@ -207,6 +208,7 @@ export class EmbedClientEx implements IEmbedClient {
         resolve(this._client as EmbedConnection)
       }
       this.identifyPageType(event)
+      this.parseLookerVersion(event?.page?.lookerVersion)
     })
     if (!this._builder.handlers['dashboard:edit:start']) {
       this._builder.handlers['dashboard:edit:start'] = []
@@ -724,12 +726,20 @@ export class EmbedClientEx implements IEmbedClient {
   }
 
   private identifyPageType(event: PageChangedEvent) {
-    const url = event?.page?.url || ''
-    const pageType = url.split('?')[0]?.split('/')[2]
     if (this._connection) {
-      this._connection._pageType = validPageTypes.includes(pageType)
-        ? (pageType as PageType)
-        : 'unknown'
+      this._connection._pageType = extractPageTypeFromUrl(
+        event?.page?.url || ''
+      )
+    }
+  }
+
+  private parseLookerVersion(lookerVersion?: string) {
+    if (lookerVersion && typeof this._lookerVersion !== 'number') {
+      const [majorVersionString, minorVersionString] = lookerVersion.split('.')
+      const version = parseFloat(`${majorVersionString}.${minorVersionString}`)
+      if (!Number.isNaN(version)) {
+        this._lookerVersion = version
+      }
     }
   }
 }

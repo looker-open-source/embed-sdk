@@ -24,6 +24,7 @@
 
  */
 import type { UrlParams } from './embed_builder'
+import type { PageType } from './v2/types'
 
 export function stringify(params: UrlParams) {
   const result: string[] = []
@@ -74,4 +75,19 @@ export function santizeEmbedUrl(embedUrl: string) {
     urlString = `/embed${urlString}`
   }
   return urlString
+}
+
+const validPageTypes = [
+  'dashboards',
+  'explore',
+  'looks',
+  'extensions',
+  'preload',
+  'query-visualization',
+  'reports',
+]
+
+export function extractPageTypeFromUrl(url: string): PageType {
+  const pageType = url.split('?')[0]?.split('/')[2]
+  return validPageTypes.includes(pageType) ? (pageType as PageType) : 'unknown'
 }

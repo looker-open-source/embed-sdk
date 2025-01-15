@@ -33,6 +33,8 @@ import type {
   ILookerEmbedExplore,
   ILookerEmbedExtension,
   ILookerEmbedLook,
+  ILookerEmbedQueryVisualization,
+  ILookerEmbedReport,
   LoadIdParams,
   LoadUrlParams,
   PageType,
@@ -40,6 +42,8 @@ import type {
 import { ExploreConnection } from './ExploreConnection'
 import { ExtensionConnection } from './ExtensionConnection'
 import { LookConnection } from './LookConnection'
+import { QueryVisualizationConnection } from './QueryVisualizationConnection'
+import { ReportConnection } from './ReportConnection'
 import type { EmbedClientEx } from './EmbedClientEx'
 
 export class EmbedConnection implements ILookerConnection {
@@ -51,28 +55,19 @@ export class EmbedConnection implements ILookerConnection {
     private _embedClient: EmbedClientEx
   ) {}
 
-  /**
-   * Send a message to the embedded content.
-   *
-   * @param message String message identifier.
-   * @param params Additional parameters to be sent to the client. After transmission ownership
-   * of the parameters is transferred to the embedded Explore.
-   */
-
   send(message: string, params?: any) {
     this._host.send(message, params)
   }
 
-  /**
-   * Send a message to the embedded content and resolve with a response
-   *
-   * @param message String message identifier.
-   * @param params Additional parameters to be sent to the client. After transmission ownership
-   * of the parameters is transferred to the embedded Explore.
-   */
-
   async sendAndReceive(message: string, params?: any) {
     return this._host.sendAndReceive(message, params)
+  }
+
+  getLookerVersion() {
+    if (this._embedClient._lookerVersion === undefined) {
+      return -1
+    }
+    return this._embedClient._lookerVersion
   }
 
   async loadUrl({
@@ -80,6 +75,11 @@ export class EmbedConnection implements ILookerConnection {
     pushHistory = false,
     waitUntilLoaded = true,
   }: LoadUrlParams): Promise<void> {
+    if (!this._embedClient.isPageLoadEventSupported) {
+      throw new Error(
+        "The 'page:load' event requires Looker version 25.2.0 or greater"
+      )
+    }
     switch (this._pageType) {
       case 'dashboards':
         this.asDashboardConnection().stop()
@@ -111,12 +111,26 @@ export class EmbedConnection implements ILookerConnection {
     })
   }
 
-  async loadDashboard2(
+  async loadDashboard(
     id: string,
     pushHistory?: boolean,
     waitUntilLoaded?: boolean
   ) {
-    return this.loadId({ id, pushHistory, type: 'dashboards', waitUntilLoaded })
+    if (this._embedClient.isPageLoadEventSupported) {
+      return this.loadId({
+        id,
+        pushHistory,
+        type: 'dashboards',
+        waitUntilLoaded,
+      })
+    }
+    switch (this._pageType) {
+      case 'dashboards':
+        return this.sendAndReceive('dashboard:load', {
+          id,
+          pushHistory: pushHistory || false,
+        })
+    }
   }
 
   async loadExplore(
@@ -145,6 +159,32 @@ export class EmbedConnection implements ILookerConnection {
     return this.loadId({ id, pushHistory, type: 'extensions', waitUntilLoaded })
   }
 
+  async loadQueryVisualization(
+    id: string,
+    pushHistory?: boolean,
+    waitUntilLoaded?: boolean
+  ) {
+    return this.loadId({
+      id,
+      pushHistory,
+      type: 'query-visualization',
+      waitUntilLoaded,
+    })
+  }
+
+  async loadReport(
+    id: string,
+    pushHistory?: boolean,
+    waitUntilLoaded?: boolean
+  ) {
+    return this.loadId({
+      id,
+      pushHistory,
+      type: 'reports',
+      waitUntilLoaded,
+    })
+  }
+
   async preload(pushHistory?: boolean, waitUntilLoaded?: boolean) {
     return this.loadUrl({ pushHistory, url: '/embed/preload', waitUntilLoaded })
   }
@@ -163,6 +203,14 @@ export class EmbedConnection implements ILookerConnection {
 
   asLookConnection(): ILookerEmbedLook {
     return new LookConnection(this)
+  }
+
+  asQueryVisualizationConnection(): ILookerEmbedQueryVisualization {
+    return new QueryVisualizationConnection(this)
+  }
+
+  asReportConnection(): ILookerEmbedReport {
+    return new ReportConnection(this)
   }
 
   getPageType() {
@@ -255,18 +303,6 @@ export class EmbedConnection implements ILookerConnection {
     switch (this._pageType) {
       case 'dashboards':
         return this.asDashboardConnection().openScheduleDialog()
-    }
-  }
-
-  /**
-   * @deprecated use.loadDashboard(id) instead unless Looker version < 25.0
-   *
-   */
-
-  async loadDashboard(id: string, pushHistory = false): Promise<void> {
-    switch (this._pageType) {
-      case 'dashboards':
-        return this.sendAndReceive('dashboard:load', { id, pushHistory })
     }
   }
 }

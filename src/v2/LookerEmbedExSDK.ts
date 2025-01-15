@@ -25,7 +25,11 @@
  */
 import type { ChattyHostBuilder } from '@looker/chatty'
 import { Chatty } from '@looker/chatty'
-import { sanitizeHostUrl, santizeEmbedUrl } from '../utils'
+import {
+  extractPageTypeFromUrl,
+  sanitizeHostUrl,
+  santizeEmbedUrl,
+} from '../utils'
 import type {
   CookielessCallback,
   GenerateTokensCallback,
@@ -152,17 +156,19 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createWithUrl(url: string): IEmbedBuilder {
-    return new EmbedBuilderEx(this, '', '').withUrl(santizeEmbedUrl(url))
+    return new EmbedBuilderEx(this, extractPageTypeFromUrl(url), '').withUrl(
+      santizeEmbedUrl(url)
+    )
   }
 
   createDashboardWithUrl(url: string): IEmbedBuilder {
-    return new EmbedBuilderEx(this, 'dashboard', '').withUrl(
+    return new EmbedBuilderEx(this, 'dashboards', '').withUrl(
       santizeEmbedUrl(url)
     )
   }
 
   createDashboardWithId(id: string | number) {
-    return new EmbedBuilderEx(this, 'dashboard', '/embed/dashboards').withId(
+    return new EmbedBuilderEx(this, 'dashboards', '/embed/dashboards').withId(
       String(id)
     )
   }
@@ -177,21 +183,45 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createLookWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'look', '').withUrl(santizeEmbedUrl(url))
+    return new EmbedBuilderEx(this, 'looks', '').withUrl(santizeEmbedUrl(url))
   }
 
   createLookWithId(id: number | string) {
-    return new EmbedBuilderEx(this, 'look', '/embed/looks').withId(String(id))
+    return new EmbedBuilderEx(this, 'looks', '/embed/looks').withId(String(id))
   }
 
   createExtensionWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'extension', '').withUrl(
+    return new EmbedBuilderEx(this, 'extensions', '').withUrl(
       santizeEmbedUrl(url)
     )
   }
 
   createExtensionWithId(id: string) {
-    return new EmbedBuilderEx(this, 'extension', '/embed/extensions').withId(id)
+    return new EmbedBuilderEx(this, 'extensions', '/embed/extensions').withId(
+      id
+    )
+  }
+
+  createQueryVisualizationWithUrl(url: string) {
+    return new EmbedBuilderEx(this, 'query-visualization', '').withUrl(
+      santizeEmbedUrl(url)
+    )
+  }
+
+  createQueryVisualizationWithId(id: string) {
+    return new EmbedBuilderEx(
+      this,
+      'query-visualization',
+      '/embed/query-visualization'
+    ).withId(id)
+  }
+
+  createReportWithUrl(url: string) {
+    return new EmbedBuilderEx(this, 'reports', '').withUrl(santizeEmbedUrl(url))
+  }
+
+  createReportWithId(id: string) {
+    return new EmbedBuilderEx(this, 'reports', '/embed/reports').withId(id)
   }
 
   /**

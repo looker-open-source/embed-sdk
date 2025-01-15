@@ -77,7 +77,19 @@ describe('EmbedConnection', () => {
         .build()
         .connect() as Promise<EmbedConnection>
     }
-    return sdk.preload().build().connect() as Promise<EmbedConnection>
+    return sdk
+      .preload()
+      .build()
+      .connect()
+      .then((connection) => {
+        mockHostBuilder.fireEventForHandler('page:changed', {
+          page: {
+            lookerVersion: '25.1.0',
+            url: '/embed/preload?embed_domain=http://localhost:9876&sdk=3',
+          },
+        })
+        return connection
+      }) as Promise<EmbedConnection>
   }
 
   beforeEach(() => {
@@ -97,7 +109,13 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     ).and.callThrough()
-    await connection.loadDashboard2('42', false, false)
+    await connection.loadDashboard('42', false, false)
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        lookerVersion: '25.1.0',
+        url: '/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3',
+      },
+    })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3',
@@ -110,8 +128,13 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     ).and.callThrough()
-    const loadPromise = connection.loadDashboard2('42')
-    mockHostBuilder.fireEventForHandler('page:changed', {})
+    const loadPromise = connection.loadDashboard('42')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        lookerVersion: '25.1.0',
+        url: '/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3',
+      },
+    })
     await loadPromise
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
@@ -279,9 +302,10 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'send'
     ).and.callThrough()
-    let loadPromise = connection.loadDashboard2('42')
+    let loadPromise = connection.loadDashboard('42')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
+        lookerVersion: '25.1.0',
         url: '/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3',
       },
     })
@@ -290,9 +314,10 @@ describe('EmbedConnection', () => {
       pushHistory: false,
       url: '/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3',
     })
-    loadPromise = connection.loadDashboard2('43')
+    loadPromise = connection.loadDashboard('43')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
+        lookerVersion: '25.1.0',
         url: '/embed/dashboards/43?embed_domain=http://localhost:9876&sdk=3',
       },
     })
@@ -302,9 +327,10 @@ describe('EmbedConnection', () => {
 
   it('updates the isEditing indicator for dashboards', async () => {
     const connection = await getConnection()
-    const loadPromise = connection.loadDashboard2('42')
+    const loadPromise = connection.loadDashboard('42')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
+        lookerVersion: '25.1.0',
         url: '/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3',
       },
     })
