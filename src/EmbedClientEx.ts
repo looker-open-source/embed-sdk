@@ -31,12 +31,13 @@ import type {
   PageChangedEvent,
   PagePropertiesChangedEvent,
   SessionStatus,
-} from '../types'
-import { IS_URL, extractPageTypeFromUrl } from '../utils'
+  IEmbedClient,
+  ILookerConnection,
+} from './types'
+import { IS_URL, extractPageTypeFromUrl } from './utils'
 import type { EmbedBuilderEx } from './EmbedBuilderEx'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedConnection } from './EmbedConnection'
-import type { IEmbedClient, ILookerConnection, PageType } from './types'
 
 export class EmbedClientEx implements IEmbedClient {
   _hostBuilder?: ChattyHostBuilder

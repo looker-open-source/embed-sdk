@@ -23,7 +23,7 @@
  SOFTWARE.
 
  */
-import type { PageType, UrlParams } from './v2/types'
+import type { PageType, UrlParams } from './types'
 
 export function stringify(params: UrlParams) {
   const result: string[] = []

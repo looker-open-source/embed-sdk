@@ -24,12 +24,12 @@
 
  */
 
-import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
+import type { EmbedBuilderEx } from '../src/EmbedBuilderEx'
 import {
   LookerEmbedExSDK,
   getEmbedSDK,
   createChattyBuilder,
-} from '../../src/v2/LookerEmbedExSDK'
+} from '../src/LookerEmbedExSDK'
 
 describe('LookerEmbedExSDK', () => {
   it('returns the same instance of the embed SDK and that it can be overridden', () => {

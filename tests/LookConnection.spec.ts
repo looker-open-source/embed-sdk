@@ -31,9 +31,9 @@ import type {
   CookielessRequestInit,
   GenerateTokensCallback,
   LookerAuthConfig,
-} from '../../src/types'
-import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
-import type { EmbedConnection } from '../../src/v2/EmbedConnection'
+} from '../src/types'
+import { LookerEmbedExSDK } from '../src/LookerEmbedExSDK'
+import type { EmbedConnection } from '../src/EmbedConnection'
 import {
   MockChattyHost,
   MockChattyHostConnection,
@@ -41,12 +41,12 @@ import {
   waitFor,
 } from './test_utils'
 
-describe('ExploreConnection', () => {
+describe('LookConnection', () => {
   let mockChattyHostConnection: MockChattyHostConnection
   let mockChattyHost: MockChattyHost
   let mockHostBuilder: MockHostBuilder
 
-  const getExploreConnection = async (
+  const getLookConnection = async (
     options: {
       apiHost?: string
       auth?: string | LookerAuthConfig
@@ -74,7 +74,7 @@ describe('ExploreConnection', () => {
       .preload()
       .build()
       .connect()) as EmbedConnection
-    return connection.asExploreConnection()
+    return connection.asLookConnection()
   }
 
   beforeEach(() => {
@@ -88,23 +88,23 @@ describe('ExploreConnection', () => {
 
   afterEach(() => mock.teardown())
 
-  it('runs an explore', async () => {
+  it('runs a look', async () => {
     const chattySendSpy = spyOn(
       mockChattyHostConnection,
       'send'
     ).and.callThrough()
-    const connection = await getExploreConnection()
+    const connection = await getLookConnection()
     connection.run()
     await waitFor(() => chattySendSpy.calls.count() > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('look:run', undefined)
   })
 
-  it('updates explore filters', async () => {
+  it('updateslook filters', async () => {
     const chattySendSpy = spyOn(
       mockChattyHostConnection,
       'send'
     ).and.callThrough()
-    const connection = await getExploreConnection()
+    const connection = await getLookConnection()
     connection.updateFilters({ state: 'Califonia' })
     await waitFor(() => chattySendSpy.calls.count() > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('look:filters:update', {

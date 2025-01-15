@@ -31,9 +31,9 @@ import type {
   CookielessRequestInit,
   GenerateTokensCallback,
   LookerAuthConfig,
-} from '../../src/types'
-import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
-import type { EmbedConnection } from '../../src/v2/EmbedConnection'
+} from '../src/types'
+import { LookerEmbedExSDK } from '../src/LookerEmbedExSDK'
+import type { EmbedConnection } from '../src/EmbedConnection'
 import {
   MockChattyHost,
   MockChattyHostConnection,

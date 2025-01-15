@@ -29,11 +29,11 @@ import type {
   CookielessCallback,
   CookielessRequestInit,
 } from './types'
-import { getEmbedSDK } from './v2/LookerEmbedExSDK'
+import { getEmbedSDK } from './LookerEmbedExSDK'
 
 export * from './types'
-export * from './v2/LookerEmbedExSDK'
-export * from './v2/types'
+export * from './LookerEmbedExSDK'
+export * from './types'
 
 /**
  * @deprecated Use <code>getEmbedSDK()</code> instead.

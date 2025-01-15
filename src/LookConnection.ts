@@ -24,9 +24,8 @@
 
  */
 
-import type { LookerEmbedFilterParams } from '../types'
+import type { LookerEmbedFilterParams, ILookerEmbedLook } from './types'
 import type { EmbedConnection } from './EmbedConnection'
-import type { ILookerEmbedLook } from './types'
 
 export class LookConnection implements ILookerEmbedLook {
   constructor(private _connection: EmbedConnection) {}

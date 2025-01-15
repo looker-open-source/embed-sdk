@@ -24,35 +24,37 @@
 
  */
 
-import type { LookerEmbedFilterParams } from '../types'
+import type {
+  LookerDashboardOptions,
+  LookerEmbedFilterParams,
+  ILookerEmbedDashboard,
+} from './types'
 import type { EmbedConnection } from './EmbedConnection'
-import type { ILookerEmbedExplore } from './types'
 
-/**
- * Client that communicates with an embedded Looker explore. Messages are documented
- * [here](https://docs.looker.com/r/sdk/events)
- */
-
-export class ExploreConnection implements ILookerEmbedExplore {
+export class DashboardConnection implements ILookerEmbedDashboard {
   constructor(private _connection: EmbedConnection) {}
 
-  /**
-   * Convenience method for sending a run message to the embedded Explore.
-   */
-
   run() {
-    // This is correct!
-    this._connection.send('look:run')
+    this._connection.send('dashboard:run')
   }
 
-  /**
-   * Convenience method for updating the filters of the embedded Explore.
-   *
-   * @param filters A set of filter parameters to update
-   */
+  stop() {
+    this._connection.send('dashboard:stop')
+  }
+
+  edit() {
+    this._connection.send('dashboard:edit')
+  }
 
   updateFilters(params: LookerEmbedFilterParams) {
-    // This is correct!
-    this._connection.send('look:filters:update', { filters: params })
+    this._connection.send('dashboard:filters:update', { filters: params })
+  }
+
+  setOptions(options: LookerDashboardOptions) {
+    this._connection.send('dashboard:options:set', options)
+  }
+
+  async openScheduleDialog(): Promise<void> {
+    return this._connection.sendAndReceive('dashboard:schedule_modal:open')
   }
 }

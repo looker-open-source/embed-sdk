@@ -28,11 +28,14 @@ import type {
   LookerAuthConfig,
   LookerEmbedEventMap,
   LookerEmbedFilterParams,
-} from '../types'
-import { stringify, escapeFilterParam } from '../utils'
+  IEmbedBuilder,
+  IEmbedClient,
+  PageType,
+  UrlParams,
+} from './types'
+import { stringify, escapeFilterParam } from './utils'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedClientEx } from './EmbedClientEx'
-import type { IEmbedBuilder, IEmbedClient, PageType, UrlParams } from './types'
 
 export class EmbedBuilderEx implements IEmbedBuilder {
   private _handlers: CallbackStore = {}
@@ -171,6 +174,13 @@ export class EmbedBuilderEx implements IEmbedBuilder {
 
   withAllowLoginScreen(): IEmbedBuilder {
     this._allowLoginScreen = true
+    return this
+  }
+
+  /**
+   * @deprecated
+   */
+  withNext(_?: string): IEmbedBuilder {
     return this
   }
 

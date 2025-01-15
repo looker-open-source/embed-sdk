@@ -25,7 +25,6 @@
  */
 
 import type { ChattyHostConnection } from '@looker/chatty'
-import type { LookerDashboardOptions, LookerEmbedFilterParams } from '../types'
 import { DashboardConnection } from './DashboardConnection'
 import type {
   ILookerConnection,
@@ -38,6 +37,8 @@ import type {
   LoadIdParams,
   LoadUrlParams,
   PageType,
+  LookerDashboardOptions,
+  LookerEmbedFilterParams,
 } from './types'
 import { ExploreConnection } from './ExploreConnection'
 import { ExtensionConnection } from './ExtensionConnection'

@@ -31,9 +31,9 @@ import type {
   CookielessRequestInit,
   GenerateTokensCallback,
   LookerAuthConfig,
-} from '../../src/types'
-import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
-import type { EmbedConnection } from '../../src/v2/EmbedConnection'
+} from '../src/types'
+import { LookerEmbedExSDK } from '../src/LookerEmbedExSDK'
+import type { EmbedConnection } from '../src/EmbedConnection'
 import {
   MockChattyHost,
   MockChattyHostConnection,
@@ -41,12 +41,12 @@ import {
   waitFor,
 } from './test_utils'
 
-describe('LookConnection', () => {
+describe('ExtensionConnection', () => {
   let mockChattyHostConnection: MockChattyHostConnection
   let mockChattyHost: MockChattyHost
   let mockHostBuilder: MockHostBuilder
 
-  const getLookConnection = async (
+  const getExtensionConnection = async (
     options: {
       apiHost?: string
       auth?: string | LookerAuthConfig
@@ -74,7 +74,7 @@ describe('LookConnection', () => {
       .preload()
       .build()
       .connect()) as EmbedConnection
-    return connection.asLookConnection()
+    return connection.asExtensionConnection()
   }
 
   beforeEach(() => {
@@ -88,29 +88,12 @@ describe('LookConnection', () => {
 
   afterEach(() => mock.teardown())
 
-  it('runs a look', async () => {
+  it('gets an extension connection', async () => {
     const chattySendSpy = spyOn(
       mockChattyHostConnection,
       'send'
     ).and.callThrough()
-    const connection = await getLookConnection()
-    connection.run()
-    await waitFor(() => chattySendSpy.calls.count() > 0)
-    expect(chattySendSpy).toHaveBeenCalledWith('look:run', undefined)
-  })
-
-  it('updateslook filters', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
-    const connection = await getLookConnection()
-    connection.updateFilters({ state: 'Califonia' })
-    await waitFor(() => chattySendSpy.calls.count() > 0)
-    expect(chattySendSpy).toHaveBeenCalledWith('look:filters:update', {
-      filters: {
-        state: 'Califonia',
-      },
-    })
+    const connection = await getExtensionConnection()
+    expect(connection).toBeDefined()
   })
 })

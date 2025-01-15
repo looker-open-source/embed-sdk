@@ -24,8 +24,8 @@
 
  */
 
-import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
-import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
+import type { EmbedBuilderEx } from '../src/EmbedBuilderEx'
+import { LookerEmbedExSDK } from '../src/LookerEmbedExSDK'
 
 describe('EmbedBuilderEx', () => {
   let builder: EmbedBuilderEx

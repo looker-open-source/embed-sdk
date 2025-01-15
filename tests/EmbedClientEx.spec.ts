@@ -33,10 +33,10 @@ import type {
   LookerAuthConfig,
   LookerEmbedCookielessSessionData,
   LookerEmbedCookielessTokenData,
-} from '../../src/types'
-import type { EmbedClientEx } from '../../src/v2/EmbedClientEx'
-import type { EmbedBuilderEx } from '../../src/v2/EmbedBuilderEx'
-import { LookerEmbedExSDK } from '../../src/v2/LookerEmbedExSDK'
+} from '../src/types'
+import type { EmbedClientEx } from '../src/EmbedClientEx'
+import type { EmbedBuilderEx } from '../src/EmbedBuilderEx'
+import { LookerEmbedExSDK } from '../src/LookerEmbedExSDK'
 import {
   waitFor,
   MockChattyHost,

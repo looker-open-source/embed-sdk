@@ -29,15 +29,16 @@ import {
   extractPageTypeFromUrl,
   sanitizeHostUrl,
   santizeEmbedUrl,
-} from '../utils'
+} from './utils'
 import type {
   CookielessCallback,
   GenerateTokensCallback,
   CookielessRequestInit,
   LookerAuthConfig,
   LookerEmbedCookielessSessionData,
-} from '../types'
-import type { ILookerEmbedSDK, IEmbedBuilder } from './types'
+  ILookerEmbedSDK,
+  IEmbedBuilder,
+} from './types'
 import { EmbedBuilderEx } from './EmbedBuilderEx'
 
 /**
