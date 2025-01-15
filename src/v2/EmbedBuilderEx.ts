@@ -24,7 +24,6 @@
 
  */
 import type { CallbackStore } from '@looker/chatty'
-import type { UrlParams } from '../embed_builder'
 import type {
   LookerAuthConfig,
   LookerEmbedEventMap,
@@ -33,7 +32,7 @@ import type {
 import { stringify, escapeFilterParam } from '../utils'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedClientEx } from './EmbedClientEx'
-import type { IEmbedBuilder, IEmbedClient, PageType } from './types'
+import type { IEmbedBuilder, IEmbedClient, PageType, UrlParams } from './types'
 
 export class EmbedBuilderEx implements IEmbedBuilder {
   private _handlers: CallbackStore = {}

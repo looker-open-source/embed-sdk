@@ -23,7 +23,7 @@
  SOFTWARE.
 
  */
-import type { UrlParams } from 'src/embed_builder'
+
 import type {
   CookielessCallback,
   GenerateTokensCallback,
@@ -55,6 +55,10 @@ export type LoadUrlParams = {
   url: string
   pushHistory?: boolean
   waitUntilLoaded?: boolean
+}
+
+export interface UrlParams {
+  [key: string]: string | string[]
 }
 
 /**

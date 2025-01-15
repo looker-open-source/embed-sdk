@@ -24,24 +24,13 @@
 
  */
 
-import { EmbedBuilder } from './embed_builder'
-import { LookerEmbedDashboard } from './dashboard_client'
-import { LookerEmbedExplore } from './explore_client'
-import { LookerEmbedExtension } from './extension_client'
-import { LookerEmbedLook } from './look_client'
 import type {
   LookerAuthConfig,
   CookielessCallback,
   CookielessRequestInit,
 } from './types'
+import { getEmbedSDK } from './v2/LookerEmbedExSDK'
 
-export type { LookerEmbedDashboard } from './dashboard_client'
-export type { LookerEmbedExplore } from './explore_client'
-export type { LookerEmbedExtension } from './extension_client'
-export type { LookerEmbedLook } from './look_client'
-export type { LookerEmbedBase } from './embed_base'
-export type { EmbedBuilder, UrlParams } from './embed_builder'
-export type { EmbedClient } from './embed'
 export * from './types'
 export * from './v2/LookerEmbedExSDK'
 export * from './v2/types'
@@ -61,10 +50,7 @@ export class LookerEmbedSDK {
    */
 
   static init(apiHost: string, auth?: string | LookerAuthConfig) {
-    this.apiHost = apiHost
-    this.auth = typeof auth === 'string' ? { url: auth } : auth
-    this.acquireSession = undefined
-    this.generateTokens = undefined
+    getEmbedSDK().init(apiHost, auth)
   }
 
   /**
@@ -89,10 +75,7 @@ export class LookerEmbedSDK {
     acquireSession: string | CookielessRequestInit | CookielessCallback,
     generateTokens: string | CookielessRequestInit | CookielessCallback
   ) {
-    this.apiHost = apiHost
-    this.acquireSession = acquireSession
-    this.generateTokens = generateTokens
-    this.auth = undefined
+    getEmbedSDK().initCookieless(apiHost, acquireSession, generateTokens)
   }
 
   /**
@@ -104,12 +87,7 @@ export class LookerEmbedSDK {
    */
 
   static createDashboardWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedDashboard>(
-      this,
-      'dashboard',
-      '/embed/dashboards',
-      LookerEmbedDashboard
-    ).withUrl(url)
+    return getEmbedSDK().createDashboardWithUrl(url)
   }
 
   /**
@@ -121,12 +99,7 @@ export class LookerEmbedSDK {
    */
 
   static createDashboardWithId(id: string | number) {
-    return new EmbedBuilder<LookerEmbedDashboard>(
-      this,
-      'dashboard',
-      '/embed/dashboards',
-      LookerEmbedDashboard
-    ).withId(id)
+    return getEmbedSDK().createDashboardWithId(id)
   }
 
   /**
@@ -138,12 +111,7 @@ export class LookerEmbedSDK {
    */
 
   static createExploreWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedExplore>(
-      this,
-      'explore',
-      '/embed/explore',
-      LookerEmbedExplore
-    ).withUrl(url)
+    return getEmbedSDK().createExploreWithUrl(url)
   }
 
   /**
@@ -155,13 +123,7 @@ export class LookerEmbedSDK {
    */
 
   static createExploreWithId(id: string) {
-    id = id.replace('::', '/') // Handle old format explore ids.
-    return new EmbedBuilder<LookerEmbedExplore>(
-      this,
-      'explore',
-      '/embed/explore',
-      LookerEmbedExplore
-    ).withId(id)
+    return getEmbedSDK().createExploreWithId(id)
   }
 
   /**
@@ -173,12 +135,7 @@ export class LookerEmbedSDK {
    */
 
   static createLookWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedLook>(
-      this,
-      'look',
-      '/embed/looks',
-      LookerEmbedLook
-    ).withUrl(url)
+    return getEmbedSDK().createLookWithUrl(url)
   }
 
   /**
@@ -190,12 +147,7 @@ export class LookerEmbedSDK {
    */
 
   static createLookWithId(id: number) {
-    return new EmbedBuilder<LookerEmbedLook>(
-      this,
-      'look',
-      '/embed/looks',
-      LookerEmbedLook
-    ).withId(id)
+    return getEmbedSDK().createLookWithId(id)
   }
 
   /**
@@ -207,12 +159,7 @@ export class LookerEmbedSDK {
    */
 
   static createExtensionWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(
-      this,
-      'extension',
-      '/embed/extensions',
-      LookerEmbedExtension
-    ).withUrl(url)
+    return getEmbedSDK().createExtensionWithUrl(url)
   }
 
   /**
@@ -224,35 +171,6 @@ export class LookerEmbedSDK {
    */
 
   static createExtensionWithId(id: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(
-      this,
-      'extension',
-      '/embed/extensions',
-      LookerEmbedExtension
-    ).withId(id)
+    return getEmbedSDK().createExtensionWithId(id)
   }
-
-  /**
-   * @hidden
-   */
-
-  static apiHost: string
-
-  /**
-   * @hidden
-   */
-
-  static auth?: LookerAuthConfig
-
-  /**
-   * @hidden
-   */
-
-  static acquireSession?: string | CookielessRequestInit | CookielessCallback
-
-  /**
-   * @hidden
-   */
-
-  static generateTokens?: string | CookielessRequestInit | CookielessCallback
 }

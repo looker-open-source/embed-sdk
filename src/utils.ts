@@ -23,8 +23,7 @@
  SOFTWARE.
 
  */
-import type { UrlParams } from './embed_builder'
-import type { PageType } from './v2/types'
+import type { PageType, UrlParams } from './v2/types'
 
 export function stringify(params: UrlParams) {
   const result: string[] = []

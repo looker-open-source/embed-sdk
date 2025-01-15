@@ -24,9 +24,7 @@
 
  */
 
-import type { LookerEmbedBase } from './embed_base'
-import type { LookerEmbedDashboard } from './dashboard_client'
-import type { LookerEmbedLook } from './look_client'
+import type { ILookerConnection } from './v2/types'
 
 /**
  * Auth server configuration
@@ -522,15 +520,15 @@ export interface EnvClientDialogEvent extends LookerEmbedEvent {
 
 export interface LookerEmbedEventMap {
   'dashboard:run:start': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardEvent
   ) => void
   'dashboard:run:complete': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardEvent
   ) => void
   'dashboard:filters:changed': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardEvent
   ) => void
   /**
@@ -539,7 +537,7 @@ export interface LookerEmbedEventMap {
    * Looker 22.20+
    */
   'dashboard:edit:start': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardEvent
   ) => void
   /**
@@ -548,7 +546,7 @@ export interface LookerEmbedEventMap {
    * Looker 22.20+
    */
   'dashboard:edit:cancel': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardEvent
   ) => void
   /**
@@ -558,7 +556,7 @@ export interface LookerEmbedEventMap {
    * Looker 21.6+
    */
   'dashboard:save:complete': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardEvent
   ) => void
   /**
@@ -566,66 +564,72 @@ export interface LookerEmbedEventMap {
    * Looker 21.6+
    */
   'dashboard:delete:complete': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardEvent
   ) => void
   'dashboard:tile:start': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardTileEvent
   ) => void
   'dashboard:tile:complete': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardTileEvent
   ) => void
   'dashboard:tile:download': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardTileDownloadEvent
   ) => void
   'dashboard:tile:explore': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardTileExploreEvent
   ) => CancellableEventResponse | undefined
   'dashboard:tile:view': (
-    this: LookerEmbedDashboard,
+    this: ILookerConnection,
     event: DashboardTileViewEvent
   ) => CancellableEventResponse | undefined
 
   'drillmenu:click': (
-    this: LookerEmbedBase,
+    this: ILookerConnection,
     event: DrillMenuEvent
   ) => CancellableEventResponse | undefined
   'drillmodal:download': (
-    this: LookerEmbedBase,
+    this: ILookerConnection,
     event: DrillModalDownloadEvent
   ) => void
   'drillmodal:explore': (
-    this: LookerEmbedBase,
+    this: ILookerConnection,
     event: DrillModalExploreEvent
   ) => CancellableEventResponse | undefined
 
-  'explore:run:start': (this: LookerEmbedLook, event: ExploreEvent) => void
-  'explore:run:complete': (this: LookerEmbedLook, event: ExploreEvent) => void
-  'explore:ready': (this: LookerEmbedLook, event: ExploreEvent) => void
-  'explore:state:changed': (this: LookerEmbedLook, event: ExploreEvent) => void
+  'explore:run:start': (this: ILookerConnection, event: ExploreEvent) => void
+  'explore:run:complete': (this: ILookerConnection, event: ExploreEvent) => void
+  'explore:ready': (this: ILookerConnection, event: ExploreEvent) => void
+  'explore:state:changed': (
+    this: ILookerConnection,
+    event: ExploreEvent
+  ) => void
 
-  'look:run:start': (this: LookerEmbedLook, event: LookEvent) => void
-  'look:run:complete': (this: LookerEmbedLook, event: LookEvent) => void
+  'look:run:start': (this: ILookerConnection, event: LookEvent) => void
+  'look:run:complete': (this: ILookerConnection, event: LookEvent) => void
   /**
    * Look saved event
    * Looker 21.6+
    */
-  'look:save:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
+  'look:save:complete': (this: ILookerConnection, event: LookSaveEvent) => void
   /**
    * Look deleted event
    * Looker 21.6+
    */
-  'look:delete:complete': (this: LookerEmbedLook, event: LookSaveEvent) => void
-  'look:ready': (this: LookerEmbedLook, event: LookEvent) => void
-  'look:state:changed': (this: LookerEmbedLook, event: LookEvent) => void
+  'look:delete:complete': (
+    this: ILookerConnection,
+    event: LookSaveEvent
+  ) => void
+  'look:ready': (this: ILookerConnection, event: LookEvent) => void
+  'look:state:changed': (this: ILookerConnection, event: LookEvent) => void
 
-  'page:changed': (this: LookerEmbedBase, event: PageChangedEvent) => void
+  'page:changed': (this: ILookerConnection, event: PageChangedEvent) => void
   'page:properties:changed': (
-    this: LookerEmbedBase,
+    this: ILookerConnection,
     event: PagePropertiesChangedEvent
   ) => void
   /**
@@ -633,27 +637,27 @@ export interface LookerEmbedEventMap {
    * Looker 22.20+
    */
   'session:token:request': (
-    this: LookerEmbedBase,
+    this: ILookerConnection,
     event: SessionTokenRequest
   ) => void
   /**
    * Cookieless embed session status event
    * Looker 23.0+
    */
-  'session:status': (this: LookerEmbedBase, event: SessionStatus) => void
+  'session:status': (this: ILookerConnection, event: SessionStatus) => void
   /**
    * Environment client dialog event
    * Looker 23.6+
    */
   'env:client:dialog': (
-    this: LookerEmbedBase,
+    this: ILookerConnection,
     event: EnvClientDialogEvent
   ) => void
   /**
    * Session expired event.
    * Looker 25.2+
    */
-  'session:expired': (this: LookerEmbedBase) => void
+  'session:expired': (this: ILookerConnection) => void
 
   [key: string]: any
 }
