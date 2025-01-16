@@ -2,7 +2,7 @@
 
 ## Embed SDK version 2.0.0
 
-The following document has been updated to reflect the usage of Embed SDK 2.0.0. The API associated with Embed SDK 1.8.x is still available but in order to take advantage of features added to Embed SDK 2.0.0 an embedding application will need to refactored slightly. See the section [Upgrading to Embed SDK 2.0.0](#upgrading_sdk) for more information.
+The following document has been updated to reflect the implementation of Embed SDK 2.0.0. Technically the 2.0.0 API is backwards compatible with Embed SDK 1.8.x but the underlying implementation has changed for some functionality. SDK 1.8.x exported a number of classes. SDK 2.0.0 replaces these classes with deprecated interfaces. It is preferred that application that uses the SDK use the 'I' prefixed interfaces (which are identical to the non prefixed interaces). Applications upgrading to SDK 2.0.0 should behave the same. In order to take advantage of the API improvements some refactoring will be required.
 
 ## Introduction
 
@@ -696,62 +696,3 @@ const connection = await getEmbedSDK()
 ```
 
 This functionality is also available to the javascript API. See [here](demo/message_example.ts) for how to add this functionality.
-
-<a name='ugrading_sdk' id='upgrading_sdk'></a>
-
-## Upgrading to Embed SDK 2.0.0
-
-Embed SDK 2.0.0 is not a breaking change as upgrading the package will NOT break an existing embedded application as the version `1.8.x` API still exists in and has not been removed from the package. It will however be removed in a future release.
-
-In order to take advantage of the new features (loading different Looker dashboards, looks and explores without creating a new IFRAME), the embedding application will need to refactored slightly. The section of the document outlines the changes that will need to be made.
-
-### SDK Initialization
-
-```javascript
-// Version 1.8.x
-LookerEmbedSDK.init('looker.example.com', '/auth')
-
-// Version 2.0.x
-getEmbedSDK().init('looker.example.com', '/auth')
-```
-
-### Creating and interacting with an IFRAME
-
-```javascript
-// Version 1.8.x
-try {
-  const dashboard = await LookerEmbedSDK
-      .createDashboardWithId('42)
-      .withAllowAttr('fullscreen')
-      .appendTo('#dashboard')
-      .on('dashboard:loaded', () => updateStatus('Loaded'))
-      .build()
-      .connect()
-
-   dashboard.run()
-} catch(error) {
-  // Error handling
-}
-
-// Version 2.0.x
-try {
-  const connection = getEmbedSDK()
-      .createDashboardWithId('42)
-      .withAllowAttr('fullscreen')
-      .appendTo('#embed_container')
-      .on('dashboard:loaded', () => updateStatus('Loaded'))
-      .build()
-      .connect()
-
-  // The following still works but is deprecated and will be
-  // removed if a future release
-  connection.run()
-
-  // The following is the preferred mechanism running a dashboard.
-  // There are equivalent methods for explores (asExploreConnection)
-  // and looks (asLookConnection).
-  connection.asDashboardConnection().run()
-} catch(error) {
-  // Error handling
-}
-```
