@@ -153,7 +153,7 @@ export const updateConfiguration = (config: RuntimeConfig) => {
 export const loadConfiguration = () => {
   try {
     const configJson = localStorage.getItem('embed-configuration')
-    const config = JSON.parse(configJson || '{}')
+    const config = JSON.parse(configJson || '{}') as RuntimeConfig
     if (
       config.lookerHost !== runtimeConfig.lookerHost ||
       config.dashboardId !== runtimeConfig.dashboardId ||
@@ -162,7 +162,7 @@ export const loadConfiguration = () => {
       config.extensionId !== runtimeConfig.extensionId ||
       config.exploreId !== runtimeConfig.exploreId ||
       config.queryVisualizationId !== runtimeConfig.queryVisualizationId ||
-      config.reportId !== runtimeConfig.reportyId
+      config.reportId !== runtimeConfig.reportId
     ) {
       saveConfiguration()
     } else {

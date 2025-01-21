@@ -28,9 +28,12 @@ export type PageType =
   | 'dashboards'
   | 'explore'
   | 'looks'
+  | 'merge'
   | 'extensions'
   | 'query-visualization'
   | 'reports'
+  | 'message'
+  | 'query'
   | 'preload'
   | 'unknown'
 
@@ -119,6 +122,29 @@ export interface ILookerConnection {
    */
 
   loadExplore(id: string, pushHistory?: boolean): Promise<void>
+
+  /**
+   * Load Looker merge query. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadMergeQuery(id: string, pushHistory?: boolean): Promise<void>
+
+  /**
+   * Load query. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadQuery(
+    model: string,
+    view: string,
+    qid: string,
+    pushHistory?: boolean
+  ): Promise<void>
 
   /**
    * Load Looker look. This does not recreate the IFRAME.
@@ -563,6 +589,36 @@ export interface ILookerEmbedSDK {
    */
 
   createExploreWithId(id: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker Merge Query.
+   *
+   * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   */
+
+  createMergeQueryWithUrl(url: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker Merge Query.
+   *
+   * @param id The ID of a Looker explore
+   */
+
+  createMergeQueryWithId(id: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker Query.
+   *
+   * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   */
+
+  createQueryWithUrl(url: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker Query.
+   */
+
+  createQueryWithId(model: string, view: string, qid: string): IEmbedBuilder
 
   /**
    * Create an EmbedBuilder for an embedded Looker Look.

@@ -79,8 +79,11 @@ export function santizeEmbedUrl(embedUrl: string) {
 const validPageTypes = [
   'dashboards',
   'explore',
+  'merge',
   'looks',
   'extensions',
+  'message',
+  'query',
   'preload',
   'query-visualization',
   'reports',

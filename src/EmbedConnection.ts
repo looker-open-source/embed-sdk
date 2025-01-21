@@ -143,6 +143,28 @@ export class EmbedConnection implements ILookerConnection {
     return this.loadId({ id, pushHistory, type: 'explore', waitUntilLoaded })
   }
 
+  loadMergeQuery(id: string, pushHistory?: boolean, waitUntilLoaded?: boolean) {
+    return this.loadUrl({
+      pushHistory,
+      url: `/embed/merge?mid=${id}`,
+      waitUntilLoaded,
+    })
+  }
+
+  loadQuery(
+    model: string,
+    view: string,
+    qid: string,
+    pushHistory?: boolean,
+    waitUntilLoaded?: boolean
+  ) {
+    return this.loadUrl({
+      pushHistory,
+      url: `/embed/query/${model}/${view}?qid=${qid}`,
+      waitUntilLoaded,
+    })
+  }
+
   async loadLook(id: string, pushHistory?: boolean, waitUntilLoaded?: boolean) {
     return this.loadId({
       id,

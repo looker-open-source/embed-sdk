@@ -183,6 +183,27 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     return new EmbedBuilderEx(this, 'explore', '/embed/explore').withId(id)
   }
 
+  createMergeQueryWithUrl(url: string) {
+    return new EmbedBuilderEx(this, 'merge', '').withUrl(santizeEmbedUrl(url))
+  }
+
+  createMergeQueryWithId(id: string) {
+    id = id.replace('::', '/') // Handle old format explore ids.
+    return new EmbedBuilderEx(this, 'merge', '').withUrl(
+      `/embed/merge?mid=${id}`
+    )
+  }
+
+  createQueryWithUrl(url: string) {
+    return new EmbedBuilderEx(this, 'query', '').withUrl(santizeEmbedUrl(url))
+  }
+
+  createQueryWithId(model: string, view: string, qid: string) {
+    return new EmbedBuilderEx(this, 'query', '').withUrl(
+      `/embed/query${model}/${view}?qid=${qid}`
+    )
+  }
+
   createLookWithUrl(url: string) {
     return new EmbedBuilderEx(this, 'looks', '').withUrl(santizeEmbedUrl(url))
   }

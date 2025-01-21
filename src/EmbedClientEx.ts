@@ -203,13 +203,13 @@ export class EmbedClientEx implements IEmbedClient {
       this._builder.handlers['page:changed'] = []
     }
     this._builder.handlers['page:changed'].push((event: PageChangedEvent) => {
+      this.identifyPageType(event)
+      this.parseLookerVersion(event?.page?.lookerVersion)
       if (this._pageChangeResolver) {
         const resolve = this._pageChangeResolver
         this._pageChangeResolver = undefined
         resolve(this._client as EmbedConnection)
       }
-      this.identifyPageType(event)
-      this.parseLookerVersion(event?.page?.lookerVersion)
     })
     if (!this._builder.handlers['dashboard:edit:start']) {
       this._builder.handlers['dashboard:edit:start'] = []
@@ -730,6 +730,12 @@ export class EmbedClientEx implements IEmbedClient {
     if (this._connection) {
       this._connection._pageType = extractPageTypeFromUrl(
         event?.page?.url || ''
+      )
+      console.info(
+        '>>>>> Page type is ' +
+          this._connection._pageType +
+          ' url=' +
+          event?.page?.url
       )
     }
   }
