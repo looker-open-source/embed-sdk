@@ -201,8 +201,7 @@ export async function generateEmbedTokens(
 export function isValidAuthConfig(res: Response) {
   if (!config.host || !config.secret) {
     console.error(
-      'Config does not have the neccassary host or secret to generate an embedded url. Config:',
-      config
+      'Config does not have the neccassary host or secret to generate an embedded url.'
     )
     return res.status(400).send({
       message: 'Invalid Configuration',
