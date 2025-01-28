@@ -63,7 +63,7 @@ const updateContentControls = (type = 'preload') => {
     type === 'preload' ||
     type === 'extensions' ||
     type === 'query-visualization' ||
-    type === 'reports'
+    type === 'reporting'
   ) {
     document.getElementById('content-controls')?.classList.add('invisible')
   } else {

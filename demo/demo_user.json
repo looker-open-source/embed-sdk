@@ -50,5 +50,9 @@
     "performance_test_thelook",
     "cypress_extensions"
   ],
-  "user_attributes": { "locale": "en_US", "embed_encrypted": "abcd" }
+  "user_attributes": {
+    "locale": "en_US",
+    "embed_encrypted": "abcd",
+    "email": "patembed@embed.com"
+  }
 }

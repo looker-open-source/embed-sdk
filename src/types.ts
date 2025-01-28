@@ -31,7 +31,7 @@ export type PageType =
   | 'merge'
   | 'extensions'
   | 'query-visualization'
-  | 'reports'
+  | 'reporting'
   | 'message'
   | 'query'
   | 'preload'

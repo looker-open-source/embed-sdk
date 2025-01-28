@@ -239,11 +239,13 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createReportWithUrl(url: string) {
-    return new EmbedBuilderEx(this, 'reports', '').withUrl(santizeEmbedUrl(url))
+    return new EmbedBuilderEx(this, 'reporting', '').withUrl(
+      santizeEmbedUrl(url)
+    )
   }
 
   createReportWithId(id: string) {
-    return new EmbedBuilderEx(this, 'reports', '/embed/reports').withId(id)
+    return new EmbedBuilderEx(this, 'reporting', '/embed/reporting').withId(id)
   }
 
   /**

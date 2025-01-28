@@ -203,7 +203,7 @@ export class EmbedConnection implements ILookerConnection {
     return this.loadId({
       id,
       pushHistory,
-      type: 'reports',
+      type: 'reporting',
       waitUntilLoaded,
     })
   }

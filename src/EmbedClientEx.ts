@@ -731,12 +731,6 @@ export class EmbedClientEx implements IEmbedClient {
       this._connection._pageType = extractPageTypeFromUrl(
         event?.page?.url || ''
       )
-      console.info(
-        '>>>>> Page type is ' +
-          this._connection._pageType +
-          ' url=' +
-          event?.page?.url
-      )
     }
   }
 
