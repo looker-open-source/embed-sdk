@@ -152,6 +152,18 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     }
   }
 
+  clearSession() {
+    this._sessionCreated = false
+    this._createEmbedSessionPromise = undefined
+    this._createEmbedSessionPromiseResolver = undefined
+    this._generateTokensPromise = undefined
+    this._apiHost = undefined
+    this._auth = undefined
+    this._acquireSession = undefined
+    this._generateTokens = undefined
+    this._cookielessSession = undefined
+  }
+
   preload() {
     return this.createWithUrl('/embed/preload/')
   }

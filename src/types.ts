@@ -545,6 +545,14 @@ export interface ILookerEmbedSDK {
   ): void
 
   /**
+   * Clears all session data currently being tracked by the SDK. Use when it
+   * is desirable to modify or change the existing user for signed or cookieless
+   * sessions. Has little to no impact for private embed sessions.
+   */
+
+  clearSession(): void
+
+  /**
    * Create an embed builder that preloads embedded Looker
    */
 
