@@ -12,6 +12,7 @@ module.exports = {
   secret: process.env.LOOKER_EMBED_SECRET,
   demo_host: process.env.LOOKER_DEMO_HOST || 'localhost',
   demo_port: process.env.LOOKER_DEMO_PORT || 8080,
+  demo_protocol: process.env.LOOKER_DEMO_PROTOCOL || 'http',
   client_id: process.env.LOOKER_CLIENT_ID,
   client_secret: process.env.LOOKER_CLIENT_SECRET,
   verify_ssl: process.env.LOOKER_VERIFY_SSL === 'true' || false,

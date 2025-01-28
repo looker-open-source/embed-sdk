@@ -42,6 +42,7 @@ export const config: ApplicationConfig = {
   ),
   demo_host: process.env.LOOKER_DEMO_HOST || 'localhost',
   demo_port: parseInt(process.env.LOOKER_DEMO_PORT || '8080', 10),
+  demo_protocol: process.env.LOOKER_DEMO_PROTOCOL || 'http',
   host:
     process.env.LOOKER_WEB_URL ||
     process.env.LOOKER_EMBED_HOST || // deprecated

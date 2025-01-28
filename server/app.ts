@@ -24,6 +24,9 @@
 
  */
 
+import https from 'https'
+import fs from 'fs'
+import path from 'path'
 import express from 'express'
 import { addRoutes } from './routes'
 import { config } from './config'
@@ -37,6 +40,20 @@ addRoutes(app, config, user)
 app.use('/', express.static('public'))
 
 const port = config.demo_port
-app.listen(port, () => {
-  console.info(`Listening on port ${port}`)
-})
+
+if (config.demo_protocol !== 'https') {
+  app.listen(port, () => {
+    console.info(`Listening on http://localhost:${port}`)
+  })
+} else {
+  const key = fs.readFileSync(path.join(__dirname, '/key.pem'))
+  const cert = fs.readFileSync(path.join(__dirname, '/cert.pem'))
+  const options = {
+    cert: cert,
+    key: key,
+  }
+  const server = https.createServer(options, app)
+  server.listen(port, () => {
+    console.info(`Listening on https://localhost:${port}`)
+  })
+}

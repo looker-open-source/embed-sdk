@@ -59,6 +59,8 @@ var webpackConfig = {
     compress: true,
     host: config.demo_host,
     port: config.demo_port,
+    server: config.demo_protocol,
+    allowedHosts: 'all',
     app: () => {
       const app = express()
       addRoutes(app, config, user)

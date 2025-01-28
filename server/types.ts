@@ -75,6 +75,7 @@ export interface ApplicationConfig {
   client_secret: string
   demo_host: string
   demo_port: number
+  demo_protocol: string
   host: string
   secret: string
   verify_ssl: boolean
