@@ -552,12 +552,15 @@ const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
     // Use cookieless embed
     getEmbedSDK().initCookieless(
       runtimeConfig.lookerHost,
-      '/acquire-embed-session',
-      '/generate-embed-tokens'
+      `${runtimeConfig.proxyPath}/acquire-embed-session`,
+      `${runtimeConfig.proxyPath}/generate-embed-tokens`
     )
   } else {
     // Use SSO embed
-    getEmbedSDK().init(runtimeConfig.lookerHost, '/auth')
+    getEmbedSDK().init(
+      runtimeConfig.lookerHost,
+      `${runtimeConfig.proxyPath}/auth`
+    )
   }
 }
 

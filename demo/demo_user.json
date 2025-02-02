@@ -52,7 +52,6 @@
   ],
   "user_attributes": {
     "locale": "en_US",
-    "embed_encrypted": "abcd",
-    "email": "patembed@embed.com"
+    "embed_encrypted": "abcd"
   }
 }

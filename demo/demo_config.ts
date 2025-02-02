@@ -35,6 +35,7 @@ export interface RuntimeConfig {
   queryVisualizationId: string
   reportId: string
   lookerHost: string
+  proxyPath: string
   /**
    * When false hides the look.
    */
@@ -123,6 +124,7 @@ let runtimeConfig: RuntimeConfig = {
   lookerHost:
     process.env.LOOKER_WEB_URL || process.env.LOOKER_EMBED_HOST || lookerHost,
   preventNavigation: true,
+  proxyPath: process.env.LOOKER_DEMO_PROXY_PATH || '',
   queryVisualizationId: _queryVisualizationId,
   reportId: _reportId,
   showDashboard: _dashboardId.trim() !== '',

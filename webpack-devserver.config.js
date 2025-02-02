@@ -1,3 +1,4 @@
+var fs = require('fs')
 var path = require('path')
 var config = require('./config')
 const webpack = require('webpack')
@@ -50,6 +51,7 @@ var webpackConfig = {
       LOOKER_REPORT_ID: null,
       LOOKER_USE_EMBED_DOMAIN: null,
       LOOKER_EMBED_TYPE: null,
+      LOOKER_DEMO_PROXY_PATH: null,
     }),
   ],
   devServer: {
@@ -57,9 +59,19 @@ var webpackConfig = {
       directory: path.join(__dirname, 'demo'),
     },
     compress: true,
-    host: config.demo_host,
+    host: process.env.LOOKER_DEMO_PROXY_PATH ? '0.0.0.0' : config.demo_host,
     port: config.demo_port,
-    server: config.demo_protocol,
+    server:
+      config.demo_protocol !== 'https'
+        ? 'http'
+        : {
+            type: 'https',
+            options: {
+              key: fs.readFileSync(path.join(__dirname, './server/key.pem')),
+              cert: fs.readFileSync(path.join(__dirname, './server/cert.pem')),
+              ca: fs.readFileSync(path.join(__dirname, './server/cacert.pem')),
+            },
+          },
     allowedHosts: 'all',
     app: () => {
       const app = express()

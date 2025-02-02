@@ -65,15 +65,15 @@ const updateContentControls = (type = 'preload') => {
     type === 'query-visualization' ||
     type === 'reporting'
   ) {
-    document.getElementById('content-controls')?.classList.add('invisible')
+    document.getElementById('content-controls')?.classList.add('hide')
   } else {
-    document.getElementById('content-controls')?.classList.remove('invisible')
+    document.getElementById('content-controls')?.classList.remove('hide')
     if (type === 'dashboards') {
-      document.getElementById('stop-embed')?.classList.remove('invisible')
-      document.getElementById('edit-embed')?.classList.remove('invisible')
+      document.getElementById('stop-embed')?.classList.remove('hide')
+      document.getElementById('edit-embed')?.classList.remove('hide')
     } else {
-      document.getElementById('stop-embed')?.classList.add('invisible')
-      document.getElementById('edit-embed')?.classList.add('invisible')
+      document.getElementById('stop-embed')?.classList.add('hide')
+      document.getElementById('edit-embed')?.classList.add('hide')
     }
   }
 }
@@ -195,10 +195,9 @@ const initializeUseDynamicHeightsCheckbox = () => {
  * Clear the currently active tab
  */
 const clearActiveTab = () => {
-  const e = document.querySelector('.tab-active')
+  const e = document.querySelector('.active')
   if (e) {
-    e.classList.remove('tab-active')
-    e.classList.add('tab')
+    e.classList.remove('active')
   }
 }
 
@@ -206,8 +205,7 @@ const clearActiveTab = () => {
  * Set a tab active
  */
 const setActiveTab = (e: HTMLElement) => {
-  e.classList.add('tab-active')
-  e.classList.remove('tab')
+  e.classList.add('active')
 }
 
 /**
@@ -216,7 +214,7 @@ const setActiveTab = (e: HTMLElement) => {
 const hideTab = (id: string) => {
   const e = document.getElementById(id)
   if (e) {
-    e.classList.add('collapse')
+    e.remove()
   }
 }
 
@@ -577,15 +575,15 @@ const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
     // Use cookieless embed
     sdk.initCookieless(
       runtimeConfig.lookerHost,
-      '/acquire-embed-session',
-      '/generate-embed-tokens'
+      `${runtimeConfig.proxyPath}/acquire-embed-session`,
+      `${runtimeConfig.proxyPath}/generate-embed-tokens`
     )
   } else if (runtimeConfig.embedType === 'private') {
     // Use private embedding
     sdk.init(runtimeConfig.lookerHost)
   } else {
     // Use SSO embed
-    sdk.init(runtimeConfig.lookerHost, '/auth')
+    sdk.init(runtimeConfig.lookerHost, `${runtimeConfig.proxyPath}/auth`)
   }
   // Now preload the embed
   createEmbed(runtimeConfig, sdk)

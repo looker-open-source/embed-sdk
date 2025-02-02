@@ -56,7 +56,8 @@ import {
  */
 const acquireEmbedSessionCallback =
   async (): Promise<LookerEmbedCookielessSessionData> => {
-    const resp = await fetch('/acquire-embed-session')
+    const runtimeConfig = getConfiguration()
+    const resp = await fetch(`${runtimeConfig.proxyPath}/acquire-embed-session`)
     if (!resp.ok) {
       console.error('acquire-embed-session failed', { resp })
       throw new Error(
@@ -78,11 +79,15 @@ const acquireEmbedSessionCallback =
 const generateEmbedTokensCallback =
   async (): Promise<LookerEmbedCookielessSessionData> => {
     const { api_token, navigation_token } = getApplicationTokens() || {}
-    const resp = await fetch('/generate-embed-tokens', {
-      body: JSON.stringify({ api_token, navigation_token }),
-      headers: { 'content-type': 'application/json' },
-      method: 'PUT',
-    })
+    const runtimeConfig = getConfiguration()
+    const resp = await fetch(
+      `${runtimeConfig.proxyPath}/generate-embed-tokens`,
+      {
+        body: JSON.stringify({ api_token, navigation_token }),
+        headers: { 'content-type': 'application/json' },
+        method: 'PUT',
+      }
+    )
     if (!resp.ok) {
       // A response status of 400 is currently unrecoverable.
       // Terminate the session.
@@ -483,7 +488,7 @@ const initializeLookerEmbed = (runtimeConfig: RuntimeConfig) => {
     )
   } else {
     // Use SSO embed
-    initSSOEmbed(runtimeConfig.lookerHost, '/auth')
+    initSSOEmbed(runtimeConfig.lookerHost, `${runtimeConfig.proxyPath}/auth`)
   }
 }
 
