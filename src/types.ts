@@ -1149,6 +1149,38 @@ export interface LookEvent extends LookerEmbedEvent {
 }
 
 /**
+ * Look edit event details
+ * Looker version 25.4+
+ */
+
+export interface LookEditEventDetail extends LookEventDetail {
+  /**
+   * Look Id
+   */
+  id: number | string
+  /**
+   * Look title
+   */
+  title: string
+}
+
+/**
+ * Look edit start event
+ * Looker version 25.4+
+ */
+export interface LookEditStartEvent extends LookerEmbedEvent {
+  look: LookEditEventDetail
+}
+
+/**
+ * Look edit start event
+ * Looker version 25.4+
+ */
+export interface LookEditCancelEvent extends LookerEmbedEvent {
+  look: LookEditEventDetail
+}
+
+/**
  * Look save event details
  * Looker version 21.6+
  */
@@ -1157,8 +1189,15 @@ export interface LookSaveEventDetail extends LookEventDetail {
   /**
    * Folder Look is associated with
    * Looker version 21.8+
+   * @deprecated
    */
-  spaceId: number
+  spaceId?: number
+  /**
+   * Folder Look is associated with. Correction related to
+   * Looker 4.0 SDK upgrade.
+   * Looker version 21.8+
+   */
+  folderId: number | string
 }
 
 /**
@@ -1348,6 +1387,22 @@ export interface LookerEmbedEventMap {
 
   'look:run:start': (this: ILookerConnection, event: LookEvent) => void
   'look:run:complete': (this: ILookerConnection, event: LookEvent) => void
+  /**
+   * Look edit start event
+   * Looker 25.4+
+   */
+  'look:edit:start': (
+    this: ILookerConnection,
+    event: LookEditStartEvent
+  ) => void
+  /**
+   * Look edit cancel event
+   * Looker 25.4+
+   */
+  'look:edit:cancel': (
+    this: ILookerConnection,
+    event: LookEditCancelEvent
+  ) => void
   /**
    * Look saved event
    * Looker 21.6+

@@ -203,6 +203,7 @@ export class EmbedClientEx implements IEmbedClient {
       this._builder.handlers['page:changed'] = []
     }
     this._builder.handlers['page:changed'].push((event: PageChangedEvent) => {
+      this.updateEditing(false)
       this.identifyPageType(event)
       this.parseLookerVersion(event?.page?.lookerVersion)
       if (this._pageChangeResolver) {
@@ -227,6 +228,25 @@ export class EmbedClientEx implements IEmbedClient {
       this._builder.handlers['dashboard:save:complete'] = []
     }
     this._builder.handlers['dashboard:save:complete'].push(() =>
+      this.updateEditing(false)
+    )
+
+    if (!this._builder.handlers['look:edit:start']) {
+      this._builder.handlers['look:edit:start'] = []
+    }
+    this._builder.handlers['look:edit:start'].push(() =>
+      this.updateEditing(true)
+    )
+    if (!this._builder.handlers['look:edit:cancel']) {
+      this._builder.handlers['look:edit:cancel'] = []
+    }
+    this._builder.handlers['look:edit:cancel'].push(() =>
+      this.updateEditing(false)
+    )
+    if (!this._builder.handlers['look:save:complete']) {
+      this._builder.handlers['look:save:complete'] = []
+    }
+    this._builder.handlers['look:save:complete'].push(() =>
       this.updateEditing(false)
     )
     if (this._builder.dialogScroll) {

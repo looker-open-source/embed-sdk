@@ -543,6 +543,8 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     .on('look:run:start', () => updateStatus('Running'))
     .on('look:run:complete', () => updateStatus('Done'))
     // Listen to messages that change Look
+    .on('look:edit:start', () => updateStatus('Editing'))
+    .on('look:edit:cancel', () => updateStatus('Editing cancelled'))
     .on('look:save:complete', () => updateStatus('Saved'))
     .on('look:delete:complete', () => updateStatus('Deleted'))
     // Session expired
