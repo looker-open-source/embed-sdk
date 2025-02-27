@@ -89,24 +89,18 @@ describe('ExploreConnection', () => {
   afterEach(() => mock.teardown())
 
   it('runs an explore', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getExploreConnection()
     connection.run()
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('look:run', undefined)
   })
 
   it('updates explore filters', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getExploreConnection()
     connection.updateFilters({ state: 'Califonia' })
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('look:filters:update', {
       filters: {
         state: 'Califonia',

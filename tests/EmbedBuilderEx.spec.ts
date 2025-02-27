@@ -190,8 +190,8 @@ describe('EmbedBuilderEx', () => {
   })
 
   it('stores on handlers correctly', () => {
-    const pageHandler1 = jasmine.createSpy()
-    const pageHandler2 = jasmine.createSpy()
+    const pageHandler1 = jest.fn()
+    const pageHandler2 = jest.fn()
     builder.on('page:changed', pageHandler1)
     builder.on('page:changed', pageHandler2)
     expect(builder.handlers).toEqual({

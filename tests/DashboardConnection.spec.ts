@@ -89,46 +89,34 @@ describe('DashboardConnection', () => {
   afterEach(() => mock.teardown())
 
   it('runs a dashboard', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getDashboardConnection()
     connection.run()
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('dashboard:run', undefined)
   })
 
   it('stops a dashboard', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getDashboardConnection()
     connection.stop()
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('dashboard:stop', undefined)
   })
 
   it('edits a dashboard', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getDashboardConnection()
     connection.edit()
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('dashboard:edit', undefined)
   })
 
   it('updates dashboard filters', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getDashboardConnection()
     connection.updateFilters({ state: 'Califonia' })
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('dashboard:filters:update', {
       filters: {
         state: 'Califonia',
@@ -137,13 +125,10 @@ describe('DashboardConnection', () => {
   })
 
   it('sets dashboard options', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getDashboardConnection()
     connection.setOptions({ elements: {}, layouts: [] })
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('dashboard:options:set', {
       elements: {},
       layouts: [],
@@ -151,10 +136,10 @@ describe('DashboardConnection', () => {
   })
 
   it('opens the schedule dialog', async () => {
-    const chattySendAndReceiveSpy = spyOn(
+    const chattySendAndReceiveSpy = jest.spyOn(
       mockChattyHostConnection,
       'sendAndReceive'
-    ).and.callThrough()
+    )
     const connection = await getDashboardConnection()
     await connection.openScheduleDialog()
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith(

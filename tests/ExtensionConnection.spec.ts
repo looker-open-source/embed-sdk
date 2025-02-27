@@ -89,10 +89,7 @@ describe('ExtensionConnection', () => {
   afterEach(() => mock.teardown())
 
   it('gets an extension connection', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getExtensionConnection()
     expect(connection).toBeDefined()
   })

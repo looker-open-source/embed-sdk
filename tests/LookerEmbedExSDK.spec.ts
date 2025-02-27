@@ -44,7 +44,7 @@ describe('LookerEmbedExSDK', () => {
   })
 
   it('can override chatty builder', () => {
-    const chattyHostCreator = jasmine.createSpy()
+    const chattyHostCreator = jest.fn()
     const sdk = new LookerEmbedExSDK(chattyHostCreator)
     expect(sdk.chattyHostCreator === chattyHostCreator).toBeTruthy()
   })

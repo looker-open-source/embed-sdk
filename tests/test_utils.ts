@@ -54,7 +54,7 @@ export class MockChattyHostConnection {
 }
 
 export class MockChattyHost {
-  _hostBuilder: MockHostBuilder
+  _hostBuilder?: MockHostBuilder
   _hostConnection?: MockChattyHostConnection
   iframe: HTMLIFrameElement = document.createElement('iframe')
 
@@ -72,7 +72,7 @@ export class MockHostBuilder {
   _frameBorder?: string
   _handlers: any[] = []
   _targetOrigin?: string
-  _el: HTMLElement
+  _el?: HTMLElement
   _sandboxAttributes: string[] = []
   _allowAttributes: string[] = []
 
@@ -110,7 +110,7 @@ export class MockHostBuilder {
     return this._chattyHost
   }
 
-  countHandlersOfType(type) {
+  countHandlersOfType(type: string) {
     return this._handlers.filter(([name]) => type === name).length
   }
 

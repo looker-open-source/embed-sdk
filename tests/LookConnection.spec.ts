@@ -89,24 +89,18 @@ describe('LookConnection', () => {
   afterEach(() => mock.teardown())
 
   it('runs a look', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getLookConnection()
     connection.run()
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('look:run', undefined)
   })
 
   it('updateslook filters', async () => {
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     const connection = await getLookConnection()
     connection.updateFilters({ state: 'Califonia' })
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('look:filters:update', {
       filters: {
         state: 'Califonia',

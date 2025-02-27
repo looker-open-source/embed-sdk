@@ -25,6 +25,8 @@
  */
 
 import type { Config } from 'jest'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path')
 
 const config: Config = {
   // All imported modules in your tests should be mocked automatically
@@ -167,7 +169,8 @@ const config: Config = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: 'jsdom',
+  // testEnvironment: 'jsdom',
+  testEnvironment: path.resolve(__dirname, './jest.environment.js'),
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},

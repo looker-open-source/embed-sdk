@@ -108,12 +108,12 @@ describe('EmbedClientEx', () => {
     mockChattyHost._hostConnection = mockChattyHostConnection
     mockHostBuilder = new MockHostBuilder()
     mockHostBuilder._chattyHost = mockChattyHost
-    jasmine.clock().install()
-    jasmine.clock().mockDate(new Date(BASE_DATE))
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(BASE_DATE))
   })
 
   afterEach(() => {
-    jasmine.clock().uninstall()
+    jest.useRealTimers()
     mock.teardown()
   })
 
@@ -121,7 +121,7 @@ describe('EmbedClientEx', () => {
     const client = getClient()
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/embed/preload/?embed_domain=http://localhost:9876&sdk=3'
+      'https://myhost.com/embed/preload/?embed_domain=http://localhost&sdk=3'
     )
     expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
       0
@@ -142,7 +142,7 @@ describe('EmbedClientEx', () => {
     const client = getClient({ allowLoginScreen: true })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/embed/preload/?embed_domain=http://localhost:9876&sdk=3&allow_login_screen=true'
+      'https://myhost.com/embed/preload/?embed_domain=http://localhost&sdk=3&allow_login_screen=true'
     )
   })
 
@@ -179,7 +179,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/preload/?embed_domain=http://localhost:9876&sdk=3'
+      'https://mylooker.com/embed/preload/?embed_domain=http://localhost&sdk=3'
     )
   })
 
@@ -189,7 +189,7 @@ describe('EmbedClientEx', () => {
     })
     const connectPromise = client.connect(true)
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/preload/?embed_domain=http://localhost:9876&sdk=3'
+      'https://mylooker.com/embed/preload/?embed_domain=http://localhost&sdk=3'
     )
     mockHostBuilder.fireEventForHandler('page:changed', {})
     await connectPromise
@@ -202,7 +202,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http://localhost:9876&sdk=3'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http://localhost&sdk=3'
     )
   })
 
@@ -210,11 +210,11 @@ describe('EmbedClientEx', () => {
     const client = getClient({
       apiHost: 'https://mylooker.com',
       createUrl:
-        '/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3&my_filter=123',
+        '/embed/dashboards/42?embed_domain=http://localhost&sdk=3&my_filter=123',
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3&my_filter=123'
+      'https://mylooker.com/embed/dashboards/42?embed_domain=http://localhost&sdk=3&my_filter=123'
     )
   })
 
@@ -222,11 +222,11 @@ describe('EmbedClientEx', () => {
     const client = getClient({
       apiHost: 'https://mylooker.com',
       createUrl:
-        '/dashboards/42?embed_domain=http://localhost:9876&sdk=3&my_filter=123',
+        '/dashboards/42?embed_domain=http://localhost&sdk=3&my_filter=123',
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?embed_domain=http://localhost:9876&sdk=3&my_filter=123'
+      'https://mylooker.com/embed/dashboards/42?embed_domain=http://localhost&sdk=3&my_filter=123'
     )
   })
 
@@ -237,7 +237,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http://localhost:9876&sdk=3'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http://localhost&sdk=3'
     )
   })
 
@@ -248,7 +248,7 @@ describe('EmbedClientEx', () => {
     })
     await client.connect()
     expect(mockHostBuilder._url).toBe(
-      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http://localhost:9876&sdk=3'
+      'https://mylooker.com/embed/dashboards/42?my_filter=123&embed_domain=http://localhost&sdk=3'
     )
   })
 
@@ -267,12 +267,12 @@ describe('EmbedClientEx', () => {
   it('creates a signed url connection', async () => {
     const authResponse = {
       url: `https://mylooker.com/login/embed${encodeURIComponent(
-        '/embed/preload/?embed_domain=http://localhost:9876&sdk=3'
+        '/embed/preload/?embed_domain=http://localhost&sdk=3'
       )}?external_user_id=postmanpat&signature=1234567890abcdef`,
     }
     mock.get(/\/auth\?src=/, (req, res) => {
       expect(req.url().toString()).toBe(
-        '/auth?src=%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%3A9876%26sdk%3D3&param_1=value_1&param_2=value_2'
+        '/auth?src=%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%26sdk%3D3&param_1=value_1&param_2=value_2'
       )
       expect(req.header('Cache-Control')).toEqual('no-cache')
       expect(req.header('header_1')).toEqual('header_value_1')
@@ -324,24 +324,21 @@ describe('EmbedClientEx', () => {
       authentication_token: 'abcdef-auth',
       ...sessionTokens,
     }
-    const fetchSpy = spyOn(window, 'fetch').and.returnValue(
+    const fetchSpy = jest.spyOn(window, 'fetch').mockReturnValue(
       Promise.resolve({
         json: () => {
           return Promise.resolve(authResponse)
         },
         ok: true,
         status: 200,
-      })
+      }) as any
     )
     const client = getClient({
       acquireSession: '/acquire-session',
       generateTokens: '/generate-tokens',
     })
     await client.connect()
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     expect(fetchSpy).toHaveBeenCalledWith('/acquire-session', undefined)
     expect(mockHostBuilder._url).toBe(
       'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%3A9876%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
@@ -363,9 +360,9 @@ describe('EmbedClientEx', () => {
     expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', sessionTokens)
 
     // generate more tokens
-    jasmine.clock().tick(500 * 1000)
-    fetchSpy.calls.reset()
-    chattySendSpy.calls.reset()
+    jest.advanceTimersByTime(500 * 1000)
+    fetchSpy.mockReset()
+    chattySendSpy.mockReset()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
     expect(fetchSpy).toHaveBeenCalledWith('/generate-tokens', {
       body: JSON.stringify({
@@ -375,7 +372,7 @@ describe('EmbedClientEx', () => {
       headers: { 'content-type': 'application/json' },
       method: 'PUT',
     })
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', sessionTokens)
   })
 
@@ -391,11 +388,11 @@ describe('EmbedClientEx', () => {
       authentication_token: 'abcdef-auth',
       ...sessionTokens,
     }
-    const fetchSpy = spyOn(window, 'fetch').and.returnValue({
+    const fetchSpy = jest.spyOn(window, 'fetch').mockReturnValue({
       json: () => authResponse,
       ok: true,
       status: 200,
-    })
+    } as any)
     const client = getClient({
       acquireSession: { method: 'POST', url: '/acquire-session' },
       generateTokens: { method: 'POST', url: '/generate-tokens' },
@@ -407,7 +404,7 @@ describe('EmbedClientEx', () => {
     mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
 
     // generate more tokens
-    fetchSpy.calls.reset()
+    fetchSpy.mockReset()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
     expect(fetchSpy).toHaveBeenCalledWith('/generate-tokens', {
       body: JSON.stringify({
@@ -420,11 +417,13 @@ describe('EmbedClientEx', () => {
   })
 
   it('handles an acquire cookieless connection failure', async () => {
-    spyOn(window, 'fetch').and.returnValue({
+    jest.spyOn(window, 'fetch').mockReturnValue({
       ok: false,
       status: 429,
+    } as any)
+    jest.spyOn(console, 'error').mockImplementation(() => {
+      // noop
     })
-    spyOn(console, 'error')
     const client = getClient({
       acquireSession: '/acquire-session',
       generateTokens: '/generate-tokens',
@@ -439,11 +438,11 @@ describe('EmbedClientEx', () => {
 
   it('handles a badly formatted acquire session response', async () => {
     const authResponse = {}
-    spyOn(window, 'fetch').and.returnValue({
+    jest.spyOn(window, 'fetch').mockReturnValue({
       json: () => authResponse,
       ok: true,
       status: 200,
-    })
+    } as any)
     const client = getClient({
       acquireSession: '/acquire-session',
       generateTokens: '/generate-tokens',
@@ -468,26 +467,23 @@ describe('EmbedClientEx', () => {
       authentication_token: 'abcdef-auth',
       ...sessionTokens,
     }
-    const fetchSpy = spyOn(window, 'fetch').and.returnValues(
-      {
+    const fetchSpy = jest
+      .spyOn(window, 'fetch')
+      .mockReturnValueOnce({
         json: () => authResponse,
         ok: true,
         status: 200,
-      },
-      {
+      } as any)
+      .mockReturnValueOnce({
         ok: false,
         status: 429,
-      }
-    )
+      } as any)
     const client = getClient({
       acquireSession: '/acquire-session',
       generateTokens: '/generate-tokens',
     })
     await client.connect()
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
 
     // generate more tokens
@@ -500,8 +496,8 @@ describe('EmbedClientEx', () => {
       headers: { 'content-type': 'application/json' },
       method: 'PUT',
     })
-    await waitFor(() => chattySendSpy.calls.count() > 1)
-    expect(chattySendSpy.calls.mostRecent().args).toEqual([
+    await waitFor(() => chattySendSpy.mock.calls.length > 1)
+    expect(chattySendSpy).toHaveBeenCalledWith([
       'session:tokens',
       {
         api_token: undefined,
@@ -511,6 +507,18 @@ describe('EmbedClientEx', () => {
         session_reference_token_ttl: 0,
       },
     ])
+    // expect(
+    //   chattySendSpy.mock.calls[chattySendSpy.mock.calls.length - 1].args
+    // ).toEqual([
+    //   'session:tokens',
+    //   {
+    //     api_token: undefined,
+    //     api_token_ttl: undefined,
+    //     navigation_token: undefined,
+    //     navigation_token_ttl: undefined,
+    //     session_reference_token_ttl: 0,
+    //   },
+    // ])
   })
 
   xit('creates a cookieless connection and generates tokens using callbacks', async () => {
@@ -540,23 +548,20 @@ describe('EmbedClientEx', () => {
       return Promise.resolve(generatedTokens)
     }
     const callbackFunctions = { acquireSessionCallback, generateTokensCallback }
-    const acquireSessionCallbackSpy = spyOn(
+    const acquireSessionCallbackSpy = jest.spyOn(
       callbackFunctions,
       'acquireSessionCallback'
-    ).and.callThrough()
-    const generateTokensCallbackSpy = spyOn(
+    )
+    const generateTokensCallbackSpy = jest.spyOn(
       callbackFunctions,
       'generateTokensCallback'
-    ).and.callThrough()
+    )
     const client = getClient({
       acquireSession: callbackFunctions.acquireSessionCallback,
       generateTokens: callbackFunctions.generateTokensCallback,
     })
     await client.connect()
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     expect(mockHostBuilder._url).toBe(
       'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%3A9876%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
     )
@@ -578,9 +583,9 @@ describe('EmbedClientEx', () => {
     expect(acquireSessionCallbackSpy).toHaveBeenCalled()
 
     // generate more tokens
-    chattySendSpy.calls.reset()
+    chattySendSpy.mockReset()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
-    await waitFor(() => chattySendSpy.calls.count() > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0)
     expect(chattySendSpy).toHaveBeenCalledWith(
       'session:tokens',
       generatedTokens
@@ -589,7 +594,7 @@ describe('EmbedClientEx', () => {
   })
 
   xit('handles open dialog events', async () => {
-    const scrollIntoViewSpy = jasmine.createSpy('scrollIntoViewSpy')
+    const scrollIntoViewSpy = jest.fn()
     mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
     const client = getClient()
     await client.connect()
@@ -598,12 +603,14 @@ describe('EmbedClientEx', () => {
       open: true,
       placement: 'cover',
     })
-    await waitFor(() => scrollIntoViewSpy.calls.count() > 0, { timeout: 200 })
+    await waitFor(() => scrollIntoViewSpy.mock.calls.length > 0, {
+      timeout: 200,
+    })
     expect(scrollIntoViewSpy).toHaveBeenCalled()
   })
 
   it('dynamically updates the IFRAME height', async () => {
-    const scrollIntoViewSpy = jasmine.createSpy('scrollIntoViewSpy')
+    const scrollIntoViewSpy = jest.fn()
     mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
     const client = getClient()
     await client.connect()
@@ -615,15 +622,12 @@ describe('EmbedClientEx', () => {
   })
 
   it('sends scroll messages', async () => {
-    const scrollIntoViewSpy = jasmine.createSpy('scrollIntoViewSpy')
+    const scrollIntoViewSpy = jest.fn()
     mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
     const client = getClient()
     await client.connect()
     expect(client.isConnected).toBeTruthy()
-    const chattySendSpy = spyOn(
-      mockChattyHostConnection,
-      'send'
-    ).and.callThrough()
+    const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     document.dispatchEvent(new Event('scroll'))
     expect(chattySendSpy).toHaveBeenCalledWith('env:host:scroll', {
       offsetLeft: mockChattyHost.iframe.offsetLeft,
@@ -631,7 +635,7 @@ describe('EmbedClientEx', () => {
       scrollX: window.scrollX,
       scrollY: window.scrollY,
     })
-    chattySendSpy.calls.reset()
+    chattySendSpy.mockReset()
     window.dispatchEvent(new Event('resize'))
     expect(chattySendSpy).toHaveBeenCalledWith('env:host:scroll', {
       offsetLeft: mockChattyHost.iframe.offsetLeft,
