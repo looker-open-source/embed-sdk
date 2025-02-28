@@ -50,6 +50,7 @@ describe('EmbedClientEx', () => {
   let mockChattyHostConnection: MockChattyHostConnection
   let mockChattyHost: MockChattyHost
   let mockHostBuilder: MockHostBuilder
+  let saveSetInterval: any
 
   const getClient = (
     options: {
@@ -100,6 +101,10 @@ describe('EmbedClientEx', () => {
     builder.sandboxedHost = sandboxedHost
     return builder.build() as EmbedClientEx
   }
+
+  beforeAll(() => {
+    saveSetInterval = setInterval
+  })
 
   beforeEach(() => {
     mock.setup()
@@ -312,7 +317,7 @@ describe('EmbedClientEx', () => {
     }
   })
 
-  xit('creates a cookieless connection and generates tokens', async () => {
+  it('creates a cookieless connection and generates tokens', async () => {
     const sessionTokens = {
       api_token: 'abcdef-api',
       api_token_ttl: 600,
@@ -341,7 +346,7 @@ describe('EmbedClientEx', () => {
     const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     expect(fetchSpy).toHaveBeenCalledWith('/acquire-session', undefined)
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%3A9876%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
     )
     expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
       1
@@ -360,9 +365,11 @@ describe('EmbedClientEx', () => {
     expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', sessionTokens)
 
     // generate more tokens
+
+    jest.setSystemTime(new Date(BASE_DATE + 500 * 1000))
     jest.advanceTimersByTime(500 * 1000)
-    fetchSpy.mockReset()
-    chattySendSpy.mockReset()
+    fetchSpy.mockClear()
+    chattySendSpy.mockClear()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
     expect(fetchSpy).toHaveBeenCalledWith('/generate-tokens', {
       body: JSON.stringify({
@@ -372,16 +379,18 @@ describe('EmbedClientEx', () => {
       headers: { 'content-type': 'application/json' },
       method: 'PUT',
     })
-    await waitFor(() => chattySendSpy.mock.calls.length > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0, {
+      setInterval: saveSetInterval,
+    })
     expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', sessionTokens)
   })
 
-  xit('creates a cookieless connection using a CookielessRequestInit type', async () => {
+  it('creates a cookieless connection using a CookielessRequestInit type', async () => {
     const sessionTokens = {
       api_token: 'abcdef-api',
-      api_token_ttl: 30000,
+      api_token_ttl: 600,
       navigation_token: 'abcdef-nav',
-      navigation_token_ttl: 30000,
+      navigation_token_ttl: 600,
       session_reference_token_ttl: 30000,
     }
     const authResponse = {
@@ -404,7 +413,10 @@ describe('EmbedClientEx', () => {
     mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
 
     // generate more tokens
-    fetchSpy.mockReset()
+
+    jest.setSystemTime(new Date(BASE_DATE + 500 * 1000))
+    jest.advanceTimersByTime(500 * 1000)
+    fetchSpy.mockClear()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
     expect(fetchSpy).toHaveBeenCalledWith('/generate-tokens', {
       body: JSON.stringify({
@@ -455,12 +467,12 @@ describe('EmbedClientEx', () => {
     }
   })
 
-  xit('handles a generate tokens failure', async () => {
+  it('handles a generate tokens failure', async () => {
     const sessionTokens = {
       api_token: 'abcdef-api',
-      api_token_ttl: 30000,
+      api_token_ttl: 600,
       navigation_token: 'abcdef-nav',
-      navigation_token_ttl: 30000,
+      navigation_token_ttl: 600,
       session_reference_token_ttl: 30000,
     }
     const authResponse = {
@@ -485,10 +497,15 @@ describe('EmbedClientEx', () => {
     await client.connect()
     const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     mockHostBuilder.fireEventForHandler('session:tokens:request', authResponse)
+    chattySendSpy.mockClear()
 
     // generate more tokens
+
+    jest.setSystemTime(new Date(BASE_DATE + 500 * 1000))
+    jest.advanceTimersByTime(500 * 1000)
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
-    expect(fetchSpy).toHaveBeenCalledWith('/generate-tokens', {
+    expect(fetchSpy).toHaveBeenCalledTimes(2)
+    expect(fetchSpy).toHaveBeenLastCalledWith('/generate-tokens', {
       body: JSON.stringify({
         api_token: sessionTokens.api_token,
         navigation_token: sessionTokens.navigation_token,
@@ -496,44 +513,31 @@ describe('EmbedClientEx', () => {
       headers: { 'content-type': 'application/json' },
       method: 'PUT',
     })
-    await waitFor(() => chattySendSpy.mock.calls.length > 1)
-    expect(chattySendSpy).toHaveBeenCalledWith([
-      'session:tokens',
-      {
-        api_token: undefined,
-        api_token_ttl: undefined,
-        navigation_token: undefined,
-        navigation_token_ttl: undefined,
-        session_reference_token_ttl: 0,
-      },
-    ])
-    // expect(
-    //   chattySendSpy.mock.calls[chattySendSpy.mock.calls.length - 1].args
-    // ).toEqual([
-    //   'session:tokens',
-    //   {
-    //     api_token: undefined,
-    //     api_token_ttl: undefined,
-    //     navigation_token: undefined,
-    //     navigation_token_ttl: undefined,
-    //     session_reference_token_ttl: 0,
-    //   },
-    // ])
+    await waitFor(() => chattySendSpy.mock.calls.length > 0, {
+      setInterval: saveSetInterval,
+    })
+    expect(chattySendSpy).toHaveBeenCalledWith('session:tokens', {
+      api_token: undefined,
+      api_token_ttl: undefined,
+      navigation_token: undefined,
+      navigation_token_ttl: undefined,
+      session_reference_token_ttl: undefined,
+    })
   })
 
-  xit('creates a cookieless connection and generates tokens using callbacks', async () => {
+  it('creates a cookieless connection and generates tokens using callbacks', async () => {
     const sessionTokens = {
       api_token: 'abcdef-api',
-      api_token_ttl: 10000,
+      api_token_ttl: 600,
       navigation_token: 'abcdef-nav',
-      navigation_token_ttl: 10000,
+      navigation_token_ttl: 600,
       session_reference_token_ttl: 30000,
     }
     const generatedTokens = {
       api_token: 'uvwxyz-api',
-      api_token_ttl: 10000,
+      api_token_ttl: 600,
       navigation_token: 'uvwxyz-nav',
-      navigation_token_ttl: 31000,
+      navigation_token_ttl: 600,
       session_reference_token_ttl: 25000,
     }
     const authResponse = {
@@ -563,7 +567,7 @@ describe('EmbedClientEx', () => {
     await client.connect()
     const chattySendSpy = jest.spyOn(mockChattyHostConnection, 'send')
     expect(mockHostBuilder._url).toBe(
-      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%3A9876%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
+      'https://myhost.com/login/embed/%2Fembed%2Fpreload%2F%3Fembed_domain%3Dhttp%3A%2F%2Flocalhost%26sdk%3D3%26embed_navigation_token%3Dabcdef-nav?embed_authentication_token=abcdef-auth'
     )
     expect(mockHostBuilder.countHandlersOfType('session:tokens:request')).toBe(
       1
@@ -583,9 +587,14 @@ describe('EmbedClientEx', () => {
     expect(acquireSessionCallbackSpy).toHaveBeenCalled()
 
     // generate more tokens
-    chattySendSpy.mockReset()
+
+    jest.setSystemTime(new Date(BASE_DATE + 500 * 1000))
+    jest.advanceTimersByTime(500 * 1000)
+    chattySendSpy.mockClear()
     mockHostBuilder.fireEventForHandler('session:tokens:request', sessionTokens)
-    await waitFor(() => chattySendSpy.mock.calls.length > 0)
+    await waitFor(() => chattySendSpy.mock.calls.length > 0, {
+      setInterval: saveSetInterval,
+    })
     expect(chattySendSpy).toHaveBeenCalledWith(
       'session:tokens',
       generatedTokens
@@ -593,7 +602,7 @@ describe('EmbedClientEx', () => {
     expect(generateTokensCallbackSpy).toHaveBeenCalled()
   })
 
-  xit('handles open dialog events', async () => {
+  it('handles open dialog events', async () => {
     const scrollIntoViewSpy = jest.fn()
     mockChattyHost.iframe.scrollIntoView = scrollIntoViewSpy
     const client = getClient()
@@ -605,6 +614,7 @@ describe('EmbedClientEx', () => {
     })
     await waitFor(() => scrollIntoViewSpy.mock.calls.length > 0, {
       timeout: 200,
+      setInterval: saveSetInterval,
     })
     expect(scrollIntoViewSpy).toHaveBeenCalled()
   })

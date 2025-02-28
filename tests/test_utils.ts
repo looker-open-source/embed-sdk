@@ -28,11 +28,13 @@ import type { Callback } from '@looker/chatty'
 
 export const waitFor = (
   callback: () => boolean,
-  options?: { timeout?: number }
+  options?: { timeout?: number; setInterval?: any }
 ) =>
   new Promise<void>((resolve, reject) => {
-    let count = 5
-    setInterval(() => {
+    let count = (options?.setInterval || setInterval)(() => {
+      if (options?.setInterval) {
+        jest.advanceTimersToNextTimer()
+      }
       count--
       if (callback()) {
         resolve()
