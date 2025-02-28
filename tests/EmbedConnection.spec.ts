@@ -52,6 +52,7 @@ describe('EmbedConnection', () => {
       acquireSession?: string | CookielessRequestInit | CookielessCallback
       generateTokens?: string | CookielessRequestInit | GenerateTokensCallback
       dashboardId?: string
+      lookerVersion?: string
     } = {}
   ) => {
     const {
@@ -60,6 +61,7 @@ describe('EmbedConnection', () => {
       acquireSession,
       generateTokens,
       dashboardId,
+      lookerVersion = '25.1.0',
     } = options
     const createChattyBuilder = (url: string) => {
       mockHostBuilder._url = url
@@ -84,7 +86,7 @@ describe('EmbedConnection', () => {
       .then((connection) => {
         mockHostBuilder.fireEventForHandler('page:changed', {
           page: {
-            lookerVersion: '25.1.0',
+            lookerVersion,
             url: '/embed/preload?embed_domain=http://localhost&sdk=3',
           },
         })
@@ -102,6 +104,42 @@ describe('EmbedConnection', () => {
   })
 
   afterEach(() => mock.teardown())
+
+  it('makes the looker version available', async () => {
+    const connection = await getConnection()
+    await connection.loadDashboard('42', false, false)
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        lookerVersion: '25.1.0',
+        url: '/embed/dashboards/42?embed_domain=http://localhost&sdk=3',
+      },
+    })
+    expect(connection.getLookerVersion()).toEqual(25.1)
+  })
+
+  it('returns -1 when looker version unavailable', async () => {
+    const connection = await getConnection({ lookerVersion: '' })
+    await connection.loadDashboard('42', false, false)
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/dashboards/42?embed_domain=http://localhost&sdk=3',
+      },
+    })
+    expect(connection.getLookerVersion()).toEqual(-1)
+  })
+
+  it('throws an error when Looker version does not support page:load action', async () => {
+    const connection = await getConnection({ lookerVersion: '24.18.0' })
+    try {
+      await connection.loadReport('42', false, false)
+    } catch (error: unknown) {
+      expect(error).toStrictEqual(
+        new Error(
+          "The 'page:load' action requires Looker version 25.2.0 or greater"
+        )
+      )
+    }
+  })
 
   it('loads a dashboard', async () => {
     const connection = await getConnection()
@@ -170,6 +208,90 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads a merge query', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadMergeQuery('a1b2c3d4', false, false)
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/merge?mid=a1b2c3d4&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('waits for a merge query to be loaded', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    const loadPromise = connection.loadMergeQuery('a1b2c3d4')
+    mockHostBuilder.fireEventForHandler('page:changed', {})
+    await loadPromise
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/merge?mid=a1b2c3d4&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('loads a query', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadQuery('mymodel', 'myview', 'a1b2c3d4', false, false)
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/query/mymodel/myview?qid=a1b2c3d4&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('waits for a query to be loaded', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    const loadPromise = connection.loadQuery('mymodel', 'myview', 'a1b2c3d4')
+    mockHostBuilder.fireEventForHandler('page:changed', {})
+    await loadPromise
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/query/mymodel/myview?qid=a1b2c3d4&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('loads a query visualization', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadQueryVisualization('a1b2c3d4', false, false)
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/query-visualization/a1b2c3d4?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('waits for a query visualization to be loaded', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    const loadPromise = connection.loadQueryVisualization('a1b2c3d4')
+    mockHostBuilder.fireEventForHandler('page:changed', {})
+    await loadPromise
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/query-visualization/a1b2c3d4?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('loads a look', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -223,6 +345,34 @@ describe('EmbedConnection', () => {
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/extensions/myproj::myext?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('loads a report', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadReport('abcdefg', false, false)
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/reporting/abcdefg?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('waits for a report to be loaded', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    const loadPromise = connection.loadReport('abcdefg')
+    mockHostBuilder.fireEventForHandler('page:changed', {})
+    await loadPromise
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/reporting/abcdefg?embed_domain=http://localhost&sdk=3',
     })
   })
 

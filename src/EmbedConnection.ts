@@ -77,8 +77,10 @@ export class EmbedConnection implements ILookerConnection {
     waitUntilLoaded = true,
   }: LoadUrlParams): Promise<void> {
     if (!this._embedClient.isPageLoadEventSupported) {
-      throw new Error(
-        "The 'page:load' event requires Looker version 25.2.0 or greater"
+      return Promise.reject(
+        new Error(
+          "The 'page:load' action requires Looker version 25.2.0 or greater"
+        )
       )
     }
     switch (this._pageType) {

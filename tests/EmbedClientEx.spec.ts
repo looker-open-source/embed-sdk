@@ -264,7 +264,7 @@ describe('EmbedClientEx', () => {
         createUrl:
           'https://mylooker.com::9999/embed/dashboards/42?my_filter=123',
       })
-    }).toThrowError(
+    }).toThrow(
       'Invalid embed URL https://mylooker.com::9999/embed/dashboards/42?my_filter=123'
     )
   })

@@ -47,7 +47,7 @@ describe('EmbedBuilderEx', () => {
   it('throws an error when withId is used with withUrl', () => {
     expect(() => {
       dashboardUrlBuilder.withId('42')
-    }).toThrowError('withId requires initialization of endpoint')
+    }).toThrow('withId requires initialization of endpoint')
   })
 
   it('can add params', () => {

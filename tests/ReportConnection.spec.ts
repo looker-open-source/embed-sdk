@@ -40,12 +40,12 @@ import {
   MockHostBuilder,
 } from './test_utils'
 
-describe('ExtensionConnection', () => {
+describe('ReportConnection', () => {
   let mockChattyHostConnection: MockChattyHostConnection
   let mockChattyHost: MockChattyHost
   let mockHostBuilder: MockHostBuilder
 
-  const getExtensionConnection = async (
+  const getReportConnection = async (
     options: {
       apiHost?: string
       auth?: string | LookerAuthConfig
@@ -70,10 +70,10 @@ describe('ExtensionConnection', () => {
       sdk.init(apiHost, auth)
     }
     const connection = (await sdk
-      .createExtensionWithId('x::y')
+      .createReportWithId('report')
       .build()
       .connect()) as EmbedConnection
-    return connection.asExtensionConnection()
+    return connection.asReportConnection()
   }
 
   beforeEach(() => {
@@ -87,8 +87,8 @@ describe('ExtensionConnection', () => {
 
   afterEach(() => mock.teardown())
 
-  it('gets an extension connection', async () => {
-    const connection = await getExtensionConnection()
+  it('gets a report connection', async () => {
+    const connection = await getReportConnection()
     expect(connection).toBeDefined()
   })
 })

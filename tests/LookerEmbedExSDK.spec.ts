@@ -65,7 +65,7 @@ describe('LookerEmbedExSDK', () => {
     expect(sdk._apiHost).toBe('myhost.com')
     expect(() => {
       sdk.init('myhost.com::9999')
-    }).toThrowError('Invalid host URL myhost.com::9999')
+    }).toThrow('Invalid host URL myhost.com::9999')
   })
 
   it('initializes signed URL SDK with string auth', () => {
@@ -112,7 +112,7 @@ describe('LookerEmbedExSDK', () => {
         .withApiHost('myhost.com')
         .withAuthUrl('/auth')
         .withAuthUrl('/auth2')
-    }).toThrowError('not allowed to change auth url')
+    }).toThrow('not allowed to change auth url')
   })
 
   it('prevents withAuth from being used more than once', () => {
@@ -123,7 +123,7 @@ describe('LookerEmbedExSDK', () => {
         .withApiHost('myhost.com')
         .withAuth({ url: '/auth' })
         .withAuth({ url: '/auth2' })
-    }).toThrowError('not allowed to change auth url')
+    }).toThrow('not allowed to change auth url')
   })
 
   it('prevents withApiHost from being used more than once', () => {
@@ -134,7 +134,7 @@ describe('LookerEmbedExSDK', () => {
         .withApiHost('myhost.com')
         .withAuthUrl('/auth')
         .withApiHost('anotherhost.com')
-    }).toThrowError('not allowed to change api host')
+    }).toThrow('not allowed to change api host')
   })
 
   it('adds sandboxed_host to params', () => {
