@@ -52,6 +52,7 @@ export class EmbedClientEx implements IEmbedClient {
   _lookerVersion?: number
   _cookielessInitialized = false
   _cookielessSessionExpired = false
+  _hasSessionExpired = false
 
   /**
    * @hidden
@@ -199,6 +200,13 @@ export class EmbedClientEx implements IEmbedClient {
 
   private async createIframe(url: string, waitUntilLoaded: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
+    if (!this._builder.handlers['session:expired']) {
+      this._builder.handlers['session:expired'] = []
+    }
+    this._builder.handlers['session:expired'].push(() => {
+      this._hasSessionExpired = true
+      this._sdk.clearSession()
+    })
     if (!this._builder.handlers['page:changed']) {
       this._builder.handlers['page:changed'] = []
     }
@@ -230,7 +238,6 @@ export class EmbedClientEx implements IEmbedClient {
     this._builder.handlers['dashboard:save:complete'].push(() =>
       this.updateEditing(false)
     )
-
     if (!this._builder.handlers['look:edit:start']) {
       this._builder.handlers['look:edit:start'] = []
     }

@@ -80,7 +80,7 @@ You finish by building the embedded element:
   .build()
 ```
 
-The `createXXX` functions (`Id` and `URL` ) will call your backend `/auth` endpoint when `build` is invoked and requires a signed embed URL in response.
+The `create[Type]` functions (`Id` and `URL` ) will call your backend `/auth` endpoint when `build` is invoked and requires a signed embed URL in response.
 
 If you want to send and receive messages to the embedded IFRAME you need to call `connect()` which returns a Promise that resolves to the communication interface of the given embedded IFRAME (the connection):
 
@@ -90,7 +90,7 @@ If you want to send and receive messages to the embedded IFRAME you need to call
   .catch(console.error)
 ```
 
-Embed SDK 2.0.x allows the same IFRAME to be used for all Looker embed types. Once the connection has been established, use the `loadXXX` methods on the connection to load different Looker embed object instances or types.
+Embed SDK 2.0.x allows the same IFRAME to be used for all Looker embed types. Once the connection has been established, use the `load[Type]` methods on the connection to load different Looker embed object instances or types.
 
 ## Building URLs for the SDK
 

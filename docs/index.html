@@ -42,11 +42,11 @@
 <p>You finish by building the embedded element:</p>
 <pre><code class="language-javascript"><span class="hl-1">  .</span><span class="hl-0">build</span><span class="hl-1">()</span>
 </code></pre>
-<p>The <code>createXXX</code> functions (<code>Id</code> and <code>URL</code> ) will call your backend <code>/auth</code> endpoint when <code>build</code> is invoked and requires a signed embed URL in response.</p>
+<p>The <code>create[Type]</code> functions (<code>Id</code> and <code>URL</code> ) will call your backend <code>/auth</code> endpoint when <code>build</code> is invoked and requires a signed embed URL in response.</p>
 <p>If you want to send and receive messages to the embedded IFRAME you need to call <code>connect()</code> which returns a Promise that resolves to the communication interface of the given embedded IFRAME (the connection):</p>
 <pre><code class="language-javascript"><span class="hl-1">  .</span><span class="hl-0">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-0">then</span><span class="hl-1">(</span><span class="hl-4">setupConnection</span><span class="hl-1">)</span><br/><span class="hl-1">  .</span><span class="hl-0">catch</span><span class="hl-1">(</span><span class="hl-4">console</span><span class="hl-1">.</span><span class="hl-4">error</span><span class="hl-1">)</span>
 </code></pre>
-<p>Embed SDK 2.0.x allows the same IFRAME to be used for all Looker embed types. Once the connection has been established, use the <code>loadXXX</code> methods on the connection to load different Looker embed object instances or types.</p>
+<p>Embed SDK 2.0.x allows the same IFRAME to be used for all Looker embed types. Once the connection has been established, use the <code>load[Type]</code> methods on the connection to load different Looker embed object instances or types.</p>
 
 <a href="#building-urls-for-the-sdk" id="building-urls-for-the-sdk" style="color: inherit; text-decoration: none;">
   <h2>Building URLs for the SDK</h2>

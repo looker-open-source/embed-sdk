@@ -228,7 +228,13 @@ export interface ILookerConnection {
   isEditing(): boolean
 
   /**
-   * @deprecated use asXXXConnection().run() instead
+   * Returns true if the session has expired
+   */
+
+  hasSessionExpired(): boolean
+
+  /**
+   * @deprecated use as[Type]Connection().run() instead
    */
 
   run(): void

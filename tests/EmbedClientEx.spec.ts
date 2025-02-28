@@ -654,4 +654,12 @@ describe('EmbedClientEx', () => {
       scrollY: window.scrollY,
     })
   })
+
+  it('clears the session when the session expires', async () => {
+    const client = getClient()
+    const connection = await client.connect()
+    expect(connection.hasSessionExpired()).toBeFalsy()
+    mockHostBuilder.fireEventForHandler('session:expired')
+    expect(connection.hasSessionExpired()).toBeTruthy()
+  })
 })

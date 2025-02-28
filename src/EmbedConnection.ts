@@ -246,6 +246,10 @@ export class EmbedConnection implements ILookerConnection {
     return this._isEditing
   }
 
+  hasSessionExpired() {
+    return this._embedClient._hasSessionExpired
+  }
+
   // deprecated methods to support migration from 1.18.x to 2.0.0
 
   /**
