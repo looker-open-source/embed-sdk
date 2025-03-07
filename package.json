@@ -27,7 +27,7 @@
     "lint-fix": "eslint --format stylish --fix '**/*.ts'",
     "start": "npm run beer-dev && npm run build_utils && webpack serve --config webpack-devserver.config.js --hot --color --progress",
     "prepare": "husky",
-    "prepublishOnly": "npm run test-once",
+    "prepublishOnly": "npm run test",
     "server-prep": "npm run build && webpack --config webpack-devserver.config.js && rm -rf ./server/public && mkdir ./server/public && npm run beer-serv && cp ./demo/demo.css ./server/public && cp ./demo/*.html ./server/public && cp ./demo/*.js ./server/public",
     "server": "npm run server-prep && cd server && ts-node ./app.ts",
     "server-dev": "cd server && find . -type f -name '*.js' -delete && ts-node-dev --watch ./utils ./app.ts",
