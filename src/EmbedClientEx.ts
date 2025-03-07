@@ -106,7 +106,7 @@ export class EmbedClientEx implements IEmbedClient {
    * client that can be used to send messages to the embedded content.
    */
   async connect(options?: IConnectOptions): Promise<ILookerConnection> {
-    return this.connectInternal(options?.waitUntilLoaded).then((connection) => {
+    return this.connectInternal(options).then((connection) => {
       this._connection = connection as EmbedConnection
       return connection
     })
@@ -159,22 +159,22 @@ export class EmbedClientEx implements IEmbedClient {
   }
 
   private async connectInternal(
-    waitUntilLoaded = false
+    options: IConnectOptions = {}
   ): Promise<ILookerConnection> {
     if (this._connectionPromise) return this._connectionPromise
     if (!this._builder.auth?.url && !this._builder.isCookielessEmbed) {
       // Private embedding
-      this._connectionPromise = this.createIframe(
+      this._connectionPromise = this.abortableCreateIframe(
         this.prependApiHost(
           this.appendRequiredParameters(this._builder.embedUrl)
         ),
-        waitUntilLoaded
+        options
       )
     } else {
       if (this._builder.isCookielessEmbed) {
         // Cookieless embedding
-        this._connectionPromise = this.acquireCookielessEmbedSession()
-          .then(async (url) => this.createIframe(url, waitUntilLoaded))
+        this._connectionPromise = this.acquireCookielessEmbedSession(options)
+          .then(async (url) => this.abortableCreateIframe(url, options))
           .catch((_error) => {
             this._connectionPromise = undefined
             throw _error
@@ -182,7 +182,7 @@ export class EmbedClientEx implements IEmbedClient {
       } else {
         // Signed
         this._connectionPromise = this.createSignedUrl().then(async (url) =>
-          this.createIframe(url, waitUntilLoaded)
+          this.abortableCreateIframe(url, options)
         )
       }
     }
@@ -199,7 +199,36 @@ export class EmbedClientEx implements IEmbedClient {
     }
   }
 
-  private async createIframe(url: string, waitUntilLoaded: boolean) {
+  private async abortableCreateIframe(
+    url: string,
+    { waitUntilLoaded, signal }: IConnectOptions
+  ): Promise<EmbedConnection> {
+    return new Promise((resolve, reject) => {
+      let promiseAborted = false
+      if (waitUntilLoaded && signal) {
+        signal.addEventListener('abort', () => {
+          this._sdk._createEmbedSessionPromise = undefined
+          promiseAborted = true
+          reject(signal.reason)
+        })
+      }
+      this.createIframe(url, waitUntilLoaded)
+        .then((connection) => {
+          if (!promiseAborted) {
+            this._sdk._sessionCreated = true
+            resolve(connection)
+          }
+        })
+        .catch((error) => {
+          if (!promiseAborted) {
+            this._sdk._createEmbedSessionPromise = undefined
+            reject(error)
+          }
+        })
+    })
+  }
+
+  private async createIframe(url: string, waitUntilLoaded?: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
     if (!this._builder.handlers['session:expired']) {
       this._builder.handlers['session:expired'] = []
@@ -571,19 +600,21 @@ export class EmbedClientEx implements IEmbedClient {
     })
   }
 
-  private async acquireCookielessEmbedSession(): Promise<string> {
+  private async acquireCookielessEmbedSession(
+    options: IConnectOptions
+  ): Promise<string> {
     if (this._sdk._sessionCreated) {
       if (this._sdk._cookielessSession?.cookielessNavigationToken) {
         return this.getCookielessEmbedUrl()
       }
-      return this.acquireCookielessEmbedSessionInternal()
+      return this.abortableAcquireCookielessEmbedSessionInternal(options)
     }
     if (this._sdk._createEmbedSessionPromise) {
       await this._sdk._createEmbedSessionPromise
       if (this._sdk._cookielessSession?.cookielessNavigationToken) {
         return this.getCookielessEmbedUrl()
       }
-      return this.acquireCookielessEmbedSessionInternal()
+      return this.abortableAcquireCookielessEmbedSessionInternal(options)
     }
 
     // Create the session acquire promise and make the resolve
@@ -595,15 +626,36 @@ export class EmbedClientEx implements IEmbedClient {
       this._sdk._createEmbedSessionPromiseResolver = resolve
     })
 
-    return this.acquireCookielessEmbedSessionInternal()
-      .then((url) => {
-        this._sdk._sessionCreated = true
-        return url
-      })
-      .catch((error) => {
-        this._sdk._createEmbedSessionPromise = undefined
-        throw error
-      })
+    return this.abortableAcquireCookielessEmbedSessionInternal(options)
+  }
+
+  private abortableAcquireCookielessEmbedSessionInternal({
+    waitUntilLoaded,
+    signal,
+  }: IConnectOptions): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let promiseAborted = false
+      if (waitUntilLoaded && signal) {
+        signal.addEventListener('abort', () => {
+          this._sdk._createEmbedSessionPromise = undefined
+          promiseAborted = true
+          reject(signal.reason)
+        })
+      }
+      this.acquireCookielessEmbedSessionInternal()
+        .then((url) => {
+          if (!promiseAborted) {
+            this._sdk._sessionCreated = true
+            resolve(url)
+          }
+        })
+        .catch((error) => {
+          if (!promiseAborted) {
+            this._sdk._createEmbedSessionPromise = undefined
+            reject(error)
+          }
+        })
+    })
   }
 
   private async acquireCookielessEmbedSessionInternal(): Promise<string> {
