@@ -33,6 +33,7 @@ import type {
   SessionStatus,
   IEmbedClient,
   ILookerConnection,
+  IConnectOptions,
 } from './types'
 import { IS_URL, extractPageTypeFromUrl } from './utils'
 import type { EmbedBuilderEx } from './EmbedBuilderEx'
@@ -104,8 +105,8 @@ export class EmbedClientEx implements IEmbedClient {
    * Establish two way communication with embedded content. Returns a promise that resolves to a
    * client that can be used to send messages to the embedded content.
    */
-  async connect(waitUntilLoaded = false): Promise<ILookerConnection> {
-    return this.connectInternal(waitUntilLoaded).then((connection) => {
+  async connect(options?: IConnectOptions): Promise<ILookerConnection> {
+    return this.connectInternal(options?.waitUntilLoaded).then((connection) => {
       this._connection = connection as EmbedConnection
       return connection
     })

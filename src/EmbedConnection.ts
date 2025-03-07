@@ -39,6 +39,7 @@ import type {
   PageType,
   LookerDashboardOptions,
   LookerEmbedFilterParams,
+  IConnectOptions,
 } from './types'
 import { ExploreConnection } from './ExploreConnection'
 import { ExtensionConnection } from './ExtensionConnection'
@@ -74,7 +75,7 @@ export class EmbedConnection implements ILookerConnection {
   async loadUrl({
     url,
     pushHistory = false,
-    waitUntilLoaded = true,
+    options,
   }: LoadUrlParams): Promise<void> {
     if (!this._embedClient.isPageLoadEventSupported) {
       return Promise.reject(
@@ -88,7 +89,7 @@ export class EmbedConnection implements ILookerConnection {
         this.asDashboardConnection().stop()
         break
     }
-    const pageChangePromise = waitUntilLoaded
+    const pageChangePromise = options?.waitUntilLoaded
       ? new Promise<EmbedConnection>((resolve) => {
           this._embedClient._pageChangeResolver = resolve
         })
@@ -98,33 +99,33 @@ export class EmbedConnection implements ILookerConnection {
       pushHistory,
       url: this._embedClient.appendRequiredParameters(url),
     })
-    return waitUntilLoaded ? pageChangePromise : pageLoadPromise
+    return options?.waitUntilLoaded ? pageChangePromise : pageLoadPromise
   }
 
   async loadId({
     type,
     id,
     pushHistory,
-    waitUntilLoaded,
+    options,
   }: LoadIdParams): Promise<void> {
     return this.loadUrl({
       pushHistory,
       url: `/embed/${type}/${id}`,
-      waitUntilLoaded,
+      options,
     })
   }
 
   async loadDashboard(
     id: string,
     pushHistory?: boolean,
-    waitUntilLoaded?: boolean
+    options?: IConnectOptions
   ) {
     if (this._embedClient.isPageLoadEventSupported) {
       return this.loadId({
         id,
         pushHistory,
         type: 'dashboards',
-        waitUntilLoaded,
+        options,
       })
     }
     switch (this._pageType) {
@@ -139,17 +140,17 @@ export class EmbedConnection implements ILookerConnection {
   async loadExplore(
     id: string,
     pushHistory?: boolean,
-    waitUntilLoaded?: boolean
+    options?: IConnectOptions
   ) {
     id = id.replace('::', '/') // Handle old format explore ids.
-    return this.loadId({ id, pushHistory, type: 'explore', waitUntilLoaded })
+    return this.loadId({ id, pushHistory, type: 'explore', options })
   }
 
-  loadMergeQuery(id: string, pushHistory?: boolean, waitUntilLoaded?: boolean) {
+  loadMergeQuery(id: string, pushHistory?: boolean, options?: IConnectOptions) {
     return this.loadUrl({
       pushHistory,
       url: `/embed/merge?mid=${id}`,
-      waitUntilLoaded,
+      options,
     })
   }
 
@@ -158,60 +159,60 @@ export class EmbedConnection implements ILookerConnection {
     view: string,
     qid: string,
     pushHistory?: boolean,
-    waitUntilLoaded?: boolean
+    options?: IConnectOptions
   ) {
     return this.loadUrl({
       pushHistory,
       url: `/embed/query/${model}/${view}?qid=${qid}`,
-      waitUntilLoaded,
+      options,
     })
   }
 
-  async loadLook(id: string, pushHistory?: boolean, waitUntilLoaded?: boolean) {
+  async loadLook(id: string, pushHistory?: boolean, options?: IConnectOptions) {
     return this.loadId({
       id,
       pushHistory,
       type: 'looks',
-      waitUntilLoaded,
+      options,
     })
   }
 
   async loadExtension(
     id: string,
     pushHistory?: boolean,
-    waitUntilLoaded?: boolean
+    options?: IConnectOptions
   ) {
-    return this.loadId({ id, pushHistory, type: 'extensions', waitUntilLoaded })
+    return this.loadId({ id, pushHistory, type: 'extensions', options })
   }
 
   async loadQueryVisualization(
     id: string,
     pushHistory?: boolean,
-    waitUntilLoaded?: boolean
+    options?: IConnectOptions
   ) {
     return this.loadId({
       id,
       pushHistory,
       type: 'query-visualization',
-      waitUntilLoaded,
+      options,
     })
   }
 
   async loadReport(
     id: string,
     pushHistory?: boolean,
-    waitUntilLoaded?: boolean
+    options?: IConnectOptions
   ) {
     return this.loadId({
       id,
       pushHistory,
       type: 'reporting',
-      waitUntilLoaded,
+      options,
     })
   }
 
-  async preload(pushHistory?: boolean, waitUntilLoaded?: boolean) {
-    return this.loadUrl({ pushHistory, url: '/embed/preload', waitUntilLoaded })
+  async preload(pushHistory?: boolean, options?: IConnectOptions) {
+    return this.loadUrl({ pushHistory, url: '/embed/preload', options })
   }
 
   asDashboardConnection(): ILookerEmbedDashboard {

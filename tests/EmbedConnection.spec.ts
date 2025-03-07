@@ -107,7 +107,7 @@ describe('EmbedConnection', () => {
 
   it('makes the looker version available', async () => {
     const connection = await getConnection()
-    await connection.loadDashboard('42', false, false)
+    await connection.loadDashboard('42', false, { waitUntilLoaded: false })
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         lookerVersion: '25.1.0',
@@ -119,7 +119,7 @@ describe('EmbedConnection', () => {
 
   it('returns -1 when looker version unavailable', async () => {
     const connection = await getConnection({ lookerVersion: '' })
-    await connection.loadDashboard('42', false, false)
+    await connection.loadDashboard('42', false, { waitUntilLoaded: false })
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         url: '/embed/dashboards/42?embed_domain=http://localhost&sdk=3',
@@ -131,7 +131,7 @@ describe('EmbedConnection', () => {
   it('throws an error when Looker version does not support page:load action', async () => {
     const connection = await getConnection({ lookerVersion: '24.18.0' })
     try {
-      await connection.loadReport('42', false, false)
+      await connection.loadReport('42', false, { waitUntilLoaded: false })
     } catch (error: unknown) {
       expect(error).toStrictEqual(
         new Error(
@@ -147,7 +147,7 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadDashboard('42', false, false)
+    await connection.loadDashboard('42', false, { waitUntilLoaded: false })
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         lookerVersion: '25.1.0',
@@ -186,7 +186,9 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadExplore('mymodel::myview', false, false)
+    await connection.loadExplore('mymodel::myview', false, {
+      waitUntilLoaded: false,
+    })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/explore/mymodel/myview?embed_domain=http://localhost&sdk=3',
@@ -214,7 +216,9 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadMergeQuery('a1b2c3d4', false, false)
+    await connection.loadMergeQuery('a1b2c3d4', false, {
+      waitUntilLoaded: false,
+    })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/merge?mid=a1b2c3d4&embed_domain=http://localhost&sdk=3',
@@ -242,7 +246,9 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadQuery('mymodel', 'myview', 'a1b2c3d4', false, false)
+    await connection.loadQuery('mymodel', 'myview', 'a1b2c3d4', false, {
+      waitUntilLoaded: false,
+    })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/query/mymodel/myview?qid=a1b2c3d4&embed_domain=http://localhost&sdk=3',
@@ -270,7 +276,9 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadQueryVisualization('a1b2c3d4', false, false)
+    await connection.loadQueryVisualization('a1b2c3d4', false, {
+      waitUntilLoaded: false,
+    })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/query-visualization/a1b2c3d4?embed_domain=http://localhost&sdk=3',
@@ -298,7 +306,7 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadLook('42', false, false)
+    await connection.loadLook('42', false, { waitUntilLoaded: false })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/looks/42?embed_domain=http://localhost&sdk=3',
@@ -326,7 +334,9 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadExtension('myproj::myext', false, false)
+    await connection.loadExtension('myproj::myext', false, {
+      waitUntilLoaded: false,
+    })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/extensions/myproj::myext?embed_domain=http://localhost&sdk=3',
@@ -354,7 +364,7 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadReport('abcdefg', false, false)
+    await connection.loadReport('abcdefg', false, { waitUntilLoaded: false })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/reporting/abcdefg?embed_domain=http://localhost&sdk=3',
@@ -382,7 +392,7 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.preload(false, false)
+    await connection.preload(false, { waitUntilLoaded: false })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/preload?embed_domain=http://localhost&sdk=3',

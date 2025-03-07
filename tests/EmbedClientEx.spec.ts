@@ -192,7 +192,7 @@ describe('EmbedClientEx', () => {
     const client = getClient({
       apiHost: 'https://mylooker.com',
     })
-    const connectPromise = client.connect(true)
+    const connectPromise = client.connect({ waitUntilLoaded: true })
     expect(mockHostBuilder._url).toBe(
       'https://mylooker.com/embed/preload/?embed_domain=http://localhost&sdk=3'
     )

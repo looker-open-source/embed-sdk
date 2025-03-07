@@ -37,18 +37,76 @@ export type PageType =
   | 'preload'
   | 'unknown'
 
-export type LoadIdParams = {
-  type: PageType
-  id: string
-  pushHistory?: boolean
+/**
+ * Connection and load options
+ */
+
+export interface IConnectOptions {
+  /**
+   * When true will block until page is loaded. Use abort signal to cancel.
+   * This will unblock the embedding application but processing may still
+   * be happening in the Looker server. Reasons for a connect to block
+   * are:
+   * <ol>
+   * <li>embed domain not configured correctly in Looker
+   * <li>user does not have permission
+   * </ol>
+   */
   waitUntilLoaded?: boolean
+  /**
+   * Allows caller to cancel the request. For example the call can implement
+   * setTimeout and if the timeout triggers it can call abortController.abort()
+   * to have the connect cancel. If the embedding application does call abort
+   * the request will reject.
+   */
+  signal?: AbortSignal
 }
 
-export type LoadUrlParams = {
-  url: string
+/**
+ * Parameters used when loading by ID.
+ */
+
+export type LoadIdParams = {
+  /**
+   * page type
+   */
+  type: PageType
+  /**
+   * id to load
+   */
+  id: string
+  /**
+   * when true pushes navigation request into browser history
+   */
   pushHistory?: boolean
-  waitUntilLoaded?: boolean
+  /**
+   * Load options
+   */
+  options?: IConnectOptions
 }
+
+/**
+ * Parameters used when loading by URL.
+ */
+
+export type LoadUrlParams = {
+  /**
+   * URL to load
+   */
+  url: string
+  /**
+   * when true pushes navigation request into browser history
+   */
+  pushHistory?: boolean
+  /**
+   * Load options
+   */
+  options?: IConnectOptions
+}
+
+/**
+ * Load URL parameters
+ */
 
 export interface UrlParams {
   [key: string]: string | string[]
@@ -372,9 +430,17 @@ export interface ILookerEmbedQueryVisualization {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ILookerEmbedReport {}
 
+/**
+ * Embed client
+ */
+
 export interface IEmbedClient {
-  connect(waitUntilLoaded?: boolean): Promise<ILookerConnection>
+  connect(options?: IConnectOptions): Promise<ILookerConnection>
 }
+
+/**
+ * Embed client/connection builder
+ */
 
 export interface IEmbedBuilder {
   /**

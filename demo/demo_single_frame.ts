@@ -556,7 +556,7 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     // Finalize the build
     .build()
     // Connect to Looker
-    .connect(true)
+    .connect({ waitUntilLoaded: true })
     // Finish up setup
     .then(embedConnected)
     // Log if something went wrong
