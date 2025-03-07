@@ -52,6 +52,7 @@ var webpackConfig = {
       LOOKER_USE_EMBED_DOMAIN: null,
       LOOKER_EMBED_TYPE: null,
       LOOKER_DEMO_PROXY_PATH: null,
+      LOOKER_DEMO_HOST_EXTERNAL: null,
     }),
   ],
   devServer: {
@@ -59,7 +60,10 @@ var webpackConfig = {
       directory: path.join(__dirname, 'demo'),
     },
     compress: true,
-    host: process.env.LOOKER_DEMO_PROXY_PATH ? '0.0.0.0' : config.demo_host,
+    host:
+      process.env.LOOKER_DEMO_HOST_EXTERNAL === 'true'
+        ? '0.0.0.0'
+        : config.demo_host,
     port: config.demo_port,
     server:
       config.demo_protocol !== 'https'

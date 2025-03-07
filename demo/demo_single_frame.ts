@@ -495,6 +495,14 @@ const processSessionStatus = (event: SessionStatus) => {
  * Render the embed.
  */
 const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
+  const abortController = new AbortController()
+  const signal = abortController.signal
+  let timeoutId: any = setTimeout(() => {
+    abortController.abort(
+      `Connection attempt timed out. Please check that ${location.origin} has been allow listed`
+    )
+    timeoutId = undefined
+  }, 5000)
   sdk
     .preload()
     // When true scrolls the top of the IFRAME into view
@@ -556,12 +564,18 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     // Finalize the build
     .build()
     // Connect to Looker
-    .connect({ waitUntilLoaded: true })
+    .connect({ waitUntilLoaded: true, signal })
     // Finish up setup
-    .then(embedConnected)
+    .then((connection) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = undefined
+      }
+      embedConnected(connection)
+    })
     // Log if something went wrong
-    .catch((error: Error) => {
-      updateStatus('Connection error')
+    .catch((error: any) => {
+      updateStatus(typeof error === 'string' ? error : 'Connection error')
       console.error('Connection error', error)
     })
 }

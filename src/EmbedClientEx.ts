@@ -181,8 +181,8 @@ export class EmbedClientEx implements IEmbedClient {
           })
       } else {
         // Signed
-        this._connectionPromise = this.createSignedUrl().then(async (url) =>
-          this.abortableCreateIframe(url, options)
+        this._connectionPromise = this.abortableCreateSignedUrl(options).then(
+          async (url) => this.abortableCreateIframe(url, options)
         )
       }
     }
@@ -205,21 +205,24 @@ export class EmbedClientEx implements IEmbedClient {
   ): Promise<EmbedConnection> {
     return new Promise((resolve, reject) => {
       let promiseAborted = false
+      const abortHandler = () => {
+        this._sdk._createEmbedSessionPromise = undefined
+        promiseAborted = true
+        reject(signal?.reason)
+      }
       if (waitUntilLoaded && signal) {
-        signal.addEventListener('abort', () => {
-          this._sdk._createEmbedSessionPromise = undefined
-          promiseAborted = true
-          reject(signal.reason)
-        })
+        signal.addEventListener('abort', abortHandler)
       }
       this.createIframe(url, waitUntilLoaded)
         .then((connection) => {
+          signal?.removeEventListener('abort', abortHandler)
           if (!promiseAborted) {
             this._sdk._sessionCreated = true
             resolve(connection)
           }
         })
         .catch((error) => {
+          signal?.removeEventListener('abort', abortHandler)
           if (!promiseAborted) {
             this._sdk._createEmbedSessionPromise = undefined
             reject(error)
@@ -538,6 +541,37 @@ export class EmbedClientEx implements IEmbedClient {
     })
   }
 
+  private abortableCreateSignedUrl({
+    waitUntilLoaded,
+    signal,
+  }: IConnectOptions): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let promiseAborted = false
+      const abortHandler = () => {
+        this._sdk._createEmbedSessionPromise = undefined
+        promiseAborted = true
+        reject(signal?.reason)
+      }
+      if (waitUntilLoaded && signal) {
+        signal.addEventListener('abort', abortHandler)
+      }
+      this.createSignedUrl()
+        .then((url) => {
+          signal?.removeEventListener('abort', abortHandler)
+          if (!promiseAborted) {
+            resolve(url)
+          }
+        })
+        .catch((error) => {
+          signal?.removeEventListener('abort', abortHandler)
+          if (!promiseAborted) {
+            this._sdk._createEmbedSessionPromise = undefined
+            reject(error)
+          }
+        })
+    })
+  }
+
   private async createSignedUrl() {
     const src = this.appendRequiredParameters(this._builder.embedUrl)
     // If the session exists there is no need to go though
@@ -635,21 +669,24 @@ export class EmbedClientEx implements IEmbedClient {
   }: IConnectOptions): Promise<string> {
     return new Promise((resolve, reject) => {
       let promiseAborted = false
+      const abortHandler = () => {
+        this._sdk._createEmbedSessionPromise = undefined
+        promiseAborted = true
+        reject(signal?.reason)
+      }
       if (waitUntilLoaded && signal) {
-        signal.addEventListener('abort', () => {
-          this._sdk._createEmbedSessionPromise = undefined
-          promiseAborted = true
-          reject(signal.reason)
-        })
+        signal.addEventListener('abort', abortHandler)
       }
       this.acquireCookielessEmbedSessionInternal()
         .then((url) => {
+          signal?.removeEventListener('abort', abortHandler)
           if (!promiseAborted) {
             this._sdk._sessionCreated = true
             resolve(url)
           }
         })
         .catch((error) => {
+          signal?.removeEventListener('abort', abortHandler)
           if (!promiseAborted) {
             this._sdk._createEmbedSessionPromise = undefined
             reject(error)
