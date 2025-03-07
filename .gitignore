@@ -18,5 +18,5 @@ server/**/*.js.map
 .direnv
 server/public/
 *.pem
-dist/beer.min.css
-dist/*.woff2
+demo/beer.min.css
+demo/*.woff2
