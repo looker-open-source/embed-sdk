@@ -227,9 +227,13 @@ const addTabListener = (id: string, loadFunction: () => void) => {
   if (e) {
     e.addEventListener('click', (event: Event) => {
       event.stopPropagation()
-      clearActiveTab()
-      setActiveTab(e)
-      loadFunction()
+      if (embedConnection?.isEditing()) {
+        updateStatus('Navigation not allowed while editing')
+      } else {
+        clearActiveTab()
+        setActiveTab(e)
+        loadFunction()
+      }
     })
   }
 }
@@ -502,7 +506,7 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
       `Connection attempt timed out. Please check that ${location.origin} has been allow listed`
     )
     timeoutId = undefined
-  }, 5000)
+  }, 60000)
   sdk
     .preload()
     // When true scrolls the top of the IFRAME into view

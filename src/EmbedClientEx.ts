@@ -244,8 +244,16 @@ export class EmbedClientEx implements IEmbedClient {
       this._builder.handlers['page:changed'] = []
     }
     this._builder.handlers['page:changed'].push((event: PageChangedEvent) => {
-      this.updateEditing(false)
-      this.identifyPageType(event)
+      if (this._connection) {
+        const pathname = (event?.page?.url || '').split('?')[0]
+        if (pathname !== this._connection._currentPathname) {
+          this._connection._currentPathname = pathname
+          if (this._connection.isEditing()) {
+            this.updateEditing(false)
+          }
+          this.identifyPageType(event)
+        }
+      }
       this.parseLookerVersion(event?.page?.lookerVersion)
       if (this._pageChangeResolver) {
         const resolve = this._pageChangeResolver

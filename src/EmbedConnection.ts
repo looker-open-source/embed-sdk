@@ -51,6 +51,7 @@ import type { EmbedClientEx } from './EmbedClientEx'
 export class EmbedConnection implements ILookerConnection {
   _pageType: PageType = 'unknown'
   _isEditing: boolean = false
+  _currentPathname: string = ''
 
   constructor(
     private _host: ChattyHostConnection,
