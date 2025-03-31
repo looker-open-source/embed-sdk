@@ -2,7 +2,7 @@
 
 ## Embed SDK version 2.0.0
 
-The following document has been updated to reflect the implementation of Embed SDK 2.0.0. Technically the 2.0.0 API is backwards compatible with Embed SDK 1.8.x but the underlying implementation has changed for some functionality. SDK 1.8.x exported a number of classes. SDK 2.0.0 replaces these classes with deprecated interfaces. It is preferred that application that uses the SDK use the 'I' prefixed interfaces (which are identical to the non prefixed interaces). Applications upgrading to SDK 2.0.0 should behave the same. In order to take advantage of the API improvements some refactoring will be required.
+The following document has been updated to reflect the implementation of Embed SDK 2.0.0. Technically the 2.0.0 API is backwards compatible with Embed SDK 1.8.x but the underlying implementation has changed for some functionality. SDK 1.8.x exported a number of classes. SDK 2.0.0 replaces these classes with deprecated interfaces. It is preferred that application that uses the SDK use the 'I' prefixed interfaces (which are identical to the non prefixed interfaces). Applications upgrading to SDK 2.0.0 should behave the same. In order to take advantage of the API improvements some refactoring will be required.
 
 ## Introduction
 
