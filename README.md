@@ -168,7 +168,7 @@ await connection.loadLook('42')
 await connection.loadUrl('/embed/dashboards/84?state=California')
 ```
 
-Different looker object types or object type instances can be loaded without recreating the IFRAME.
+Different Looker object types or object type instances can be loaded without recreating the IFRAME.
 
 ### Signed URL Advanced Auth Configuration
 
