@@ -158,7 +158,7 @@ const connection = await builder.connect()
 
 The call to connect calls the auth endpoint to get a signed embed login URL. This URL is used to construct the IFRAME. The conection returned from the call allows the hosting application to interact with the Looker IFRAME. Embed SDK 2.0.x has a single connection object that can interact will Looker embed object types (dashboards, explores, looks, extensions). This means that it is no longer a requirement to replace an existing IFRAME with another IFRAME to display a different object type or object type instance.
 
-If another IFRAME is required, the SDK will not call the auth endpoint again as the embed session already exists. Instead the IFRAME will be created with the requested embed URL without signing a `login/embed` URL. If multiple IFRAMEs are created on page load (not recommended but it does work), the SDK will wait for the first IFRAME to be created before creating the more IFRAMEs. This is done to reduce contention that can occur when complex embed users are created.
+If another IFRAME is required, the SDK will not call the auth endpoint again as the embed session already exists. Instead the IFRAME will be created with the requested embed URL without signing a `login/embed` URL. If multiple IFRAMEs are created on page load (not recommended but it does work), the SDK will wait for the first IFRAME to be created before creating more IFRAMEs. This is done to reduce contention that can occur when complex embed users are created.
 
 4. Load a different object type.
 
