@@ -43,7 +43,7 @@ try {
 }
 ```
 
-A more complete example can be found [here](https://github.com/looker-open-source/embed-sdk/demo/demo_single_frame.ts) and [here](https://github.com/looker-open-source/embed-sdk/demo/demo_multi_frame.ts).
+A more complete example can be found [here](https://github.com/looker-open-source/embed-sdk/blob/master/demo/demo_single_frame.ts) and [here](https://github.com/looker-open-source/embed-sdk/blob/master/demo/demo_multi_frame.ts).
 
 ## Details
 
@@ -162,7 +162,7 @@ This section does not apply to cookieless embed. See the [cookieless embed](#coo
 
 In order to use the Embed SDK on the frontend you must supply a backend service that handles signing of the Embed URL. This service is called by the Embed SDK to generate a signed URL that is unique to the requesting user. The backend process can either generate the signed embed URL itself using an embed secret or can generate the URL by calling the [Looker Create Signed Embed URL API](https://cloud.google.com/looker/docs/reference/looker-api/latest/methods/Auth/create_sso_embed_url). Manual URL generation and signing avoids calling the Looker API resulting in decreased latency. Calling the Looker API requires less code and is easier to maintain.
 
-An example of a helper method that generates a signed URL, `createSignedUrl()`, can be found in [server/utils/auth_utils.ts](https://github.com/looker-open-source/embed-sdk/tree/master/server/utils/auth_utils.ts). Its usage is as follows:
+A javascript example of a helper method that generates a signed URL, `createSignedUrl()`, can be found in [server/utils/auth_utils.ts](https://github.com/looker-open-source/embed-sdk/blob/master/server/utils/auth_utils.ts). Its usage is as follows:
 
 ```javascript
 import { createSignedUrl } from './utils/auth_utils'
@@ -177,6 +177,8 @@ app.get('/looker_auth', function (req, res) {
   res.json({ url })
 })
 ```
+
+A python example of the same method can be found [here](https://github.com/looker-open-source/embed-sdk/blob/master/server_utils/auth_utils.py).
 
 ### Signed URL Advanced Auth Configuration
 
