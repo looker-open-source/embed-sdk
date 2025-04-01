@@ -8,6 +8,7 @@ jobs:
 
     strategy:
       matrix:
+        language: ['javascript-typescript']
         node-version: [20.x]
 
     steps:
