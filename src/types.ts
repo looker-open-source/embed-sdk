@@ -157,8 +157,8 @@ export interface ILookerConnection {
   /**
    * Load Looker object using a URL. This does not recreate the IFRAME.
    *
-   * Requires Looker 25.2 or greater. An error is thrown if unsupported
-   * Looker version.
+   * Requires Looker 25.2 or greater. An error is thrown for unsupported
+   * Looker versions.
    */
 
   loadUrl(params: LoadUrlParams): Promise<void>
