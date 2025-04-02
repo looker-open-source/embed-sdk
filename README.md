@@ -51,7 +51,7 @@ The Looker Embed SDK uses the fluent interface pattern. The construction of the 
 
 ### Building
 
-Initialize the SDK with address of the Looker server and the endpoint of the embedding application server that will create a signed Looker embedded login URL (for private embedding, omit the signing endpoint).
+Initialize the SDK with the address of the Looker server and the endpoint of the embedding application server that will create a signed Looker embedded login URL (for private embedding, omit the signing endpoint).
 
 ```javascript
 getEmbedSDK().init('looker.example.com', '/auth')
