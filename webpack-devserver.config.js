@@ -70,11 +70,6 @@ var webpackConfig = {
         ? 'http'
         : {
             type: 'https',
-            options: {
-              key: fs.readFileSync(path.join(__dirname, './server/key.pem')),
-              cert: fs.readFileSync(path.join(__dirname, './server/cert.pem')),
-              ca: fs.readFileSync(path.join(__dirname, './server/cacert.pem')),
-            },
           },
     allowedHosts: 'all',
     app: () => {

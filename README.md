@@ -31,7 +31,7 @@ const setupConnection = (connection) => {
 
 try {
   connection = await getEmbedSDK()
-    .createDashboardWithId(11)
+    .createDashboardWithId('11')
     .appendTo('#embed_container')
     .on('dashboard:run:start', () => updateStatus('Running'))
     .on('dashboard:run:complete', () => updateStatus('Done'))
@@ -497,9 +497,9 @@ LOOKER_EXPLORE_ID=thelook::orders
 # Extension ID
 LOOKER_EXTENSION_ID=extension::my-great-extension
 # Report ID
-LOOKER_REPORT_ID=58a99d9e-eb3f-4c08-a0d9-4ac839a807b7
+LOOKER_REPORT_ID=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
 # Query Visualization ID
-LOOKER_QUERY_VISUALIZATION_ID=O78fF73U3qNe3SelryY838
+LOOKER_QUERY_VISUALIZATION_ID=1234567890ABCDEF123456
 ```
 
 - Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application to inform Looker about important user properties that control data access controls. The `demo/demo_user.json` file is also used for cookieless embedding. Remember that cookieless_embed always treats `force_logout_login` as `true`. See [documentation](https://cloud.google.com/looker/docs/single-sign-on-embedding) for detailed information on the content of the embed user definition.
