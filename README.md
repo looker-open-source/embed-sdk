@@ -94,7 +94,7 @@ Create an embedded client by calling the build method:
 
 ### Connecting
 
-Once the client is built, call connect to create the IFRAME. The connect process creates the `src` attribute used for the actual IFRAME. How the `src` value is generated is based upon how the embed SDK is initialized.
+Once the client is built, call `connect` to create the IFRAME. The connect process creates the `src` attribute used for the actual IFRAME. How the `src` value is generated is based upon how the embed SDK is initialized.
 
 1. Signed - the endpoint specified by the 2nd argument of the `init` call is called. The endpoint is expected to return a signed embed login URL.
 2. Cookieless - the endpoint or the function specified by the 2nd argument of the `initCookieless` call is called. The endpoint or function is expected to return cookieless tokens, in particular the authentication and navigation tokens. The tokens are appended to the embed login URL.
