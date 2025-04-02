@@ -432,7 +432,7 @@ Enabling signed URL embedding is documented in more detail [here](https://cloud.
 Enabling cookieless embedding is documented in more detail [here](https://cloud.google.com/looker/docs/r/sdk/cookieless-embed).
 
 - Navigate to Admin > _Platform_ Embed on your Looker instance. This requires Admin privileges.
-- The demo server runs by default at [http://localhost:8080](http://localhost:8080). By adding that address to the "Embedded Domain Whitelist" you can enable the demo to receive messages from Looker.
+- The demo server runs by default at [http://localhost:8080](http://localhost:8080). By adding that address to the "Embedded Domain Allowlist" you can enable the demo to receive messages from Looker.
 - Turn on "Embed SSO Authentication"
 - In order to use embedding you must generate an "Embed Secret" for SSO embedding and/or a JWT secret for cookieless embedding. A Looker instance can support signed URL and cookieles embedding simulaneously.
 
