@@ -246,9 +246,34 @@ in a browser console with</p>
 </a>
 <p>Beginning with Embed SDK 2.0.0 and Looker 25.6, Looker supports the embedding of Report content. Due to the complexities of some of the CSP checking for Embedded Studio Reports in Looker some additional setup needs to be undertaken by the embed developers wishing to embed Reports.</p>
 <ol>
-<li>Development servers must run on https. If the embed demo server is being used, set the <code>.env</code> LOOKER_DEMO_PROTOCOL variable to https.</li>
+<li>Development servers must run on https. If the embed demo server is being used, set the <code>.env</code> LOOKER_DEMO_PROTOCOL variable to https. If you intend to use <code>npm run server</code> you will need to generate an SSL certificate and a private key. See below for instuctions on how to do this.</li>
 <li>The development server must run on a subdomain of the domain that the Looker server is running on. This can be simulated by adding the subdomain and domain to your <code>/etc/hosts</code> file. If the embed demo server is being used, set the <code>.env</code> LOOKER_DEMO_HOST_EXTERNAL variable to true. This allows the demo server to accept connections from the required URL. If the demo server is being used an invalid certificate will be generated. You will need to type <code>thisisunsafe</code> when accessing the server through a chrome browser.</li>
 </ol>
+
+<a href="#generate-an-ssl-certificate-and-private-key" id="generate-an-ssl-certificate-and-private-key" style="color: inherit; text-decoration: none;">
+  <h3>Generate an SSL certificate and private key</h3>
+</a>
+<p>The following commands will generate a certificate and private key that can be used to have the demo server use https. Note that the certificate is for development purposes only and the browser will warn you that the certificate is invalid when it connects to the server. Click advanced and type &quot;thisisunsafe&quot; in order to continue (if using chrome).</p>
+
+<a href="#generate-a-certificate" id="generate-a-certificate" style="color: inherit; text-decoration: none;">
+  <h4>Generate a certificate</h4>
+</a>
+<p><code>openssl req -x509 -newkey rsa:2048 -keyout server/keytmp.pem -out server/cert.pem -days 365</code></p>
+<p>Enter the PEM pass phrase and remember it (it is needed to generate the key).
+Enter or accept the defaults for all of the following prompts.</p>
+
+<a href="#generate-a-key" id="generate-a-key" style="color: inherit; text-decoration: none;">
+  <h4>Generate a key</h4>
+</a>
+<p><code>openssl rsa -in server/keytmp.pem -out server/key.pem</code></p>
+<p>The demo server may now be started using the command <code>npm start server</code>.</p>
+
+<a href="#navigating-to-different-content-using-loadurl-loaddashboard-loadlook-loadreport-etc" id="navigating-to-different-content-using-loadurl-loaddashboard-loadlook-loadreport-etc" style="color: inherit; text-decoration: none;">
+  <h2>Navigating to different content using loadUrl, loadDashboard, loadLook, loadReport etc</h2>
+</a>
+<p>Prior to Embed SDK 2.0.0 the <code>loadDashboard</code> method allowed embedding applications to navigate between dashboards. The Looker server would prevent navigation if the dashboard was being edited. With Embed SDK 2.0.0, the Looker server no longer prevents navigation if a Dashboard is being edited (or for that matter if a Look is being edited). Instead, if the host application wants to prevent navigation if a dashboard or look is being edited, it can query the connection to see if an edit is in progress. Example:</p>
+<pre><code><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-4">embedConnection</span><span class="hl-1">?.</span><span class="hl-0">isEditing</span><span class="hl-1">()) {</span><br/><span class="hl-1">  </span><span class="hl-0">updateStatus</span><span class="hl-1">(</span><span class="hl-2">&#39;Navigation not allowed while editing&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">} </span><span class="hl-5">else</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">embedConnection</span><span class="hl-1">.</span><span class="hl-0">loadDashboard</span><span class="hl-1">(</span><span class="hl-2">&#39;42&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">}</span>
+</code></pre>
 
 <a href="#dynamic-dashboard-height" id="dynamic-dashboard-height" style="color: inherit; text-decoration: none;">
   <h2>Dynamic dashboard height</h2>

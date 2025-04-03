@@ -594,8 +594,37 @@ Prior to the release of the Embed SDK, Looker exposed an API that utilized JavaS
 
 Beginning with Embed SDK 2.0.0 and Looker 25.6, Looker supports the embedding of Report content. Due to the complexities of some of the CSP checking for Embedded Studio Reports in Looker some additional setup needs to be undertaken by the embed developers wishing to embed Reports.
 
-1. Development servers must run on https. If the embed demo server is being used, set the `.env` LOOKER_DEMO_PROTOCOL variable to https.
+1. Development servers must run on https. If the embed demo server is being used, set the `.env` LOOKER_DEMO_PROTOCOL variable to https. If you intend to use `npm run server` you will need to generate an SSL certificate and a private key. See below for instuctions on how to do this.
 2. The development server must run on a subdomain of the domain that the Looker server is running on. This can be simulated by adding the subdomain and domain to your `/etc/hosts` file. If the embed demo server is being used, set the `.env` LOOKER_DEMO_HOST_EXTERNAL variable to true. This allows the demo server to accept connections from the required URL. If the demo server is being used an invalid certificate will be generated. You will need to type `thisisunsafe` when accessing the server through a chrome browser.
+
+### Generate an SSL certificate and private key
+
+The following commands will generate a certificate and private key that can be used to have the demo server use https. Note that the certificate is for development purposes only and the browser will warn you that the certificate is invalid when it connects to the server. Click advanced and type "thisisunsafe" in order to continue (if using chrome).
+
+#### Generate a certificate
+
+`openssl req -x509 -newkey rsa:2048 -keyout server/keytmp.pem -out server/cert.pem -days 365`
+
+Enter the PEM pass phrase and remember it (it is needed to generate the key).
+Enter or accept the defaults for all of the following prompts.
+
+#### Generate a key
+
+`openssl rsa -in server/keytmp.pem -out server/key.pem`
+
+The demo server may now be started using the command `npm start server`.
+
+## Navigating to different content using loadUrl, loadDashboard, loadLook, loadReport etc
+
+Prior to Embed SDK 2.0.0 the `loadDashboard` method allowed embedding applications to navigate between dashboards. The Looker server would prevent navigation if the dashboard was being edited. With Embed SDK 2.0.0, the Looker server no longer prevents navigation if a Dashboard is being edited (or for that matter if a Look is being edited). Instead, if the host application wants to prevent navigation if a dashboard or look is being edited, it can query the connection to see if an edit is in progress. Example:
+
+```
+if (embedConnection?.isEditing()) {
+  updateStatus('Navigation not allowed while editing')
+} else {
+  embedConnection.loadDashboard('42')
+}
+```
 
 ## Dynamic dashboard height
 
