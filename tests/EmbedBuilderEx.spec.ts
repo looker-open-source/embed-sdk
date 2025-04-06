@@ -24,17 +24,18 @@
 
  */
 
-import type { EmbedBuilderEx } from '../src/EmbedBuilderEx'
+import { EmbedBuilderEx } from '../src/EmbedBuilderEx'
 import { LookerEmbedExSDK } from '../src/LookerEmbedExSDK'
 
 describe('EmbedBuilderEx', () => {
+  let sdk: LookerEmbedExSDK
   let builder: EmbedBuilderEx
   let dashboardUrlBuilder: EmbedBuilderEx
   let dashboardIdBuilder: EmbedBuilderEx
   let lookIdBuilder: EmbedBuilderEx
 
   beforeEach(() => {
-    const sdk = new LookerEmbedExSDK()
+    sdk = new LookerEmbedExSDK()
     sdk.init('myhost.com', '/auth')
     builder = sdk.preload() as EmbedBuilderEx
     dashboardUrlBuilder = sdk.createDashboardWithUrl(
@@ -42,6 +43,13 @@ describe('EmbedBuilderEx', () => {
     ) as EmbedBuilderEx
     dashboardIdBuilder = sdk.createDashboardWithId('42') as EmbedBuilderEx
     lookIdBuilder = sdk.createLookWithId('42') as EmbedBuilderEx
+  })
+
+  it('can create a builder with a url', () => {
+    const bldr = new EmbedBuilderEx(sdk, 'dashboards', '').withUrl(
+      '/embed/dashboards/42'
+    ) as EmbedBuilderEx
+    expect(bldr.embedUrl).toBe('/embed/dashboards/42')
   })
 
   it('throws an error when withId is used with withUrl', () => {
@@ -111,6 +119,11 @@ describe('EmbedBuilderEx', () => {
     expect(dashboardIdBuilder.embedUrl).toBe(
       '/embed/dashboards/42?theme=darcula'
     )
+  })
+
+  it('does nothing with withNext', () => {
+    dashboardIdBuilder.withNext()
+    expect(dashboardIdBuilder.embedUrl).toBe('/embed/dashboards/42')
   })
 
   it('can specify a frame border', () => {

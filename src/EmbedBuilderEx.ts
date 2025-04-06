@@ -33,7 +33,7 @@ import type {
   PageType,
   UrlParams,
 } from './types'
-import { stringify, escapeFilterParam } from './utils'
+import { stringify, escapeFilterParam, santizeEmbedUrl } from './utils'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
 import { EmbedClientEx } from './EmbedClientEx'
 
@@ -168,7 +168,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   }
 
   withUrl(url: string): IEmbedBuilder {
-    this._url = url
+    this._url = santizeEmbedUrl(url)
     return this
   }
 

@@ -169,9 +169,11 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createWithUrl(url: string): IEmbedBuilder {
-    return new EmbedBuilderEx(this, extractPageTypeFromUrl(url), '').withUrl(
-      santizeEmbedUrl(url)
-    )
+    return new EmbedBuilderEx(
+      this,
+      extractPageTypeFromUrl(santizeEmbedUrl(url)),
+      ''
+    ).withUrl(url)
   }
 
   createDashboardWithUrl(url: string): IEmbedBuilder {
@@ -200,7 +202,6 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
   }
 
   createMergeQueryWithId(id: string) {
-    id = id.replace('::', '/') // Handle old format explore ids.
     return new EmbedBuilderEx(this, 'merge', '').withUrl(
       `/embed/merge?mid=${id}`
     )
@@ -212,7 +213,7 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
 
   createQueryWithId(model: string, view: string, qid: string) {
     return new EmbedBuilderEx(this, 'query', '').withUrl(
-      `/embed/query${model}/${view}?qid=${qid}`
+      `/embed/query/${model}/${view}?qid=${qid}`
     )
   }
 

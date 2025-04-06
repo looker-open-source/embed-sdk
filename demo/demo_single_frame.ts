@@ -24,8 +24,9 @@
 
  */
 
-// IDs for content to demonstrate are configured in demo_config.ts
+// IDs for content to demonstrate can be configured in the .env file or in demo_config.ts
 
+import { connection } from '@looker/sdk'
 import type {
   ILookerConnection,
   ILookerEmbedSDK,
@@ -42,6 +43,7 @@ import {
 
 let embedConnection: ILookerConnection
 let currentPageType: string
+let currentPathname: string
 
 /**
  * Save the embed connection. This provides access to the undelying
@@ -208,6 +210,14 @@ const setActiveTab = (e: HTMLElement) => {
   e.classList.add('active')
 }
 
+const updateActiveTab = (tabId: string) => {
+  const e = document.getElementById(tabId)
+  if (e) {
+    clearActiveTab()
+    setActiveTab(e)
+  }
+}
+
 /**
  * Set a tab active
  */
@@ -222,7 +232,11 @@ const hideTab = (id: string) => {
  * Add a listener for a tab. The load function controls what
  * data will be displayed when the tab is clicked.
  */
-const addTabListener = (id: string, loadFunction: () => void) => {
+const addTabListener = (
+  id: string,
+  loadFunction: () => void,
+  pathname?: string
+) => {
   const e = document.getElementById(id)
   if (e) {
     e.addEventListener('click', (event: Event) => {
@@ -235,6 +249,23 @@ const addTabListener = (id: string, loadFunction: () => void) => {
         loadFunction()
       }
     })
+    if (pathname && location.pathname.startsWith(pathname)) {
+      clearActiveTab()
+      setActiveTab(e)
+    }
+  }
+}
+
+/**
+ * Update the current url
+ */
+const updateCurrentUrl = (pathname: string, push = true) => {
+  currentPathname = pathname
+  const newUrl = new URL(pathname, location.origin)
+  if (push) {
+    history.pushState(undefined, '', newUrl)
+  } else {
+    history.replaceState(undefined, '', newUrl)
   }
 }
 
@@ -245,18 +276,8 @@ const preload = async () => {
   if (embedConnection) {
     await embedConnection.preload()
     updateStatus('')
-  }
-}
-
-/**
- * Load dashboard tab function
- */
-const loadDashboard1 = () => {
-  if (embedConnection) {
-    const config = getConfiguration()
-    if (config.dashboardId) {
-      // loadDashboard falls back to legacy "dashboard:load" embed action
-      embedConnection.loadDashboard(config.dashboardId)
+    if (location.pathname !== '/' && location.pathname !== '') {
+      updateCurrentUrl('/')
     }
   }
 }
@@ -264,12 +285,31 @@ const loadDashboard1 = () => {
 /**
  * Load dashboard tab function
  */
-const loadDashboard2 = () => {
+const loadDashboard1 = async () => {
+  if (embedConnection) {
+    const config = getConfiguration()
+    if (config.dashboardId) {
+      // loadDashboard falls back to legacy "dashboard:load" embed action
+      await embedConnection.loadDashboard(config.dashboardId)
+      if (!location.pathname.startsWith('/dashboard1')) {
+        updateCurrentUrl('/dashboard1')
+      }
+    }
+  }
+}
+
+/**
+ * Load dashboard tab function
+ */
+const loadDashboard2 = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.dashboardId2) {
       // loadDashboard falls back to legacy "dashboard:load" embed action
-      embedConnection.loadDashboard(config.dashboardId2)
+      await embedConnection.loadDashboard(config.dashboardId2)
+      if (!location.pathname.startsWith('/dashboard2')) {
+        updateCurrentUrl('/dashboard2')
+      }
     }
   }
 }
@@ -283,6 +323,9 @@ const loadExplore = async () => {
     if (config.exploreId) {
       try {
         await embedConnection.loadExplore(config.exploreId)
+        if (!location.pathname.startsWith('/explore')) {
+          updateCurrentUrl('/explore')
+        }
       } catch (error) {
         updateStatus(
           'Connection loadExplore functionality requires Looker version >= 25.2.0'
@@ -301,6 +344,9 @@ const loadLook = async () => {
     if (config.lookId) {
       try {
         await embedConnection.loadLook(config.lookId)
+        if (!location.pathname.startsWith('/look')) {
+          updateCurrentUrl('/look')
+        }
       } catch (error) {
         updateStatus(
           'Connection loadLook functionality requires Looker version >= 25.2.0'
@@ -319,6 +365,9 @@ const loadExtension = async () => {
     if (config.extensionId) {
       try {
         await embedConnection.loadExtension(config.extensionId)
+        if (!location.pathname.startsWith('/extension')) {
+          updateCurrentUrl('/extension')
+        }
       } catch (error) {
         updateStatus(
           'Connection loadExtension functionality requires requires Looker version >= 25.2.0'
@@ -339,6 +388,9 @@ const loadQueryVisualization = async () => {
         await embedConnection.loadQueryVisualization(
           config.queryVisualizationId
         )
+        if (!location.pathname.startsWith('/query')) {
+          updateCurrentUrl('/query')
+        }
       } catch (error) {
         updateStatus(
           'Connection loadQueryVisualization functionality requires Looker version >= 25.2.0'
@@ -357,6 +409,9 @@ const loadReport = async () => {
     if (config.reportId) {
       try {
         await embedConnection.loadReport(config.reportId)
+        if (!location.pathname.startsWith('/report')) {
+          updateCurrentUrl('/report')
+        }
       } catch (error) {
         updateStatus(
           'Connection loadReport functionality requires Looker version >= 25.2.0'
@@ -373,37 +428,37 @@ const initializeTabs = () => {
   addTabListener('preload-tab', preload)
   const config = getConfiguration()
   if (config.dashboardId) {
-    addTabListener('dashboard-1-tab', loadDashboard1)
+    addTabListener('dashboard-1-tab', loadDashboard1, '/dashboard1')
   } else {
     hideTab('dashboard-1-tab')
   }
   if (config.dashboardId2) {
-    addTabListener('dashboard-2-tab', loadDashboard2)
+    addTabListener('dashboard-2-tab', loadDashboard2, '/dashboard2')
   } else {
     hideTab('dashboard-2-tab')
   }
   if (config.exploreId) {
-    addTabListener('explore-tab', loadExplore)
+    addTabListener('explore-tab', loadExplore, '/explore')
   } else {
     hideTab('explore-tab')
   }
   if (config.lookId) {
-    addTabListener('look-tab', loadLook)
+    addTabListener('look-tab', loadLook, '/look')
   } else {
     hideTab('look-tab')
   }
   if (config.extensionId) {
-    addTabListener('extension-tab', loadExtension)
+    addTabListener('extension-tab', loadExtension, '/extension')
   } else {
     hideTab('extension-tab')
   }
   if (config.queryVisualizationId) {
-    addTabListener('query-visualization-tab', loadQueryVisualization)
+    addTabListener('query-visualization-tab', loadQueryVisualization, '/query')
   } else {
     hideTab('query-visualization-tab')
   }
   if (config.reportId) {
-    addTabListener('report-tab', loadReport)
+    addTabListener('report-tab', loadReport, '/report')
   } else {
     hideTab('report-tab')
   }
@@ -496,6 +551,77 @@ const processSessionStatus = (event: SessionStatus) => {
 }
 
 /**
+ * Initialize history
+ */
+const initializeHistoryListener = () => {
+  window.addEventListener('popstate', (_event) => {
+    if (currentPathname !== location.pathname && embedConnection) {
+      if (
+        embedConnection.isEditing() &&
+        (currentPathname === '/dashboard1' ||
+          currentPathname === '/dashboard2' ||
+          currentPathname === '/look')
+      ) {
+        setTimeout(() => {
+          history.forward()
+        })
+      } else {
+        if (location.pathname.startsWith('/dashboard1')) {
+          updateActiveTab('dashboard-1-tab')
+          loadDashboard1()
+        } else if (location.pathname.startsWith('/dashboard2')) {
+          updateActiveTab('dashboard-2-tab')
+          loadDashboard2()
+        } else if (location.pathname.startsWith('/explore')) {
+          updateActiveTab('explore-tab')
+          loadExplore()
+        } else if (location.pathname.startsWith('/look')) {
+          updateActiveTab('look-tab')
+          loadLook()
+        } else if (location.pathname.startsWith('/extension')) {
+          updateActiveTab('extension-tab')
+          loadExtension()
+        } else if (location.pathname.startsWith('/query')) {
+          updateActiveTab('query-visualization-tab')
+          loadQueryVisualization()
+        } else if (location.pathname.startsWith('/report')) {
+          updateActiveTab('report-tab')
+          loadReport()
+        } else {
+          updateActiveTab('preload-tab')
+          preload()
+        }
+      }
+    }
+  })
+}
+
+const buildInitialUrl = (runtimeConfig: RuntimeConfig) => {
+  const pathname = location.pathname
+  if (pathname.startsWith('/dashboard1') && runtimeConfig.dashboardId) {
+    return `/embed/dashboards/${runtimeConfig.dashboardId}`
+  } else if (pathname.startsWith('/dashboard2') && runtimeConfig.dashboardId2) {
+    return `/embed/dashboards/${runtimeConfig.dashboardId2}`
+  } else if (pathname.startsWith('/explore') && runtimeConfig.exploreId) {
+    return `/embed/explore/${runtimeConfig.exploreId.replace('::', '/')}`
+  } else if (pathname.startsWith('/look') && runtimeConfig.lookId) {
+    return `/embed/looks/${runtimeConfig.lookId}`
+  } else if (pathname.startsWith('/extension') && runtimeConfig.extensionId) {
+    return `/embed/extensions/${runtimeConfig.extensionId}`
+  } else if (
+    pathname.startsWith('/query') &&
+    runtimeConfig.queryVisualizationId
+  ) {
+    return `/embed/query-visualization/${runtimeConfig.queryVisualizationId}`
+  } else if (pathname.startsWith('/report') && runtimeConfig.reportId) {
+    return `/embed/reporting/${runtimeConfig.reportId}`
+  } else {
+    updateCurrentUrl('', false)
+    return '/embed/preload'
+  }
+}
+
+/**
  * Render the embed.
  */
 const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
@@ -508,7 +634,7 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     timeoutId = undefined
   }, 60000)
   sdk
-    .preload()
+    .createWithUrl(buildInitialUrl(runtimeConfig))
     // When true scrolls the top of the IFRAME into view
     .withDialogScroll(runtimeConfig.useDynamicHeights)
     // When true updates the IFRAME height to reflect the height of the
@@ -568,7 +694,7 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     // Finalize the build
     .build()
     // Connect to Looker
-    .connect({ waitUntilLoaded: true, signal })
+    .connect({ signal, waitUntilLoaded: true })
     // Finish up setup
     .then((connection) => {
       if (timeoutId) {
@@ -615,6 +741,7 @@ const initializeEmbedSdk = (runtimeConfig: RuntimeConfig) => {
  */
 document.addEventListener('DOMContentLoaded', function () {
   loadConfiguration()
+  initializeHistoryListener()
   initializeControls()
   const runtimeConfig = getConfiguration()
   initializeEmbedSdk(runtimeConfig)

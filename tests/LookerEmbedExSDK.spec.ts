@@ -156,6 +156,13 @@ describe('LookerEmbedExSDK', () => {
     expect(sdk._auth).toBeUndefined()
   })
 
+  it('can create using a url', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createWithUrl('/embed/dashboards/42') as EmbedBuilderEx
+    expect(builder.embedUrl).toBe('/embed/dashboards/42')
+  })
+
   it('creates preload builder', () => {
     const sdk = new LookerEmbedExSDK()
     sdk.init('myhost.com', '/auth')
@@ -266,5 +273,109 @@ describe('LookerEmbedExSDK', () => {
     expect(builder.endpoint).toBe('/embed/extensions')
     expect(builder.id).toBe('myproj::myext')
     expect(builder.embedUrl).toBe('/embed/extensions/myproj::myext')
+  })
+
+  it('creates report with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createReportWithUrl(
+      '/embed/reporting/0123456780abcdef'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('reporting')
+    expect(builder.endpoint).toBe('')
+    expect(builder.embedUrl).toBe('/embed/reporting/0123456780abcdef')
+  })
+
+  it('creates report with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createReportWithId('0123456780abcdef') as EmbedBuilderEx
+    expect(builder.type).toBe('reporting')
+    expect(builder.endpoint).toBe('/embed/reporting')
+    expect(builder.embedUrl).toBe('/embed/reporting/0123456780abcdef')
+  })
+
+  it('creates query visualization with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createQueryVisualizationWithUrl(
+      '/embed/query-visualization/1234567890abcedf'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('query-visualization')
+    expect(builder.endpoint).toBe('')
+    expect(builder.id).toBeUndefined()
+    expect(builder.embedUrl).toBe('/embed/query-visualization/1234567890abcedf')
+  })
+
+  it('creates query visualization with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createQueryVisualizationWithId(
+      '1234567890abcedf'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('query-visualization')
+    expect(builder.endpoint).toBe('/embed/query-visualization')
+    expect(builder.id).toBe('1234567890abcedf')
+    expect(builder.embedUrl).toBe('/embed/query-visualization/1234567890abcedf')
+  })
+
+  it('creates query with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createQueryWithUrl(
+      '/embed/query/mymodel/myview?qid=1234567890abcedf'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('query')
+    // createQueryWithId is just a convenience wrapper of createQueryWithUrl.
+    // as such endpoint and id are not populated.
+    expect(builder.endpoint).toBe('')
+    expect(builder.id).toBeUndefined()
+    expect(builder.embedUrl).toBe(
+      '/embed/query/mymodel/myview?qid=1234567890abcedf'
+    )
+  })
+
+  it('creates query with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createQueryWithId(
+      'mymodel',
+      'myview',
+      '1234567890abcedf'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('query')
+    // createQueryWithId is just a convenience wrapper of createQueryWithUrl.
+    // as such endpoint and id are not populated.
+    expect(builder.endpoint).toBe('')
+    expect(builder.id).toBeUndefined()
+    expect(builder.embedUrl).toBe(
+      '/embed/query/mymodel/myview?qid=1234567890abcedf'
+    )
+  })
+
+  it('creates merge query with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createMergeQueryWithUrl(
+      '/embed/merge?mid=1234567890abcedf'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('merge')
+    expect(builder.endpoint).toBe('')
+    expect(builder.id).toBeUndefined()
+    expect(builder.embedUrl).toBe('/embed/merge?mid=1234567890abcedf')
+  })
+
+  it('creates merge query with id builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createMergeQueryWithId(
+      '1234567890abcedf'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('merge')
+    // createMergeQueryWithId is just a convenience wrapper of createMergeQueryWithUrl.
+    // as such endpoint and id are not populated.
+    expect(builder.endpoint).toBe('')
+    expect(builder.id).toBeUndefined()
+    expect(builder.embedUrl).toBe('/embed/merge?mid=1234567890abcedf')
   })
 })

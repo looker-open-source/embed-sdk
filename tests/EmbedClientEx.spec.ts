@@ -613,8 +613,8 @@ describe('EmbedClientEx', () => {
       placement: 'cover',
     })
     await waitFor(() => scrollIntoViewSpy.mock.calls.length > 0, {
-      timeout: 200,
       setInterval: saveSetInterval,
+      timeout: 200,
     })
     expect(scrollIntoViewSpy).toHaveBeenCalled()
   })

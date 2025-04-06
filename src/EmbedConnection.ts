@@ -110,9 +110,9 @@ export class EmbedConnection implements ILookerConnection {
     options,
   }: LoadIdParams): Promise<void> {
     return this.loadUrl({
+      options,
       pushHistory,
       url: `/embed/${type}/${id}`,
-      options,
     })
   }
 
@@ -124,9 +124,9 @@ export class EmbedConnection implements ILookerConnection {
     if (this._embedClient.isPageLoadEventSupported) {
       return this.loadId({
         id,
+        options,
         pushHistory,
         type: 'dashboards',
-        options,
       })
     }
     switch (this._pageType) {
@@ -144,14 +144,14 @@ export class EmbedConnection implements ILookerConnection {
     options?: IConnectOptions
   ) {
     id = id.replace('::', '/') // Handle old format explore ids.
-    return this.loadId({ id, pushHistory, type: 'explore', options })
+    return this.loadId({ id, options, pushHistory, type: 'explore' })
   }
 
   loadMergeQuery(id: string, pushHistory?: boolean, options?: IConnectOptions) {
     return this.loadUrl({
+      options,
       pushHistory,
       url: `/embed/merge?mid=${id}`,
-      options,
     })
   }
 
@@ -163,18 +163,18 @@ export class EmbedConnection implements ILookerConnection {
     options?: IConnectOptions
   ) {
     return this.loadUrl({
+      options,
       pushHistory,
       url: `/embed/query/${model}/${view}?qid=${qid}`,
-      options,
     })
   }
 
   async loadLook(id: string, pushHistory?: boolean, options?: IConnectOptions) {
     return this.loadId({
       id,
+      options,
       pushHistory,
       type: 'looks',
-      options,
     })
   }
 
@@ -183,7 +183,7 @@ export class EmbedConnection implements ILookerConnection {
     pushHistory?: boolean,
     options?: IConnectOptions
   ) {
-    return this.loadId({ id, pushHistory, type: 'extensions', options })
+    return this.loadId({ id, options, pushHistory, type: 'extensions' })
   }
 
   async loadQueryVisualization(
@@ -193,9 +193,9 @@ export class EmbedConnection implements ILookerConnection {
   ) {
     return this.loadId({
       id,
+      options,
       pushHistory,
       type: 'query-visualization',
-      options,
     })
   }
 
@@ -206,14 +206,14 @@ export class EmbedConnection implements ILookerConnection {
   ) {
     return this.loadId({
       id,
+      options,
       pushHistory,
       type: 'reporting',
-      options,
     })
   }
 
   async preload(pushHistory?: boolean, options?: IConnectOptions) {
-    return this.loadUrl({ pushHistory, url: '/embed/preload', options })
+    return this.loadUrl({ options, pushHistory, url: '/embed/preload' })
   }
 
   asDashboardConnection(): ILookerEmbedDashboard {

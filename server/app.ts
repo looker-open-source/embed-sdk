@@ -28,6 +28,8 @@ import https from 'https'
 import fs from 'fs'
 import path from 'path'
 import express from 'express'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import history from 'connect-history-api-fallback'
 import { addRoutes } from './routes'
 import { config } from './config'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -37,6 +39,7 @@ const app = express()
 
 addRoutes(app, config, user)
 
+app.use(history())
 app.use('/', express.static('public'))
 
 const port = config.demo_port

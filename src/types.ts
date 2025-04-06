@@ -631,7 +631,7 @@ export interface ILookerEmbedSDK {
   preload(): IEmbedBuilder
 
   /**
-   * Create a builder that loads an embedded URL. This can be used to preload Looker
+   * Create a builder that loads an embedded URL.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
    */
@@ -714,7 +714,7 @@ export interface ILookerEmbedSDK {
    * @param id The ID of a Looker Look
    */
 
-  createLookWithId(id: number): IEmbedBuilder
+  createLookWithId(id: string | number): IEmbedBuilder
 
   /**
    * Create an EmbedBuilder for an embedded Looker extension.
