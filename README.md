@@ -456,8 +456,10 @@ LOOKER_DEMO_PROTOCOL=http
 # Set to true when developing Embedded Reports
 LOOKER_DEMO_HOST_EXTERNAL=false
 # Looker Web Server (omit the protocol)
+# LOOKER_EMBED_HOST can also be used
 LOOKER_WEB_URL=mycompany.looker.com
 # Looker API server (include the protocol)
+# LOOKER_EMBED_API_URL can also be used
 LOOKER_API_URL=https://mycompany.looker.com:19999
 # Host name for the demo server
 LOOKER_DEMO_HOST=localhost
