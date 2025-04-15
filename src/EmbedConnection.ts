@@ -77,7 +77,7 @@ export class EmbedConnection implements ILookerConnection {
     url,
     pushHistory = false,
     options,
-  }: LoadUrlParams): Promise<void> {
+  }: LoadUrlParams): Promise<any> {
     if (!this._embedClient.isPageLoadEventSupported) {
       return Promise.reject(
         new Error(
