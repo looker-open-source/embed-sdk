@@ -398,7 +398,7 @@ export async function generateEmbedTokens(userAgent, user) {
 
 ### Initializing the Embed SDK in the frontend
 
-Cookieless embed is initialized by calling `getEmbedSDK().initCookieless(...)` passing in the Looker host value and the the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
+Cookieless embed is initialized by calling `getEmbedSDK().initCookieless(...)` passing in the Looker host value and the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.
 
 ```javascript
 getEmbedSDK().initCookieless(
