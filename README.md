@@ -212,7 +212,7 @@ This functionality will:
 
 ### Acquire session backend process
 
-This process is called every time a Looker Embed IFRAME is created. The acquire session backend process requires that the Looker api endpoint `acquire_embed_cookieless_session` be called to create an embed session or attach to an existing embed session. The endpoint accepts an embed user definition and creates or updates it. This is similar behavior to the signed URL embed login as they both can create and update embed user definitions.
+This process is called every time a Looker Embed IFRAME is created. The acquire session backend process requires that the Looker API endpoint `acquire_embed_cookieless_session` be called to create an embed session or attach to an existing embed session. The endpoint accepts an embed user definition and creates or updates it. This is similar behavior to the signed URL embed login as they both can create and update embed user definitions.
 One major difference in the payloads is that `force_logout_login` is ignored by `acquire_embed_cookieless_session`. Cookieless embed logins ALWAYS forces logout login (as the Looker cookies are blocked this should be a noop).
 
 Cookieless embed sessions are associated with the user's browser user agent. It is important that that user agent for the browser be set with the request.
