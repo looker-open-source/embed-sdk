@@ -130,7 +130,7 @@
 <a href="#acquire-session-backend-process" id="acquire-session-backend-process" style="color: inherit; text-decoration: none;">
   <h3>Acquire session backend process</h3>
 </a>
-<p>This process is called every time a Looker Embed IFRAME is created. The acquire session backend process requires that the Looker api endpoint <code>acquire_embed_cookieless_session</code> be called to create an embed session or attach to an existing embed session. The endpoint accepts an embed user definition and creates or updates it. This is similar behavior to the signed URL embed login as they both can create and update embed user definitions.
+<p>This process is called every time a Looker Embed IFRAME is created. The acquire session backend process requires that the Looker API endpoint <code>acquire_embed_cookieless_session</code> be called to create an embed session or attach to an existing embed session. The endpoint accepts an embed user definition and creates or updates it. This is similar behavior to the signed URL embed login as they both can create and update embed user definitions.
 One major difference in the payloads is that <code>force_logout_login</code> is ignored by <code>acquire_embed_cookieless_session</code>. Cookieless embed logins ALWAYS forces logout login (as the Looker cookies are blocked this should be a noop).</p>
 <p>Cookieless embed sessions are associated with the user&#39;s browser user agent. It is important that that user agent for the browser be set with the request.</p>
 <p>If successful, the <code>acquire_embed_cookieless_session</code> returns a number of tokens:</p>
@@ -158,7 +158,7 @@ the <code>session_reference_token_ttl</code> value will be set to 0. When this h
 <a href="#initializing-the-embed-sdk-in-the-frontend" id="initializing-the-embed-sdk-in-the-frontend" style="color: inherit; text-decoration: none;">
   <h3>Initializing the Embed SDK in the frontend</h3>
 </a>
-<p>Cookieless embed is initialized by calling <code>getEmbedSDK().initCookieless(...)</code> passing in the Looker host value and the the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.</p>
+<p>Cookieless embed is initialized by calling <code>getEmbedSDK().initCookieless(...)</code> passing in the Looker host value and the urls of the backend endpoints described previously. Once a Looker embed IFRAME is created it will communicate with the Embed SDK running in the host application and use the callbacks appropriately.</p>
 <pre><code class="language-javascript"><span class="hl-0">getEmbedSDK</span><span class="hl-1">().</span><span class="hl-0">initCookieless</span><span class="hl-1">(</span><br/><span class="hl-1">  </span><span class="hl-2">&#39;looker.example.com&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">&#39;/acquire-embed-session&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">&#39;/generate-embed-tokens&#39;</span><br/><span class="hl-1">)</span>
 </code></pre>
 
@@ -190,7 +190,7 @@ Enabling cookieless embedding is documented in more detail <a href="https://clou
 <li>Navigate to Admin &gt; <em>Platform</em> Embed on your Looker instance. This requires Admin privileges.</li>
 <li>The demo server runs by default at <a href="http://localhost:8080">http://localhost:8080</a>. By adding that address to the &quot;Embedded Domain Allowlist&quot; you can enable the demo to receive messages from Looker.</li>
 <li>Turn on &quot;Embed SSO Authentication&quot;</li>
-<li>In order to use embedding you must generate an &quot;Embed Secret&quot; for SSO embedding and/or a JWT secret for cookieless embedding. A Looker instance can support signed URL and cookieles embedding simulaneously.</li>
+<li>In order to use embedding you must generate an &quot;Embed Secret&quot; for SSO embedding and/or a JWT secret for cookieless embedding. A Looker instance can support signed URL and cookieless embedding simultaneously.</li>
 </ul>
 <p>Additional steps to activate cookieless embed:</p>
 <ul>
@@ -228,7 +228,7 @@ Enabling cookieless embedding is documented in more detail <a href="https://clou
 in a browser console with</p>
 <pre><code class="language-javascript"><span class="hl-4">localStorage</span><span class="hl-1">.</span><span class="hl-4">debug</span><span class="hl-1"> = </span><span class="hl-2">&#39;looker:chatty:*&#39;</span>
 </code></pre>
-<p>The hosting window and the embedded IFRAME have separate local storage, so you can enable logging on one, the other or both. You can disable logging with</p>
+<p>The hosting window and the embedded IFRAME have separate local storage, so you can enable logging on one, the other, or both. You can disable logging with</p>
 <pre><code class="language-javascript"><span class="hl-4">localStorage</span><span class="hl-1">.</span><span class="hl-4">debug</span><span class="hl-1"> = </span><span class="hl-3">undefined</span>
 </code></pre>
 
