@@ -580,7 +580,7 @@ in a browser console with
 localStorage.debug = 'looker:chatty:*'
 ```
 
-The hosting window and the embedded IFRAME have separate local storage, so you can enable logging on one, the other or both. You can disable logging with
+The hosting window and the embedded IFRAME have separate local storage, so you can enable logging on one, the other, or both. You can disable logging with
 
 ```javascript
 localStorage.debug = undefined
