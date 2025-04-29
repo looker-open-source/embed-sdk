@@ -54,12 +54,12 @@ const testNonce = 'abc123'
 
 describe('createSignedUrl', () => {
   beforeEach(() => {
-    jasmine.clock().install()
-    jasmine.clock().mockDate(new Date(1561486800168))
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(1561486800168))
   })
 
   afterEach(() => {
-    jasmine.clock().uninstall()
+    jest.useRealTimers()
   })
 
   it('creates a signed URL with properly encoded parameters', () => {
@@ -119,7 +119,7 @@ describe('createSignedUrl', () => {
     delete user.user_timezone
 
     const signed = createSignedUrl(testUrl, user, testHost, testSecret)
-    expect(signed).toMatch('signature=[A-Za-z0-9%]+')
+    expect(signed).toMatch(/signature=[A-Za-z0-9%]+/)
   })
 
   it('creates a signed URL without optional signed parameters', () => {

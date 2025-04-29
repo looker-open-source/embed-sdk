@@ -24,26 +24,20 @@
 
  */
 
-import { EmbedBuilder } from './embed_builder'
-import { LookerEmbedDashboard } from './dashboard_client'
-import { LookerEmbedExplore } from './explore_client'
-import { LookerEmbedExtension } from './extension_client'
-import { LookerEmbedLook } from './look_client'
 import type {
   LookerAuthConfig,
   CookielessCallback,
   CookielessRequestInit,
 } from './types'
+import { getEmbedSDK } from './LookerEmbedExSDK'
 
-export type { LookerEmbedDashboard } from './dashboard_client'
-export type { LookerEmbedExplore } from './explore_client'
-export type { LookerEmbedExtension } from './extension_client'
-export type { LookerEmbedLook } from './look_client'
-export type { LookerEmbedBase } from './embed_base'
-export type { EmbedBuilder, UrlParams } from './embed_builder'
-export type { EmbedClient } from './embed'
+export * from './types'
+export * from './LookerEmbedExSDK'
 export * from './types'
 
+/**
+ * @deprecated Use <code>getEmbedSDK()</code> instead.
+ */
 export class LookerEmbedSDK {
   /**
    * Initialize the Embed SDK.
@@ -51,13 +45,12 @@ export class LookerEmbedSDK {
    * @param apiHost The address or base URL of the Looker host (example.looker.com:9999, https://example.looker.com:9999)
    *                This is required for verification of messages sent from the embedded content.
    * @param authUrl A server endpoint that will sign SSO embed URLs
+   *
+   * @deprecated Use <code>getEmbedSDK().init(...)</code> instead.
    */
 
   static init(apiHost: string, auth?: string | LookerAuthConfig) {
-    this.apiHost = apiHost
-    this.auth = typeof auth === 'string' ? { url: auth } : auth
-    this.acquireSession = undefined
-    this.generateTokens = undefined
+    getEmbedSDK().init(apiHost, auth)
   }
 
   /**
@@ -74,160 +67,110 @@ export class LookerEmbedSDK {
    * The server endpoint should ultimately call the Looker endpoint `generate_tokens_for_cookieless_session`.
    *
    * Looker 22.20+
+   *
+   * @deprecated Use <code>getEmbedSDK().initCookieless(...)</code> instead.
    */
   static initCookieless(
     apiHost: string,
     acquireSession: string | CookielessRequestInit | CookielessCallback,
     generateTokens: string | CookielessRequestInit | CookielessCallback
   ) {
-    this.apiHost = apiHost
-    this.acquireSession = acquireSession
-    this.generateTokens = generateTokens
-    this.auth = undefined
+    getEmbedSDK().initCookieless(apiHost, acquireSession, generateTokens)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker dashboard.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getEmbedSDK().createDashboardWithUrl(...)</code> instead.
    */
 
   static createDashboardWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedDashboard>(
-      this,
-      'dashboard',
-      '/embed/dashboards',
-      LookerEmbedDashboard
-    ).withUrl(url)
+    return getEmbedSDK().createDashboardWithUrl(url)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker dashboard.
    *
    * @param id The numeric ID of a Looker User Defined Dashboard, or LookML Dashboard ID
+   *
+   * @deprecated Use <code>getEmbedSDK().createDashboardWithId(...)</code> instead.
    */
 
   static createDashboardWithId(id: string | number) {
-    return new EmbedBuilder<LookerEmbedDashboard>(
-      this,
-      'dashboard',
-      '/embed/dashboards',
-      LookerEmbedDashboard
-    ).withId(id)
+    return getEmbedSDK().createDashboardWithId(id)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker Explore.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getEmbedSDK().createExploreWithUrl(...)</code> instead.
    */
 
   static createExploreWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedExplore>(
-      this,
-      'explore',
-      '/embed/explore',
-      LookerEmbedExplore
-    ).withUrl(url)
+    return getEmbedSDK().createExploreWithUrl(url)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker Explore.
    *
    * @param id The ID of a Looker explore
+   *
+   * @deprecated Use <code>getEmbedSDK().createExploreWithId(...)</code> instead.
    */
 
   static createExploreWithId(id: string) {
-    id = id.replace('::', '/') // Handle old format explore ids.
-    return new EmbedBuilder<LookerEmbedExplore>(
-      this,
-      'explore',
-      '/embed/explore',
-      LookerEmbedExplore
-    ).withId(id)
+    return getEmbedSDK().createExploreWithId(id)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker Look.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getEmbedSDK().createLookWithUrl(...)</code> instead.
    */
 
   static createLookWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedLook>(
-      this,
-      'look',
-      '/embed/looks',
-      LookerEmbedLook
-    ).withUrl(url)
+    return getEmbedSDK().createLookWithUrl(url)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker dashboard.
    *
    * @param id The ID of a Looker Look
+   *
+   * @deprecated Use <code>getEmbedSDK().createLookWithId(...)</code> instead.
    */
 
   static createLookWithId(id: number) {
-    return new EmbedBuilder<LookerEmbedLook>(
-      this,
-      'look',
-      '/embed/looks',
-      LookerEmbedLook
-    ).withId(id)
+    return getEmbedSDK().createLookWithId(id)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker extension.
    *
    * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   *
+   * @deprecated Use <code>getEmbedSDK().createExtensionWithUrl(...)</code> instead.
    */
 
   static createExtensionWithUrl(url: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(
-      this,
-      'extension',
-      '/embed/extensions',
-      LookerEmbedExtension
-    ).withUrl(url)
+    return getEmbedSDK().createExtensionWithUrl(url)
   }
 
   /**
    * Create an EmbedBuilder for an embedded Looker extension. Requires Looker 7.12
    *
    * @param id The ID of a Looker Look
+   *
+   * @deprecated Use <code>getEmbedSDK().createExtensionWithId(...)</code> instead.
    */
 
   static createExtensionWithId(id: string) {
-    return new EmbedBuilder<LookerEmbedExtension>(
-      this,
-      'extension',
-      '/embed/extensions',
-      LookerEmbedExtension
-    ).withId(id)
+    return getEmbedSDK().createExtensionWithId(id)
   }
-
-  /**
-   * @hidden
-   */
-
-  static apiHost: string
-
-  /**
-   * @hidden
-   */
-
-  static auth?: LookerAuthConfig
-
-  /**
-   * @hidden
-   */
-
-  static acquireSession?: string | CookielessRequestInit | CookielessCallback
-
-  /**
-   * @hidden
-   */
-
-  static generateTokens?: string | CookielessRequestInit | CookielessCallback
 }

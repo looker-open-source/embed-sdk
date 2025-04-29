@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="beer.min.css" rel="stylesheet" />
+  <link href="demo.css" rel="stylesheet" type="text/css" />
+  <title>Looker Embed SDK Multi Frame Demo</title>
+  <script src="demo_multi_frame.js"></script>
+</head>
+
+<body class="pt-5">
+  <h6 class="main-heading">Looker Embed SDK Multi Frame Demo</h6>
+  <div id="controls" class="grid no-space pt-5 py-10">
+    <div class="s4">
+      <div class="control-row flex-wrap">
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="showDashboard">
+          <span>Show dashboard</span>
+        </label>
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="showLook">
+          <span>Show look</span>
+        </label>
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="showExplore">
+          <span>Show explore</span>
+        </label>
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="showExtension">
+          <span>Show extension</span>
+        </label>
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="useCookieless">
+          <span>Use cookieless</span>
+        </label>
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="useDynamicHeights">
+          <span>Use dynamic heights</span>
+        </label>
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="preventNavigation">
+          <span>Prevent navigation</span>
+        </label>
+      </div>
+    </div>
+    <div class="s4">
+      <div class="field label suffix border s6">
+        <select id="state">
+          <option value="">Select...</option>
+          <option value="California" selected>California</option>
+          <option value="Illinois">Illinois</option>
+          <option value="Minnesota">Minnesota</option>
+        </select>
+        <label>Select a state to filter by</label>
+        <i>arrow_drop_down</i>
+      </div>
+      <div class="center-button-container">
+        <button id="run-all" class="small-round">Run All</button>
+        <button id="reset-config" class="small-round">Reset</button>
+      </div>
+    </div>
+    <div class="s4">
+      <div class="control-column">
+        <a href="index.html" class="link">Single Frame Demo</a>
+        <a href="message_example.html" class="link">Embed Message API Demo</a>
+      </div>
+    </div>
+  </div>
+  <div class="embed-container">
+    <div id="demo-dashboard">
+      <div class="pt-5 center-button-container">
+        <button id="run-dashboard" class="small-round">Run</button>
+        <button id="stop-dashboard" class="small-round">Stop</button>
+        <button id="edit-dashboard" class="small-round">Edit</button>
+      </div>
+      <div id="dashboard-state" class="pt-10 large-text">Loading...</div>
+      <div id="dashboard"></div>
+    </div>
+    <div id="demo-look">
+      <div class="pt-5 center-button-container">
+        <button id="run-look" class="small-round">Run</button>
+      </div>
+      <div id="look-state" class="pt-10 large-text">Loading...</div>
+      <div id="look"></div>
+    </div>
+    <div id="demo-explore">
+      <div class="pt-5 center-button-container">
+        <button id="run-explore" class="small-round">Run</button>
+      </div>
+      <div id="explore-state" class="pt-10 large-text">Loading...</div>
+      <div id="explore"></div>
+    </div>
+    <div id="demo-extension">
+      <div id="extension-state" class="pt-10 large-text"></div>
+      <div id="extension"></div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,3 +1,4 @@
+var fs = require('fs')
 var path = require('path')
 var config = require('./config')
 const webpack = require('webpack')
@@ -10,7 +11,8 @@ var webpackConfig = {
   mode: 'development',
   devtool: 'source-map',
   entry: {
-    demo: './demo/demo.ts',
+    demo_single_frame: './demo/demo_single_frame.ts',
+    demo_multi_frame: './demo/demo_multi_frame.ts',
     message_example: './demo/message_example.ts',
   },
   output: {
@@ -38,22 +40,39 @@ var webpackConfig = {
   },
   plugins: [
     new webpack.EnvironmentPlugin({
-      LOOKER_EMBED_HOST: null,
+      LOOKER_WEB_URL: null,
+      LOOKER_EMBED_HOST: null, // deprecated - use LOOKER_WEB_URL instead
       LOOKER_DASHBOARD_ID: null,
+      LOOKER_DASHBOARD_ID_2: null,
       LOOKER_LOOK_ID: null,
       LOOKER_EXPLORE_ID: null,
       LOOKER_EXTENSION_ID: null,
-      LOOKER_COOKIELESS_ENABLED: null,
+      LOOKER_QUERY_VISUALIZATION_ID: null,
+      LOOKER_REPORT_ID: null,
       LOOKER_USE_EMBED_DOMAIN: null,
+      LOOKER_EMBED_TYPE: null,
+      LOOKER_DEMO_PROXY_PATH: null,
+      LOOKER_DEMO_HOST_EXTERNAL: null,
     }),
   ],
   devServer: {
+    historyApiFallback: true,
     static: {
       directory: path.join(__dirname, 'demo'),
     },
     compress: true,
-    host: config.demo_host,
+    host:
+      process.env.LOOKER_DEMO_HOST_EXTERNAL === 'true'
+        ? '0.0.0.0'
+        : config.demo_host,
     port: config.demo_port,
+    server:
+      config.demo_protocol !== 'https'
+        ? 'http'
+        : {
+            type: 'https',
+          },
+    allowedHosts: 'all',
     app: () => {
       const app = express()
       addRoutes(app, config, user)

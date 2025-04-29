@@ -1,94 +1,82 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Looker Embed SDK Demo</title>
-    <link href="demo.css" rel="stylesheet" type="text/css" />
-    <script src="demo.js"></script>
-  </head>
-  <body>
-    <h1>Looker Embed SDK Demo Page</h1>
-    <div id="controls" class="embeds-header">
-      <div class="embeds-controls">
-        <div class="embed-control">
-          <input type="checkbox" id="showDashboard" checked />
-          <label>Show dashboard</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showLook" checked />
-          <label>Show look</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showExplore" checked />
-          <label>Show explore</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="showExtension" checked />
-          <label>Show extension</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="useCookieless" checked />
-          <label>Use cookieless</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="useDynamicHeights" />
-          <label>Use dynamic heights</label>
-        </div>
-        <div class="embed-control">
-          <input type="checkbox" id="preventNavigation" />
-          <label>Prevent navigation</label>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="beer.min.css" rel="stylesheet" />
+  <link href="demo.css" rel="stylesheet" type="text/css" />
+  <title>Looker Embed SDK Single Frame Demo</title>
+  <script src="demo_single_frame.js"></script>
+</head>
+
+<body class="single-frame-container">
+  <h6 class="main-heading">Looker Embed SDK Single Frame Demo</h6>
+  <div id="controls" class="grid no-space py-10">
+    <div class="s6">
+      <div class="control-row">
+        <label class="radio min-width-checkbox">
+          <input id="useSigned" type="radio" value="signed" name="embedType">
+          <span>Use signed URL</span>
+        </label>
+        <label class="radio min-width-checkbox">
+          <input id="useCookieless" type="radio" value="cookieless" name="embedType">
+          <span>Use cookieless</span>
+        </label>
+        <label class="radio min-width-checkbox">
+          <input id="usePrivate" type="radio" value="private" name="embedType">
+          <span>Use private</span>
+        </label>
       </div>
-      <div>
-        <label for="state">State: </label>
-        <select id="state">
+      <div class="control-row">
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="useDynamicHeights">
+          <span>Use dynamic heights</span>
+        </label>
+        <label class="checkbox min-width-checkbox">
+          <input type="checkbox" id="preventNavigation">
+          <span>Prevent navigation</span>
+        </label>
+      </div>
+    </div>
+    <div class="s6">
+      <div class="control-column">
+        <a href="demo_multi_frame.html" class="link">Multi Frame Demo</a>
+        <a href="message_example.html" class="link">Embed Message API Demo</a>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <a id="preload-tab" class="active">Preload</a>
+    <a id="dashboard-1-tab">Dashboard 1</a>
+    <a id="dashboard-2-tab">Dashboard 2</a>
+    <a id="explore-tab">Explore</a>
+    <a id="look-tab">Look</a>
+    <a id="extension-tab">Extension</a>
+    <a id="query-visualization-tab">Query Visualization</a>
+    <a id="report-tab">Report</a>
+  </div>
+  <div id="embed-status" class="pt-10 py-10 large-text">Loading...</div>
+  <div id="content-controls" class="grid no-space pt-5 py-10">
+    <div class="s6">
+      <button id="run-embed" class="small-round">Run</button>
+      <button id="stop-embed" class="small-round">Stop</button>
+      <button id="edit-embed" class="small-round">Edit</button>
+    </div>
+    <div class="s6">
+      <div class="field label suffix border s6">
+        <select>
           <option value="">Select...</option>
           <option value="California" selected>California</option>
           <option value="Illinois">Illinois</option>
           <option value="Minnesota">Minnesota</option>
         </select>
-        <button id="run-all">Run All</button>
-        <button id="reset-config">Reset</button>
-      </div>
-      <div class="demo-link">
-        <a href="message_example.html">Window Message Example</a>
+        <label>Select a state to filter by</label>
+        <i>arrow_drop_down</i>
       </div>
     </div>
-    <div class="embed-container">
-      <div id="demo-dashboard">
-        <div class="embed-header">
-          <button id="run-dashboard">Run</button>
-          <button id="stop-dashboard">Stop</button>
-          <button id="edit-dashboard">Edit</button>
-          <div id="dashboard-state" class="loading-message">Loading...</div>
-        </div>
-        <div id="dashboard"></div>
-      </div>
-      <div id="demo-look">
-        <div class="embed-header">
-          <button id="run-look">Run</button>
-          <div id="look-state" class="loading-message">Loading...</div>
-        </div>
-        <div id="look"></div>
-      </div>
-      <div id="demo-explore">
-        <div class="embed-header">
-          <button id="run-explore">Run</button>
-          <div id="explore-state" class="loading-message">Loading...</div>
-        </div>
-        <div id="explore"></div>
-      </div>
-      <div id="demo-extension">
-        <div class="embed-header">
-          <div id="extension-state" class="loading-message"></div>
-        </div>
-        <div id="extension"></div>
-      </div>
-    </div>
-  </body>
+  </div>
+  <div id="embed-container"></div>
+</body>
+
 </html>

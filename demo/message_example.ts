@@ -56,7 +56,8 @@ import {
  */
 const acquireEmbedSessionCallback =
   async (): Promise<LookerEmbedCookielessSessionData> => {
-    const resp = await fetch('/acquire-embed-session')
+    const runtimeConfig = getConfiguration()
+    const resp = await fetch(`${runtimeConfig.proxyPath}/acquire-embed-session`)
     if (!resp.ok) {
       console.error('acquire-embed-session failed', { resp })
       throw new Error(
@@ -78,11 +79,15 @@ const acquireEmbedSessionCallback =
 const generateEmbedTokensCallback =
   async (): Promise<LookerEmbedCookielessSessionData> => {
     const { api_token, navigation_token } = getApplicationTokens() || {}
-    const resp = await fetch('/generate-embed-tokens', {
-      body: JSON.stringify({ api_token, navigation_token }),
-      headers: { 'content-type': 'application/json' },
-      method: 'PUT',
-    })
+    const runtimeConfig = getConfiguration()
+    const resp = await fetch(
+      `${runtimeConfig.proxyPath}/generate-embed-tokens`,
+      {
+        body: JSON.stringify({ api_token, navigation_token }),
+        headers: { 'content-type': 'application/json' },
+        method: 'PUT',
+      }
+    )
     if (!resp.ok) {
       // A response status of 400 is currently unrecoverable.
       // Terminate the session.
@@ -186,11 +191,11 @@ const initializeShowLookCheckbox = () => {
 const initializeUseCookielessCheckbox = () => {
   const cb = document.getElementById('useCookieless') as HTMLInputElement
   if (cb) {
-    const { useCookieless } = getConfiguration()
-    cb.checked = useCookieless
+    const { embedType } = getConfiguration()
+    cb.checked = embedType === 'cookieless'
     cb.addEventListener('change', (event: any) => {
       const runtimeConfig = getConfiguration()
-      runtimeConfig.useCookieless = event.target.checked
+      runtimeConfig.embedType = event.target.checked ? 'cookieless' : 'signed'
       updateConfiguration(runtimeConfig)
       location.reload()
     })
@@ -474,7 +479,7 @@ const initializeLookControls = (runtimeConfig: RuntimeConfig) => {
  * document to the embedded content. The auth endpoint is documented in README.md.
  */
 const initializeLookerEmbed = (runtimeConfig: RuntimeConfig) => {
-  if (runtimeConfig.useCookieless) {
+  if (runtimeConfig.embedType === 'cookieless') {
     // Use cookieless embed
     initCookielessEmbed(
       runtimeConfig.lookerHost,
@@ -482,8 +487,12 @@ const initializeLookerEmbed = (runtimeConfig: RuntimeConfig) => {
       generateEmbedTokensCallback
     )
   } else {
+    const el = document.getElementById('cookieless-error-controls')
+    if (el) {
+      el.remove()
+    }
     // Use SSO embed
-    initSSOEmbed(runtimeConfig.lookerHost, '/auth')
+    initSSOEmbed(runtimeConfig.lookerHost, `${runtimeConfig.proxyPath}/auth`)
   }
 }
 
@@ -507,66 +516,61 @@ const initializeRunAllButton = (runtimeConfig: RuntimeConfig) => {
  */
 const initializeErrorControls = (runtimeConfig: RuntimeConfig) => {
   if (runtimeConfig.showDashboard) {
-    const controls = document.querySelector('.error-controls') as HTMLDivElement
-    if (controls) {
-      if (runtimeConfig.useCookieless) {
-        // Test unrecoverable initial connection
-        const error1 = document.getElementById('error-1') as HTMLButtonElement
-        if (error1) {
-          error1.addEventListener('click', () => {
-            // Hide the dashboard
-            renderDashboard({ ...runtimeConfig, showDashboard: false })
-            // Need to wait a bit for current dashboard to unload
-            setTimeout(() => {
-              // sdk=2 is a deliberate mistake. It tells the embedded Looker
-              // application that the embed SDK is being used. In this case
-              // it is not. The Looker application is going to timeout because
-              // it fails to get a handshake. This is considered a coding error
-              // on the part of the embedding application (this) and is unrecoverable.
-              // Note that the Looker application displays an explanatory message in the console.
-              renderDashboard({ ...runtimeConfig }, '?sdk=2')
-            }, 500)
-          })
-        }
-        // Test recoverable initial connection
-        const error2 = document.getElementById('error-2') as HTMLButtonElement
-        if (error2) {
-          error2.addEventListener('click', () => {
-            // Hide the dashboard
-            renderDashboard({ ...runtimeConfig, showDashboard: false })
-            // Need to wait a bit for current dashboard to unload
-            setTimeout(() => {
-              // Recoverable error ignores the first three requests for session
-              // tokens. The Looker UI tries three times. This causes the Looker
-              // UI to render a recoverable error display. The user can click a
-              // button to try again and this time the session reques will not
-              // be ignored.
-              renderDashboard({ ...runtimeConfig }, '', true)
-            }, 500)
-          })
-        }
-        // Simulate bad tokens
-        const error3 = document.getElementById('error-3') as HTMLButtonElement
-        if (error3) {
-          error3.addEventListener('click', () => {
-            getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send(
-              'session:tokens',
-              {}
-            )
-          })
-        }
-        // Simulate expired session
-        const error4 = document.getElementById('error-4') as HTMLButtonElement
-        if (error4) {
-          error4.addEventListener('click', () => {
-            getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send(
-              'session:tokens',
-              { ...getApplicationTokens(), session_reference_token_ttl: 0 }
-            )
-          })
-        }
-      } else {
-        controls.style.display = 'none'
+    if (runtimeConfig.embedType === 'cookieless') {
+      // Test unrecoverable initial connection
+      const error1 = document.getElementById('error-1') as HTMLButtonElement
+      if (error1) {
+        error1.addEventListener('click', () => {
+          // Hide the dashboard
+          renderDashboard({ ...runtimeConfig, showDashboard: false })
+          // Need to wait a bit for current dashboard to unload
+          setTimeout(() => {
+            // sdk=2 is a deliberate mistake. It tells the embedded Looker
+            // application that the embed SDK is being used. In this case
+            // it is not. The Looker application is going to timeout because
+            // it fails to get a handshake. This is considered a coding error
+            // on the part of the embedding application (this) and is unrecoverable.
+            // Note that the Looker application displays an explanatory message in the console.
+            renderDashboard({ ...runtimeConfig }, '?sdk=2')
+          }, 500)
+        })
+      }
+      // Test recoverable initial connection
+      const error2 = document.getElementById('error-2') as HTMLButtonElement
+      if (error2) {
+        error2.addEventListener('click', () => {
+          // Hide the dashboard
+          renderDashboard({ ...runtimeConfig, showDashboard: false })
+          // Need to wait a bit for current dashboard to unload
+          setTimeout(() => {
+            // Recoverable error ignores the first three requests for session
+            // tokens. The Looker UI tries three times. This causes the Looker
+            // UI to render a recoverable error display. The user can click a
+            // button to try again and this time the session reques will not
+            // be ignored.
+            renderDashboard({ ...runtimeConfig }, '', true)
+          }, 500)
+        })
+      }
+      // Simulate bad tokens
+      const error3 = document.getElementById('error-3') as HTMLButtonElement
+      if (error3) {
+        error3.addEventListener('click', () => {
+          getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send(
+            'session:tokens',
+            {}
+          )
+        })
+      }
+      // Simulate expired session
+      const error4 = document.getElementById('error-4') as HTMLButtonElement
+      if (error4) {
+        error4.addEventListener('click', () => {
+          getEmbedFrame(getDashboardFrameId(runtimeConfig))?.send(
+            'session:tokens',
+            { ...getApplicationTokens(), session_reference_token_ttl: 0 }
+          )
+        })
       }
     }
   }

@@ -27,66 +27,72 @@
 export interface RuntimeConfig {
   [key: string]: any
   preventNavigation: boolean
-  dashboardId: number | string
+  dashboardId: string
+  dashboardId2: string
   exploreId: string
   extensionId: string
-  lookId: number
+  lookId: string
+  queryVisualizationId: string
+  reportId: string
   lookerHost: string
+  proxyPath: string
   /**
-   * When false hides the look. Used in conjuction with
-   * look id. When look id is empty the showLook
-   * toggle will be hidden.
+   * When false hides the look.
    */
   showDashboard: boolean
   /**
-   * When false hides the look. Used in conjuction with
-   * look id. When look id is empty the showLook
-   * toggle will be hidden.
+   * When false hides the look.
    */
   showLook: boolean
   /**
-   * When false hides the explore. Used in conjuction with
-   * explore id. When explore id is empty the showExplore
-   * toggle will be hidden.
+   * When false hides the explore.
    */
   showExplore: boolean
   /**
-   * When false hides the extension. Used in conjuction with
-   * extension id. When extension id is empty the showExtension
-   * toggle will be hidden.
+   * When false hides the extension.
    */
   showExtension: boolean
   /**
-   * When true will use cookieless embed. When false will use
-   * SSO signing.
+   * When false hides the query visualization.
    */
-  useCookieless: boolean
+  showQueryVisualization: boolean
+  /**
+   * When false hides the report.
+   */
+  showReport: boolean
   /**
    * Dashboards only. When true, will dynamically change height of
    * dashboard IFRAME.
    */
   useDynamicHeights: boolean
+  /**
+   * Type of embedding to demonstrate
+   */
+  embedType: string
 }
 
 const lookerHost = 'mycompany.looker.com'
 
-// A dashboard that the user can see. Set to '-' or 0 to disable dashboard demo.
-// dashboardId can be a numeric id or a slug string.
-const dashboardId: number | string = 1
+// A dashboard that the user can see. Set to '-' or '0' to disable the dashboard demo.
+// dashboardId can be a numeric id string or a slug string.
+const dashboardId = '1'
+const dashboardId2 = '2'
 
-// A Look that the user can see. Set to 0 to disable look demo.
-// lookId must be numeric. Slugs are NOT supported.
-const lookId = 1
+// A Look that the user can see. Set to '-' or '0' to disable the look demo.
+// Slugs are NOT supported.
+const lookId = '1'
 
-// An Explore that the user can see. Set to '-' to disable explore demo.
+// An Explore that the user can see. Set to '-' to disable the explore demo.
 const exploreId = 'thelook::orders'
 
-// An Extension that the user can see. Set to '-' to disable extension demo.
-// Requires Looker 7.12 and extensions framework.
+// An Extension that the user can see. Set to '-' to disable the extension demo.
 const extensionId = 'extension::my-great-extension'
 
-// Demo new cookieless embed (new cookieless embed is not backward compatible)
-const cookielessEmbedV2 = false
+// An Query Visualization that the user can see. Set to '-' to disable the
+// query visualization demo.
+const queryVisualizationId = 'O78fF73U3qNe3SelryY838'
+
+const reportId = '17dc58ee-ffc0-49d1-9514-908666bfec8c'
 
 const getId = (defaultId: string, id?: string) => {
   const _id = id || defaultId
@@ -96,28 +102,37 @@ const getId = (defaultId: string, id?: string) => {
   return _id
 }
 
-const _dashboardId = getId(
-  dashboardId.toString(),
-  process.env.LOOKER_DASHBOARD_ID
-)
+const _dashboardId = getId(dashboardId, process.env.LOOKER_DASHBOARD_ID)
+const _dashboardId2 = getId(dashboardId2, process.env.LOOKER_DASHBOARD_ID_2)
 const _exploreId = getId(exploreId, process.env.LOOKER_EXPLORE_ID)
 const _extensionId = getId(extensionId, process.env.LOOKER_EXTENSION_ID)
-const _lookId = parseInt(process.env.LOOKER_LOOK_ID || lookId.toString(), 10)
+const _lookId = getId(lookId, process.env.LOOKER_LOOK_ID)
+const _queryVisualizationId = getId(
+  queryVisualizationId,
+  process.env.LOOKER_QUERY_VISUALIZATION_ID
+)
+const _reportId = getId(reportId, process.env.LOOKER_REPORT_ID)
 
 // Current runtime config
 let runtimeConfig: RuntimeConfig = {
   dashboardId: _dashboardId,
+  dashboardId2: _dashboardId2,
+  embedType: process.env.LOOKER_EMBED_TYPE || 'signed',
   exploreId: _exploreId,
   extensionId: _extensionId,
   lookId: _lookId,
-  lookerHost: process.env.LOOKER_EMBED_HOST || lookerHost,
+  lookerHost:
+    process.env.LOOKER_WEB_URL || process.env.LOOKER_EMBED_HOST || lookerHost,
   preventNavigation: true,
-  showDashboard: typeof _dashboardId === 'string' && _dashboardId.trim() !== '',
-  showExplore: typeof _exploreId === 'string' && _exploreId.trim() !== '',
-  showExtension: typeof _extensionId === 'string' && _extensionId.trim() !== '',
-  showLook: _lookId > 0,
-  useCookieless:
-    process.env.LOOKER_COOKIELESS_ENABLED === 'true' ? true : cookielessEmbedV2,
+  proxyPath: process.env.LOOKER_DEMO_PROXY_PATH || '',
+  queryVisualizationId: _queryVisualizationId,
+  reportId: _reportId,
+  showDashboard: _dashboardId.trim() !== '',
+  showExplore: _exploreId.trim() !== '',
+  showExtension: _extensionId.trim() !== '',
+  showLook: _lookId.trim() !== '',
+  showQueryVisualization: _queryVisualizationId.trim() !== '',
+  showReport: _reportId.trim() !== '',
   useDynamicHeights: false,
 }
 
@@ -136,17 +151,20 @@ export const updateConfiguration = (config: RuntimeConfig) => {
   saveConfiguration()
 }
 
-// load configuration from local storage UNLESS ids chan
+// load configuration from local storage UNLESS ids change
 export const loadConfiguration = () => {
   try {
     const configJson = localStorage.getItem('embed-configuration')
-    const config = JSON.parse(configJson || '{}')
+    const config = JSON.parse(configJson || '{}') as RuntimeConfig
     if (
       config.lookerHost !== runtimeConfig.lookerHost ||
       config.dashboardId !== runtimeConfig.dashboardId ||
+      config.dashboardId2 !== runtimeConfig.dashboardId2 ||
       config.lookId !== runtimeConfig.lookId ||
+      config.extensionId !== runtimeConfig.extensionId ||
       config.exploreId !== runtimeConfig.exploreId ||
-      config.extensionId !== runtimeConfig.extensionId
+      config.queryVisualizationId !== runtimeConfig.queryVisualizationId ||
+      config.reportId !== runtimeConfig.reportId
     ) {
       saveConfiguration()
     } else {
