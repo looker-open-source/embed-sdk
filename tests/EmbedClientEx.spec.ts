@@ -61,6 +61,7 @@ describe('EmbedClientEx', () => {
       generateTokens?: string | CookielessRequestInit | GenerateTokensCallback
       createUrl?: string
       allowLoginScreen?: boolean
+      ariaLabel?: string
     } = {}
   ) => {
     const {
@@ -71,6 +72,7 @@ describe('EmbedClientEx', () => {
       generateTokens,
       createUrl,
       allowLoginScreen,
+      ariaLabel,
     } = options
     const createChattyBuilder = (url: string) => {
       mockHostBuilder._url = url
@@ -90,6 +92,9 @@ describe('EmbedClientEx', () => {
     }
     if (allowLoginScreen) {
       builder.withAllowLoginScreen()
+    }
+    if (ariaLabel) {
+      builder.withAriaLabel(ariaLabel)
     }
     builder
       .withDialogScroll()

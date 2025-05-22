@@ -77,6 +77,7 @@ export class MockHostBuilder {
   _el?: HTMLElement
   _sandboxAttributes: string[] = []
   _allowAttributes: string[] = []
+  _ariaLabel = ''
 
   frameBorder(border: string) {
     this._frameBorder = border
@@ -100,6 +101,11 @@ export class MockHostBuilder {
 
   withAllowAttribute(...attr: string[]) {
     this._allowAttributes = this._allowAttributes.concat(attr)
+    return this
+  }
+
+  withAriaLabel(ariaLabel: string) {
+    this._ariaLabel = ariaLabel
     return this
   }
 

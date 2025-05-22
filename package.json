@@ -1,6 +1,6 @@
 {
   "name": "@looker/embed-sdk",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A toolkit for embedding Looker",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -86,7 +86,7 @@
     "xhr-mock": "^2.5.1"
   },
   "dependencies": {
-    "@looker/chatty": "^2.3.9",
+    "@looker/chatty": "^2.3.10",
     "@typescript/lib-dom": "npm:@types/web"
   },
   "eslintConfig": {
