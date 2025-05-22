@@ -86,7 +86,7 @@
     "xhr-mock": "^2.5.1"
   },
   "dependencies": {
-    "@looker/chatty": "^2.3.9",
+    "@looker/chatty": "^2.3.10",
     "@typescript/lib-dom": "npm:@types/web"
   },
   "eslintConfig": {

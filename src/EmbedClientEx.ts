@@ -491,6 +491,7 @@ export class EmbedClientEx implements IEmbedClient {
       // tslint:disable-next-line:deprecation
       .frameBorder(this._builder.frameBorder)
       .withTargetOrigin(this.targetOrigin)
+      .withAriaLabel(this._builder.ariaLabel)
       .appendTo(this._builder.el)
       .build()
 

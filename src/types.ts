@@ -551,9 +551,16 @@ export interface IEmbedBuilder {
    * @deprecated dashboards legacy was was replaced by dashboards next.
    *             The `-next` suffix has no impact aside from the overhead
    *             of redirecting to /dashboards. Please remove.
+   *             The current implementation is a noop.
    */
 
   withNext(_?: string): IEmbedBuilder
+
+  /**
+   * Aria label for the IFRAME.
+   */
+
+  withAriaLabel(ariaLabel: string): IEmbedBuilder
 
   /**
    *

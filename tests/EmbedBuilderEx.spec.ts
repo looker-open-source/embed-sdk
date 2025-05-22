@@ -212,6 +212,11 @@ describe('EmbedBuilderEx', () => {
     })
   })
 
+  it('can specify an aria label', () => {
+    builder.withAriaLabel('My aria label')
+    expect(builder.ariaLabel).toBe('My aria label')
+  })
+
   it('builds', () => {
     const client = builder.build()
     expect(client).toBeDefined()

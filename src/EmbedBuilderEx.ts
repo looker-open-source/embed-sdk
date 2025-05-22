@@ -52,6 +52,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   private _dynamicIFrameHeight?: boolean
   private _dialogScroll?: boolean
   private _allowLoginScreen?: boolean
+  private _ariaLabel: string = ''
 
   constructor(
     private _sdk: LookerEmbedExSDK,
@@ -177,6 +178,11 @@ export class EmbedBuilderEx implements IEmbedBuilder {
     return this
   }
 
+  withAriaLabel(ariaLabel: string) {
+    this._ariaLabel = ariaLabel
+    return this
+  }
+
   /**
    * @deprecated
    */
@@ -210,6 +216,10 @@ export class EmbedBuilderEx implements IEmbedBuilder {
 
   get type() {
     return this._type
+  }
+
+  get ariaLabel() {
+    return this._ariaLabel
   }
 
   get apiHost() {
