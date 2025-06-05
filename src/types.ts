@@ -469,6 +469,7 @@ export interface IEmbedBuilder {
   /**
    * Allows specifying sandbox attributes for an embedded content iframe. Sandbox attributes
    * should include `allow-scripts` or embedded content will not execute.
+   * 
    * @param attr one or more sandbox attributes for an embedded content iframe.
    */
 
@@ -476,6 +477,7 @@ export interface IEmbedBuilder {
 
   /**
    * Allows specifying allow attributes (for example fullscreen) for an embedded content iframe.
+   * 
    * @param attr one or more allow attributes for an embedded content iframe.
    */
 
@@ -483,10 +485,19 @@ export interface IEmbedBuilder {
 
   /**
    * Allows specifying classes for an embedded content
+   * 
    * @param className one or more sandbox attributes for an embedded content.
    */
 
   withClassName(...className: string[]): IEmbedBuilder
+
+  /**
+   * Allows specifying theme for embedded content.
+   * 
+   * @param theme Name of theme you want to apply
+   */
+
+  withTheme(theme: string): IEmbedBuilder
 
   /**
    * Monitors scroll position and informs the embedded Looker IFRAME
@@ -497,6 +508,7 @@ export interface IEmbedBuilder {
    * @param monitor defaults to true
    *
    */
+
   withScrollMonitor(monitor?: boolean): IEmbedBuilder
 
   /**
@@ -505,6 +517,7 @@ export interface IEmbedBuilder {
    *
    * @param dynamicIFrameHeight defaults to true
    */
+
   withDynamicIFrameHeight(dynamicIFrameHeight?: boolean): IEmbedBuilder
 
   /**
@@ -513,6 +526,7 @@ export interface IEmbedBuilder {
    *
    * @param dialogScroll defaults to true
    */
+
   withDialogScroll(dialogScroll?: boolean): IEmbedBuilder
 
   /**
