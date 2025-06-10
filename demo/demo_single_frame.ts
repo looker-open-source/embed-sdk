@@ -26,7 +26,6 @@
 
 // IDs for content to demonstrate can be configured in the .env file or in demo_config.ts
 
-import { connection } from '@looker/sdk'
 import type {
   ILookerConnection,
   ILookerEmbedSDK,
@@ -51,7 +50,16 @@ let currentPathname: string
  */
 const embedConnected = (connection: ILookerConnection) => {
   embedConnection = connection
-  updateStatus('')
+  if (
+    embedConnection.getLookerMajorVersion() >= 25 &&
+    embedConnection.getLookerMinorVersion() > 10
+  ) {
+    updateStatus('')
+  } else {
+    updateStatus(
+      'Listening for event "dashboard:tile:merge" is not supported by the Looker instance'
+    )
+  }
 }
 
 /**
@@ -106,6 +114,17 @@ const updateStatus = (status: string) => {
       statusElement.innerHTML = '&nbsp;'
     }
   }
+}
+
+/**
+ * A canceller callback that prevents the default behavior of edit merge query.
+ * The default behavior is for the edit merge query page to be opened in a top
+ * level window.
+ */
+const openMergeQuery = (event: any): any => {
+  window.open(`/merge_edit?merge_url=${encodeURI(event.url)}`)
+  updateStatus('Merge query edit opened in a new window')
+  return { cancel: true }
 }
 
 /**
@@ -672,6 +691,8 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     .on('drillmodal:explore', preventNavigation)
     .on('dashboard:tile:explore', preventNavigation)
     .on('dashboard:tile:view', preventNavigation)
+    // Open merge query in its own window
+    .on('dashboard:tile:merge', openMergeQuery)
     // Listen to messages to display explore progress
     .on('explore:ready', () => updateStatus('Loaded'))
     .on('explore:run:start', () => updateStatus('Running'))

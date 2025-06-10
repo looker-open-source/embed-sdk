@@ -115,6 +115,8 @@ describe('EmbedConnection', () => {
       },
     })
     expect(connection.getLookerVersion()).toEqual(25.1)
+    expect(connection.getLookerMajorVersion()).toEqual(25)
+    expect(connection.getLookerMinorVersion()).toEqual(1)
   })
 
   it('returns -1 when looker version unavailable', async () => {
