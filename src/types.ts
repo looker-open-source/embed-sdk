@@ -509,6 +509,14 @@ export interface IEmbedBuilder {
   withClassName(...className: string[]): IEmbedBuilder
 
   /**
+   * Allows specifying theme for embedded content.
+   *
+   * @param theme Name of theme you want to apply
+   */
+
+  withTheme(theme: string): IEmbedBuilder
+
+  /**
    * Monitors scroll position and informs the embedded Looker IFRAME
    * of the current scroll position and the offset of the containing
    * IFRAME within the window. Looker uses this information to position
