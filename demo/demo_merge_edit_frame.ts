@@ -24,7 +24,11 @@
 
  */
 
-import type { ILookerConnection, ILookerEmbedSDK } from '../src/index'
+import type {
+  DashboardTileMergeEvent,
+  ILookerConnection,
+  ILookerEmbedSDK,
+} from '../src/index'
 import { getEmbedSDK } from '../src/index'
 import type { RuntimeConfig } from './demo_config'
 import { getConfiguration, loadConfiguration } from './demo_config'
@@ -71,7 +75,15 @@ const initializeControls = () => {
  * The default behavior is for the edit merge query page to be opened in a top
  * level window.
  */
-const openMergeQuery = (event: any): any => {
+const openMergeQuery = (event: DashboardTileMergeEvent): any => {
+  if (
+    event.dashboard_modified &&
+    !window.confirm(
+      'The dashboard has unsaved changes which may be lost if the merge query is edited. Proceed?'
+    )
+  ) {
+    return
+  }
   window.open(`/merge_edit?merge_url=${encodeURI(event.url)}`)
   updateStatus('Merge query edit opened in a new window')
   return { cancel: true }
