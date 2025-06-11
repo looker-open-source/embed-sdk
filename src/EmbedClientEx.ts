@@ -51,6 +51,8 @@ export class EmbedClientEx implements IEmbedClient {
   ) => void
 
   _lookerVersion?: number
+  _lookerMajorVersion = -1
+  _lookerMinorVersion = -1
   _cookielessInitialized = false
   _cookielessSessionExpired = false
   _hasSessionExpired = false
@@ -98,7 +100,7 @@ export class EmbedClientEx implements IEmbedClient {
    */
 
   get isPageLoadEventSupported() {
-    return this._lookerVersion !== undefined && this._lookerVersion >= 25.1
+    return this._lookerMajorVersion >= 25
   }
 
   /**
@@ -861,8 +863,14 @@ export class EmbedClientEx implements IEmbedClient {
   }
 
   private parseLookerVersion(lookerVersion?: string) {
-    if (lookerVersion && typeof this._lookerVersion !== 'number') {
+    if (lookerVersion && this._lookerMajorVersion < 0) {
       const [majorVersionString, minorVersionString] = lookerVersion.split('.')
+      if (/^[0-9]*$/.test(majorVersionString)) {
+        this._lookerMajorVersion = parseInt(majorVersionString, 10)
+      }
+      if (/^[0-9]*$/.test(minorVersionString)) {
+        this._lookerMinorVersion = parseInt(minorVersionString, 10)
+      }
       const version = parseFloat(`${majorVersionString}.${minorVersionString}`)
       if (!Number.isNaN(version)) {
         this._lookerVersion = version

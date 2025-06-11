@@ -89,7 +89,7 @@ export type LoadIdParams = {
  * Parameters used when loading by URL.
  */
 
-export type LoadUrlParams = {
+export type LoadUrlArgs = {
   /**
    * URL to load
    */
@@ -103,6 +103,13 @@ export type LoadUrlParams = {
    */
   options?: IConnectOptions
 }
+
+/**
+ * Parameters used when loading by URL.
+ * @deprecated use LoadUrlArgs
+ */
+
+export type LoadUrlParams = LoadUrlArgs
 
 /**
  * Load URL parameters
@@ -144,9 +151,22 @@ export interface ILookerConnection {
    * The value returned is -1 for Looker versions < 25.2.
    *
    * The value returned for 25.2.45 is 25.2
+   * @deprecated use getLookerMajorVersion and getLookerMinorVersion
    */
 
   getLookerVersion(): number
+
+  /**
+   * Returns the major version of the Looker instance
+   */
+
+  getLookerMajorVersion(): number
+
+  /**
+   * Returns the minor version of the Looker instance
+   */
+
+  getLookerMinorVersion(): number
 
   /**
    * @hidden
@@ -161,7 +181,7 @@ export interface ILookerConnection {
    * Looker versions.
    */
 
-  loadUrl(params: LoadUrlParams): Promise<void>
+  loadUrl(params: LoadUrlArgs | LoadUrlParams): Promise<void>
 
   /**
    * Load Looker dashboard. This does not recreate the IFRAME.
@@ -487,6 +507,14 @@ export interface IEmbedBuilder {
    */
 
   withClassName(...className: string[]): IEmbedBuilder
+
+  /**
+   * Allows specifying theme for embedded content.
+   *
+   * @param theme Name of theme you want to apply
+   */
+
+  withTheme(theme: string): IEmbedBuilder
 
   /**
    * Monitors scroll position and informs the embedded Looker IFRAME
@@ -1134,6 +1162,23 @@ export interface DashboardTileEvent {
 }
 
 /**
+ * Dashboard tile merge event. Fired when a user edits a merged
+ * query. The normal behavior is to open a new window but this
+ * event can be cancelled allowing the embedding application to
+ * implement its own merged query edit behavior, such as opening
+ * a new embedded host window which embeds the merged query.
+ */
+
+export interface DashboardTileMergeEvent {
+  dashboard_id: string
+  tile_id: string
+  tile_title: string
+  label: string
+  url: string
+  absoluteUrl: string
+}
+
+/**
  * Dashboard tile download event
  */
 
@@ -1441,6 +1486,10 @@ export interface LookerEmbedEventMap {
   'dashboard:tile:view': (
     this: ILookerConnection,
     event: DashboardTileViewEvent
+  ) => CancellableEventResponse | undefined
+  'dashboard:tile:merge': (
+    this: ILookerConnection,
+    event: DashboardTileMergeEvent
   ) => CancellableEventResponse | undefined
 
   'drillmenu:click': (
