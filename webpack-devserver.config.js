@@ -13,6 +13,7 @@ var webpackConfig = {
   entry: {
     demo_single_frame: './demo/demo_single_frame.ts',
     demo_multi_frame: './demo/demo_multi_frame.ts',
+    demo_merge_edit_frame: './demo/demo_merge_edit_frame.ts',
     message_example: './demo/message_example.ts',
   },
   output: {
@@ -56,7 +57,9 @@ var webpackConfig = {
     }),
   ],
   devServer: {
-    historyApiFallback: true,
+    historyApiFallback: {
+      rewrites: [{ from: /merge_edit/, to: '/demo_merge_edit_frame.html' }],
+    },
     static: {
       directory: path.join(__dirname, 'demo'),
     },

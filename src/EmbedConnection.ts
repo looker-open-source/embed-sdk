@@ -35,6 +35,7 @@ import type {
   ILookerEmbedQueryVisualization,
   ILookerEmbedReport,
   LoadIdParams,
+  LoadUrlArgs,
   LoadUrlParams,
   PageType,
   LookerDashboardOptions,
@@ -73,11 +74,19 @@ export class EmbedConnection implements ILookerConnection {
     return this._embedClient._lookerVersion
   }
 
+  getLookerMajorVersion() {
+    return this._embedClient._lookerMajorVersion || -1
+  }
+
+  getLookerMinorVersion() {
+    return this._embedClient._lookerMinorVersion || -1
+  }
+
   async loadUrl({
     url,
     pushHistory = false,
     options,
-  }: LoadUrlParams): Promise<any> {
+  }: LoadUrlArgs | LoadUrlParams): Promise<any> {
     if (!this._embedClient.isPageLoadEventSupported) {
       return Promise.reject(
         new Error(
