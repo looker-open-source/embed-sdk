@@ -149,16 +149,21 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadDashboard('42', false, { waitUntilLoaded: false })
+    await connection.loadDashboard(
+      '42',
+      false,
+      { waitUntilLoaded: false },
+      'Dark'
+    )
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         lookerVersion: '25.1.0',
-        url: '/embed/dashboards/42?embed_domain=http://localhost&sdk=3',
+        url: '/embed/dashboards/42?theme=Dark&embed_domain=http://localhost&sdk=3',
       },
     })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
-      url: '/embed/dashboards/42?embed_domain=http://localhost&sdk=3',
+      url: '/embed/dashboards/42?theme=Dark&embed_domain=http://localhost&sdk=3',
     })
   })
 

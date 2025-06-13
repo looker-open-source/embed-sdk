@@ -117,18 +117,21 @@ export class EmbedConnection implements ILookerConnection {
     id,
     pushHistory,
     options,
+    theme,
   }: LoadIdParams): Promise<void> {
+    const qs = theme ? `?theme=${theme}` : ''
     return this.loadUrl({
       options,
       pushHistory,
-      url: `/embed/${type}/${id}`,
+      url: `/embed/${type}/${id}${qs}`,
     })
   }
 
   async loadDashboard(
     id: string,
     pushHistory?: boolean,
-    options?: IConnectOptions
+    options?: IConnectOptions,
+    theme?: string
   ) {
     if (this._embedClient.isPageLoadEventSupported) {
       return this.loadId({
@@ -136,6 +139,7 @@ export class EmbedConnection implements ILookerConnection {
         options,
         pushHistory,
         type: 'dashboards',
+        theme,
       })
     }
     switch (this._pageType) {
@@ -150,10 +154,11 @@ export class EmbedConnection implements ILookerConnection {
   async loadExplore(
     id: string,
     pushHistory?: boolean,
-    options?: IConnectOptions
+    options?: IConnectOptions,
+    theme?: string
   ) {
     id = id.replace('::', '/') // Handle old format explore ids.
-    return this.loadId({ id, options, pushHistory, type: 'explore' })
+    return this.loadId({ id, options, pushHistory, type: 'explore', theme })
   }
 
   loadMergeQuery(id: string, pushHistory?: boolean, options?: IConnectOptions) {
@@ -178,12 +183,18 @@ export class EmbedConnection implements ILookerConnection {
     })
   }
 
-  async loadLook(id: string, pushHistory?: boolean, options?: IConnectOptions) {
+  async loadLook(
+    id: string,
+    pushHistory?: boolean,
+    options?: IConnectOptions,
+    theme?: string
+  ) {
     return this.loadId({
       id,
       options,
       pushHistory,
       type: 'looks',
+      theme,
     })
   }
 
@@ -198,13 +209,15 @@ export class EmbedConnection implements ILookerConnection {
   async loadQueryVisualization(
     id: string,
     pushHistory?: boolean,
-    options?: IConnectOptions
+    options?: IConnectOptions,
+    theme?: string
   ) {
     return this.loadId({
       id,
       options,
       pushHistory,
       type: 'query-visualization',
+      theme,
     })
   }
 
