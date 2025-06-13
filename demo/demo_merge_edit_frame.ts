@@ -24,7 +24,12 @@
 
  */
 
-import type { ILookerConnection, ILookerEmbedSDK } from '../src/index'
+import type {
+  CancellableEventResponse,
+  DashboardTileMergeEvent,
+  ILookerConnection,
+  ILookerEmbedSDK,
+} from '../src/index'
 import { getEmbedSDK } from '../src/index'
 import type { RuntimeConfig } from './demo_config'
 import { getConfiguration, loadConfiguration } from './demo_config'
@@ -71,9 +76,23 @@ const initializeControls = () => {
  * The default behavior is for the edit merge query page to be opened in a top
  * level window.
  */
-const openMergeQuery = (event: any): any => {
-  window.open(`/merge_edit?merge_url=${encodeURI(event.url)}`)
-  updateStatus('Merge query edit opened in a new window')
+const openMergeQuery = (
+  event: DashboardTileMergeEvent
+): CancellableEventResponse => {
+  let doMergeEdit = false
+  if (!event.dashboard_modified) {
+    doMergeEdit = true
+  } else {
+    doMergeEdit = window.confirm(
+      'The dashboard has unsaved changes which may be lost if the merge query is edited. Proceed?'
+    )
+  }
+  if (doMergeEdit) {
+    window.open(`/merge_edit?merge_url=${encodeURIComponent(event.url)}`)
+    updateStatus('Merge query edit opened in a new window')
+  } else {
+    updateStatus('Merge query edit cancelled')
+  }
   return { cancel: true }
 }
 
@@ -81,7 +100,7 @@ const openMergeQuery = (event: any): any => {
  * The merge edit url is stored in history state
  */
 const getEmbedMergeEditUrl = () => {
-  const embedUrl = decodeURI(history.state?.merge_url || '')
+  const embedUrl = decodeURIComponent(history.state?.merge_url || '')
   return embedUrl || '/embed/preload'
 }
 

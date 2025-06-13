@@ -1171,6 +1171,7 @@ export interface DashboardTileEvent {
 
 export interface DashboardTileMergeEvent {
   dashboard_id: string
+  dashboard_modified: boolean
   tile_id: string
   tile_title: string
   label: string

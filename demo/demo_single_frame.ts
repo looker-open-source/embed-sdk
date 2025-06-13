@@ -27,6 +27,8 @@
 // IDs for content to demonstrate can be configured in the .env file or in demo_config.ts
 
 import type {
+  CancellableEventResponse,
+  DashboardTileMergeEvent,
   ILookerConnection,
   ILookerEmbedSDK,
   PageChangedEvent,
@@ -121,9 +123,23 @@ const updateStatus = (status: string) => {
  * The default behavior is for the edit merge query page to be opened in a top
  * level window.
  */
-const openMergeQuery = (event: any): any => {
-  window.open(`/merge_edit?merge_url=${encodeURI(event.url)}`)
-  updateStatus('Merge query edit opened in a new window')
+const openMergeQuery = (
+  event: DashboardTileMergeEvent
+): CancellableEventResponse => {
+  let doMergeEdit = false
+  if (!event.dashboard_modified) {
+    doMergeEdit = true
+  } else {
+    doMergeEdit = window.confirm(
+      'The dashboard has unsaved changes which may be lost if the merge query is edited. Proceed?'
+    )
+  }
+  if (doMergeEdit) {
+    window.open(`/merge_edit?merge_url=${encodeURIComponent(event.url)}`)
+    updateStatus('Merge query edit opened in a new window')
+  } else {
+    updateStatus('Merge query edit cancelled')
+  }
   return { cancel: true }
 }
 
