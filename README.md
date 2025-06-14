@@ -487,7 +487,7 @@ LOOKER_CLIENT_SECRET=
 LOOKER_USE_EMBED_DOMAIN=false
 
 # Looker Embed Data Configuration
-# Set to - if demo needs to ignore it
+# Set to "-" if demo needs to ignore it
 
 # Dashboard IDs
 LOOKER_DASHBOARD_ID=1
@@ -502,6 +502,10 @@ LOOKER_EXTENSION_ID=extension::my-great-extension
 LOOKER_REPORT_ID=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
 # Query Visualization ID
 LOOKER_QUERY_VISUALIZATION_ID=1234567890ABCDEF123456
+
+# Theme configuration, Dashboards, Looks and Explores
+LOOKER_THEME=Dark
+LOOKER_CUSTOM_THEME={"show_title":false,"show_filters_bar":false,"text_tile_text_color":"blue"}
 ```
 
 - Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application to inform Looker about important user properties that control data access controls. The `demo/demo_user.json` file is also used for cookieless embedding. Remember that cookieless_embed always treats `force_logout_login` as `true`. See [documentation](https://cloud.google.com/looker/docs/single-sign-on-embedding) for detailed information on the content of the embed user definition.

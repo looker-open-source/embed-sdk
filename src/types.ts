@@ -66,11 +66,7 @@ export interface IConnectOptions {
  * Parameters used when loading by ID.
  */
 
-export type LoadIdParams = {
-  /**
-   * page type
-   */
-  type: PageType
+export interface LoadParams {
   /**
    * id to load
    */
@@ -83,6 +79,21 @@ export type LoadIdParams = {
    * Load options
    */
   options?: IConnectOptions
+  /**
+   * Parameters to append to URL. Examples are filters, theme, _theme.
+   */
+  params?: UrlParams
+}
+
+/**
+ * Parameters used when loading by ID.
+ */
+
+export interface LoadIdParams extends LoadParams {
+  /**
+   * page type
+   */
+  type: PageType
 }
 
 /**
@@ -190,7 +201,29 @@ export interface ILookerConnection {
    * For Looker < 25.2 it fires the legacy dashboard:load event.
    */
 
-  loadDashboard(id: string, pushHistory?: boolean): Promise<void>
+  loadDashboard(loadIdParams: LoadParams): Promise<void>
+
+  /**
+   * Load Looker dashboard. This does not recreate the IFRAME.
+   *
+   * For Looker 25.2 or greater it fires the new page:load event.
+   * For Looker < 25.2 it fires the legacy dashboard:load event.
+   */
+
+  loadDashboard(
+    id: string,
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ): Promise<void>
+
+  /**
+   * Load Looker explore. This does not recreate the IFRAME.
+   *
+   * For Looker 25.2 or greater it fires the new page:load event.
+   * For Looker < 25.2 it fires the legacy dashboard:load event.
+   */
+
+  loadExplore(loadIdParams: LoadParams): Promise<void>
 
   /**
    * Load Looker explore. This does not recreate the IFRAME.
@@ -208,7 +241,20 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  loadMergeQuery(id: string, pushHistory?: boolean): Promise<void>
+  loadMergeQuery(loadIdParams: LoadParams): Promise<void>
+
+  /**
+   * Load Looker merge query. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadMergeQuery(
+    id: string,
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ): Promise<void>
 
   /**
    * Load query. This does not recreate the IFRAME.
@@ -221,7 +267,9 @@ export interface ILookerConnection {
     model: string,
     view: string,
     qid: string,
-    pushHistory?: boolean
+    pushHistory?: boolean,
+    options?: IConnectOptions,
+    urlParams?: UrlParams
   ): Promise<void>
 
   /**
@@ -231,7 +279,20 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  loadLook(id: string, pushHistory?: boolean): Promise<void>
+  loadLook(loadIdParams: LoadParams): Promise<void>
+
+  /**
+   * Load Looker look. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadLook(
+    id: string,
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ): Promise<void>
 
   /**
    * Load Looker extension. This does not recreate the IFRAME.
@@ -240,7 +301,20 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  loadExtension(id: string, pushHistory?: boolean): Promise<void>
+  loadExtension(loadIdParams: LoadParams): Promise<void>
+
+  /**
+   * Load Looker extension. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadExtension(
+    id: string,
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ): Promise<void>
 
   /**
    * Load Looker query visualization. This does not recreate the IFRAME.
@@ -249,7 +323,20 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  loadQueryVisualization(id: string, pushHistory?: boolean): Promise<void>
+  loadQueryVisualization(loadIdParams: LoadParams): Promise<void>
+
+  /**
+   * Load Looker query visualization. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadQueryVisualization(
+    id: string,
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ): Promise<void>
 
   /**
    * Load Looker report. This does not recreate the IFRAME.
@@ -258,7 +345,20 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  loadReport(id: string, pushHistory?: boolean): Promise<void>
+  loadReport(loadIdParams: LoadParams): Promise<void>
+
+  /**
+   * Load Looker report. This does not recreate the IFRAME.
+   *
+   * Requires Looker 25.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadReport(
+    id: string,
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ): Promise<void>
 
   /**
    * Render the preload page. This does not recreate the IFRAME.
@@ -267,7 +367,7 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  preload(): Promise<void>
+  preload(pushHistory?: boolean, options?: IConnectOptions): Promise<void>
 
   /**
    * Get the connection as a dashboard

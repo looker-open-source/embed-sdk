@@ -54,6 +54,8 @@ var webpackConfig = {
       LOOKER_EMBED_TYPE: null,
       LOOKER_DEMO_PROXY_PATH: null,
       LOOKER_DEMO_HOST_EXTERNAL: null,
+      LOOKER_THEME: null,
+      LOOKER_CUSTOM_THEME: null,
     }),
   ],
   devServer: {

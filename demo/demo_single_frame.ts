@@ -33,6 +33,7 @@ import type {
   ILookerEmbedSDK,
   PageChangedEvent,
   SessionStatus,
+  UrlParams,
 } from '../src/index'
 import { getEmbedSDK } from '../src/index'
 import type { RuntimeConfig } from './demo_config'
@@ -324,8 +325,14 @@ const loadDashboard1 = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.dashboardId) {
-      // loadDashboard falls back to legacy "dashboard:load" embed action
-      await embedConnection.loadDashboard(config.dashboardId)
+      const params: UrlParams = {}
+      if (config.customTheme) {
+        params['_theme'] = config.customTheme
+      }
+      if (config.theme) {
+        params['theme'] = config.theme
+      }
+      await embedConnection.loadDashboard({ id: config.dashboardId, params })
       if (!location.pathname.startsWith('/dashboard1')) {
         updateCurrentUrl('/dashboard1')
       }
@@ -340,8 +347,14 @@ const loadDashboard2 = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.dashboardId2) {
-      // loadDashboard falls back to legacy "dashboard:load" embed action
-      await embedConnection.loadDashboard(config.dashboardId2)
+      const params: UrlParams = {}
+      if (config.customTheme) {
+        params['_theme'] = config.customTheme
+      }
+      if (config.theme) {
+        params['theme'] = config.theme
+      }
+      await embedConnection.loadDashboard({ id: config.dashboardId2, params })
       if (!location.pathname.startsWith('/dashboard2')) {
         updateCurrentUrl('/dashboard2')
       }
@@ -356,8 +369,12 @@ const loadExplore = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.exploreId) {
+      const params: UrlParams = {}
+      if (config.theme) {
+        params['theme'] = config.theme
+      }
       try {
-        await embedConnection.loadExplore(config.exploreId)
+        await embedConnection.loadExplore({ id: config.exploreId, params })
         if (!location.pathname.startsWith('/explore')) {
           updateCurrentUrl('/explore')
         }
@@ -377,8 +394,12 @@ const loadLook = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.lookId) {
+      const params: UrlParams = {}
+      if (config.theme) {
+        params['theme'] = config.theme
+      }
       try {
-        await embedConnection.loadLook(config.lookId)
+        await embedConnection.loadLook({ id: config.lookId, params })
         if (!location.pathname.startsWith('/look')) {
           updateCurrentUrl('/look')
         }
@@ -399,7 +420,7 @@ const loadExtension = async () => {
     const config = getConfiguration()
     if (config.extensionId) {
       try {
-        await embedConnection.loadExtension(config.extensionId)
+        await embedConnection.loadExtension({ id: config.extensionId })
         if (!location.pathname.startsWith('/extension')) {
           updateCurrentUrl('/extension')
         }
@@ -419,10 +440,15 @@ const loadQueryVisualization = async () => {
   if (embedConnection) {
     const config = getConfiguration()
     if (config.queryVisualizationId) {
+      const params: UrlParams = {}
+      if (config.theme) {
+        params['theme'] = config.theme
+      }
       try {
-        await embedConnection.loadQueryVisualization(
-          config.queryVisualizationId
-        )
+        await embedConnection.loadQueryVisualization({
+          id: config.queryVisualizationId,
+          params,
+        })
         if (!location.pathname.startsWith('/query')) {
           updateCurrentUrl('/query')
         }
@@ -632,24 +658,33 @@ const initializeHistoryListener = () => {
 }
 
 const buildInitialUrl = (runtimeConfig: RuntimeConfig) => {
+  let sep = '?'
+  let qs = ''
+  if (runtimeConfig.theme) {
+    qs = `${sep}theme=${encodeURIComponent(runtimeConfig.theme)}`
+    sep = '&'
+  }
+  if (runtimeConfig.customTheme) {
+    qs = `${qs}${sep}_theme=${encodeURIComponent(runtimeConfig.customTheme)}`
+  }
   const pathname = location.pathname
   if (pathname.startsWith('/dashboard1') && runtimeConfig.dashboardId) {
-    return `/embed/dashboards/${runtimeConfig.dashboardId}`
+    return `/embed/dashboards/${runtimeConfig.dashboardId}${qs}`
   } else if (pathname.startsWith('/dashboard2') && runtimeConfig.dashboardId2) {
-    return `/embed/dashboards/${runtimeConfig.dashboardId2}`
+    return `/embed/dashboards/${runtimeConfig.dashboardId2}${qs}`
   } else if (pathname.startsWith('/explore') && runtimeConfig.exploreId) {
-    return `/embed/explore/${runtimeConfig.exploreId.replace('::', '/')}`
+    return `/embed/explore/${runtimeConfig.exploreId.replace('::', '/')}${qs}`
   } else if (pathname.startsWith('/look') && runtimeConfig.lookId) {
-    return `/embed/looks/${runtimeConfig.lookId}`
+    return `/embed/looks/${runtimeConfig.lookId}${qs}`
   } else if (pathname.startsWith('/extension') && runtimeConfig.extensionId) {
-    return `/embed/extensions/${runtimeConfig.extensionId}`
+    return `/embed/extensions/${runtimeConfig.extensionId}${qs}`
   } else if (
     pathname.startsWith('/query') &&
     runtimeConfig.queryVisualizationId
   ) {
     return `/embed/query-visualization/${runtimeConfig.queryVisualizationId}`
   } else if (pathname.startsWith('/report') && runtimeConfig.reportId) {
-    return `/embed/reporting/${runtimeConfig.reportId}`
+    return `/embed/reporting/${runtimeConfig.reportId}${qs}`
   } else {
     updateCurrentUrl('', false)
     return '/embed/preload'
