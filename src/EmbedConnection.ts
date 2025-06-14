@@ -34,6 +34,7 @@ import type {
   ILookerEmbedLook,
   ILookerEmbedQueryVisualization,
   ILookerEmbedReport,
+  LoadParams,
   LoadIdParams,
   LoadUrlArgs,
   LoadUrlParams,
@@ -41,6 +42,7 @@ import type {
   LookerDashboardOptions,
   LookerEmbedFilterParams,
   IConnectOptions,
+  UrlParams,
 } from './types'
 import { ExploreConnection } from './ExploreConnection'
 import { ExtensionConnection } from './ExtensionConnection'
@@ -48,6 +50,8 @@ import { LookConnection } from './LookConnection'
 import { QueryVisualizationConnection } from './QueryVisualizationConnection'
 import { ReportConnection } from './ReportConnection'
 import type { EmbedClientEx } from './EmbedClientEx'
+import { stringify } from './utils'
+import e = require('express')
 
 export class EmbedConnection implements ILookerConnection {
   _pageType: PageType = 'unknown'
@@ -117,50 +121,86 @@ export class EmbedConnection implements ILookerConnection {
     id,
     pushHistory,
     options,
+    params = {},
   }: LoadIdParams): Promise<void> {
+    const urlParams = stringify(params)
+    const sep = urlParams ? '?' : ''
     return this.loadUrl({
       options,
       pushHistory,
-      url: `/embed/${type}/${id}`,
+      url: `/embed/${type}/${id}${sep}${urlParams}`,
     })
   }
 
   async loadDashboard(
-    id: string,
+    idOrParams: string | LoadParams,
     pushHistory?: boolean,
     options?: IConnectOptions
   ) {
     if (this._embedClient.isPageLoadEventSupported) {
-      return this.loadId({
-        id,
-        options,
-        pushHistory,
-        type: 'dashboards',
-      })
+      const loadIdParams: LoadIdParams =
+        typeof idOrParams === 'string'
+          ? {
+              id: idOrParams,
+              options,
+              pushHistory,
+              type: 'dashboards',
+            }
+          : { ...idOrParams, type: 'dashboards' }
+      return this.loadId(loadIdParams)
     }
     switch (this._pageType) {
       case 'dashboards':
         return this.sendAndReceive('dashboard:load', {
-          id,
+          id: idOrParams,
           pushHistory: pushHistory || false,
         })
     }
   }
 
   async loadExplore(
-    id: string,
+    idOrParams: string | LoadParams,
     pushHistory?: boolean,
     options?: IConnectOptions
   ) {
-    id = id.replace('::', '/') // Handle old format explore ids.
-    return this.loadId({ id, options, pushHistory, type: 'explore' })
+    const loadIdParams: LoadIdParams =
+      typeof idOrParams === 'string'
+        ? {
+            id: idOrParams,
+            options,
+            pushHistory,
+            type: 'explore',
+          }
+        : { ...idOrParams, type: 'explore' }
+    loadIdParams.id = loadIdParams.id.replace('::', '/') // Handle old format explore ids.
+    return this.loadId(loadIdParams)
   }
 
-  loadMergeQuery(id: string, pushHistory?: boolean, options?: IConnectOptions) {
+  loadMergeQuery(
+    idOrParams: string | LoadParams,
+    pushHistoryArg?: boolean,
+    optionsArg?: IConnectOptions
+  ) {
+    let id: string
+    let pushHistory: boolean | undefined = undefined
+    let options: IConnectOptions | undefined = undefined
+    let qs = ''
+    let sep = ''
+    if (typeof idOrParams === 'string') {
+      id = idOrParams
+      pushHistory = pushHistoryArg
+      options = optionsArg
+    } else {
+      id = idOrParams.id
+      pushHistory = idOrParams.pushHistory
+      options = idOrParams.options
+      qs = stringify(idOrParams.params || {})
+      sep = qs ? '&' : ''
+    }
     return this.loadUrl({
       options,
       pushHistory,
-      url: `/embed/merge?mid=${id}`,
+      url: `/embed/merge?mid=${id}${sep}${qs}`,
     })
   }
 
@@ -169,56 +209,84 @@ export class EmbedConnection implements ILookerConnection {
     view: string,
     qid: string,
     pushHistory?: boolean,
-    options?: IConnectOptions
+    options?: IConnectOptions,
+    urlParams?: UrlParams
   ) {
+    let qs = stringify(urlParams || {})
+    let sep = qs ? '&' : ''
     return this.loadUrl({
       options,
       pushHistory,
-      url: `/embed/query/${model}/${view}?qid=${qid}`,
+      url: `/embed/query/${model}/${view}?qid=${qid}${sep}${qs}`,
     })
   }
 
-  async loadLook(id: string, pushHistory?: boolean, options?: IConnectOptions) {
-    return this.loadId({
-      id,
-      options,
-      pushHistory,
-      type: 'looks',
-    })
+  async loadLook(
+    idOrParams: string | LoadParams,
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ) {
+    const loadIdParams: LoadIdParams =
+      typeof idOrParams === 'string'
+        ? {
+            id: idOrParams,
+            options,
+            pushHistory,
+            type: 'looks',
+          }
+        : { ...idOrParams, type: 'looks' }
+    return this.loadId(loadIdParams)
   }
 
   async loadExtension(
-    id: string,
+    idOrParams: string | LoadParams,
     pushHistory?: boolean,
     options?: IConnectOptions
   ) {
-    return this.loadId({ id, options, pushHistory, type: 'extensions' })
+    const loadIdParams: LoadIdParams =
+      typeof idOrParams === 'string'
+        ? {
+            id: idOrParams,
+            options,
+            pushHistory,
+            type: 'extensions',
+          }
+        : { ...idOrParams, type: 'extensions' }
+    return this.loadId(loadIdParams)
   }
 
   async loadQueryVisualization(
-    id: string,
+    idOrParams: string | LoadParams,
     pushHistory?: boolean,
     options?: IConnectOptions
   ) {
-    return this.loadId({
-      id,
-      options,
-      pushHistory,
-      type: 'query-visualization',
-    })
+    const loadIdParams: LoadIdParams =
+      typeof idOrParams === 'string'
+        ? {
+            id: idOrParams,
+            options,
+            pushHistory,
+            type: 'query-visualization',
+          }
+        : { ...idOrParams, type: 'query-visualization' }
+    return this.loadId(loadIdParams)
   }
 
   async loadReport(
-    id: string,
+    idOrParams: string | LoadParams,
     pushHistory?: boolean,
     options?: IConnectOptions
   ) {
-    return this.loadId({
-      id,
-      options,
-      pushHistory,
-      type: 'reporting',
-    })
+    const loadIdParams: LoadIdParams =
+      typeof idOrParams === 'string'
+        ? {
+            id: idOrParams,
+            options,
+            pushHistory,
+            type: 'reporting',
+          }
+        : { ...idOrParams, type: 'reporting' }
+    return this.loadId(loadIdParams)
   }
 
   async preload(pushHistory?: boolean, options?: IConnectOptions) {
