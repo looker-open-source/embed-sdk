@@ -162,6 +162,30 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads a dashboard with parameters', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadDashboard({
+      id: '42',
+      pushHistory: false,
+      options: { waitUntilLoaded: false },
+      params: { theme: 'Dark', _theme: '{"show_title":false}' },
+    })
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        lookerVersion: '25.1.0',
+        url: '/embed/dashboards/42?theme=Dark&_theme=%7B%22show_title%22%3Afalse%7D&embed_domain=http://localhost&sdk=3',
+      },
+    })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/dashboards/42?theme=Dark&_theme=%7B%22show_title%22%3Afalse%7D&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('waits for a dashboard to be loaded', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -197,6 +221,26 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads an explore with paramters', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadExplore({
+      id: 'mymodel::myview',
+      pushHistory: false,
+      options: {
+        waitUntilLoaded: false,
+      },
+      params: { theme: 'Dark' },
+    })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/explore/mymodel/myview?theme=Dark&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('waits for an explore to be loaded', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -224,6 +268,22 @@ describe('EmbedConnection', () => {
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/merge?mid=a1b2c3d4&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('loads a merge query with parameters', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadMergeQuery({
+      id: 'a1b2c3d4',
+      params: { theme: 'Dark' },
+    })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/merge?mid=a1b2c3d4&theme=Dark&embed_domain=http://localhost&sdk=3',
     })
   })
 
@@ -257,6 +317,28 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads a query with params', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadQuery(
+      'mymodel',
+      'myview',
+      'a1b2c3d4',
+      false,
+      {
+        waitUntilLoaded: false,
+      },
+      { theme: 'Dark' }
+    )
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/query/mymodel/myview?qid=a1b2c3d4&theme=Dark&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('waits for a query to be loaded', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -287,6 +369,26 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads a query visualization with params', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadQueryVisualization({
+      id: 'a1b2c3d4',
+      pushHistory: false,
+      options: {
+        waitUntilLoaded: false,
+      },
+      params: { theme: 'Dark' },
+    })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/query-visualization/a1b2c3d4?theme=Dark&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('waits for a query visualization to be loaded', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -312,6 +414,24 @@ describe('EmbedConnection', () => {
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/looks/42?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('loads a look with a parameter', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadLook({
+      id: '42',
+      pushHistory: false,
+      options: { waitUntilLoaded: false },
+      params: { theme: 'Dark' },
+    })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/looks/42?theme=Dark&embed_domain=http://localhost&sdk=3',
     })
   })
 
@@ -345,6 +465,26 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads an extension with params', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadExtension({
+      id: 'myproj::myext',
+      pushHistory: false,
+      options: {
+        waitUntilLoaded: false,
+      },
+      params: { theme: 'Dark' },
+    })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/extensions/myproj::myext?theme=Dark&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('waits for an extension to be loaded', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -370,6 +510,24 @@ describe('EmbedConnection', () => {
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/reporting/abcdefg?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('loads a report with params', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadReport({
+      id: 'abcdefg',
+      pushHistory: false,
+      options: { waitUntilLoaded: false },
+      params: { page: '20' },
+    })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/reporting/abcdefg?page=20&embed_domain=http://localhost&sdk=3',
     })
   })
 

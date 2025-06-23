@@ -69,6 +69,14 @@ export interface RuntimeConfig {
    * Type of embedding to demonstrate
    */
   embedType: string
+  /**
+   * Looker theme
+   */
+  theme: string
+  /**
+   * Custom theme
+   */
+  customTheme: string
 }
 
 const lookerHost = 'mycompany.looker.com'
@@ -134,6 +142,8 @@ let runtimeConfig: RuntimeConfig = {
   showQueryVisualization: _queryVisualizationId.trim() !== '',
   showReport: _reportId.trim() !== '',
   useDynamicHeights: false,
+  theme: process.env.LOOKER_THEME || '',
+  customTheme: process.env.LOOKER_CUSTOM_THEME || '',
 }
 
 const saveConfiguration = () => {
@@ -164,7 +174,9 @@ export const loadConfiguration = () => {
       config.extensionId !== runtimeConfig.extensionId ||
       config.exploreId !== runtimeConfig.exploreId ||
       config.queryVisualizationId !== runtimeConfig.queryVisualizationId ||
-      config.reportId !== runtimeConfig.reportId
+      config.reportId !== runtimeConfig.reportId ||
+      config.theme !== runtimeConfig.theme ||
+      config.customTheme !== runtimeConfig.customTheme
     ) {
       saveConfiguration()
     } else {
