@@ -586,6 +586,52 @@ const initializeContentControls = () => {
   }
 }
 
+async function oauth_login() {
+  const base_url = 'https://self-signed.looker.com:9999/auth'
+  const code_verifier = secure_random(32)
+  const code_challenge = await sha256_hash(code_verifier)
+  const params = {
+    response_type: 'code',
+    client_id: 'embed-server',
+    redirect_uri: `${location.origin}`,
+    scope: 'cors_api',
+    state: '1235813',
+    code_challenge_method: 'S256',
+    code_challenge: code_challenge,
+  }
+  const url = `${base_url}?${new URLSearchParams(params).toString()}`
+  document.location.assign(url)
+}
+
+function array_to_hex(array: any) {
+  return Array.from(array)
+    .map((b: any) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+function secure_random(byte_count: any) {
+  const array = new Uint8Array(byte_count)
+  crypto.getRandomValues(array)
+  return array_to_hex(array)
+}
+
+async function sha256_hash(message: any) {
+  const msgUint8 = new TextEncoder().encode(message)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+  return hashHex
+}
+
+const initializeLoginControl = () => {
+  const b = document.getElementById('oauth-login')
+  if (b) {
+    b.addEventListener('click', () => {
+      oauth_login()
+    })
+  }
+}
+
 /**
  * Initialize controls.
  */
@@ -596,6 +642,7 @@ const initializeControls = () => {
   initializeUseDynamicHeightsCheckbox()
   initializeTabs()
   initializeContentControls()
+  initializeLoginControl()
 }
 
 /**
@@ -719,7 +766,7 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     // Applicable to private embed only. If the user is not logged in,
     // the Looker login page will be displayed. Note that this will not
     // in Looker core.
-    .withAllowLoginScreen()
+    // .withAllowLoginScreen()
     // Append to the #dashboard element
     .appendTo('#embed-container')
     .on('page:changed', (event: PageChangedEvent) => {
