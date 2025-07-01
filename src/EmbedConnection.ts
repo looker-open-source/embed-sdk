@@ -63,6 +63,10 @@ export class EmbedConnection implements ILookerConnection {
     private _embedClient: EmbedClientEx
   ) {}
 
+  resetConnectionHost(connection: EmbedConnection) {
+    this._host = connection._host
+  }
+
   send(message: string, params?: any) {
     this._host.send(message, params)
   }

@@ -32,6 +32,7 @@ import type {
   IEmbedClient,
   PageType,
   UrlParams,
+  MergedQueryEditFlowOptions,
 } from './types'
 import { stringify, escapeFilterParam, santizeEmbedUrl } from './utils'
 import type { LookerEmbedExSDK } from './LookerEmbedExSDK'
@@ -53,6 +54,7 @@ export class EmbedBuilderEx implements IEmbedBuilder {
   private _dialogScroll?: boolean
   private _allowLoginScreen?: boolean
   private _ariaLabel: string = ''
+  private _mergedQueryEditFlowOptions?: MergedQueryEditFlowOptions
 
   constructor(
     private _sdk: LookerEmbedExSDK,
@@ -183,6 +185,20 @@ export class EmbedBuilderEx implements IEmbedBuilder {
     return this
   }
 
+  withMergedQueryEditFlow(options: MergedQueryEditFlowOptions) {
+    if (
+      options?.cancelIfDashboardModified ||
+      options?.confirmMessageIfDashboardModified
+    ) {
+      this._mergedQueryEditFlowOptions = options
+    } else {
+      throw new Error(
+        'Either confirmMessageIfDashboardModified or cancelIfDashboardModified must be set. confirmMessageIfDashboardModified takes precedence.'
+      )
+    }
+    return this
+  }
+
   /**
    * @deprecated
    */
@@ -292,6 +308,10 @@ export class EmbedBuilderEx implements IEmbedBuilder {
     return (
       this._allowLoginScreen && !this.isCookielessEmbed && !this._sdk.auth?.url
     )
+  }
+
+  get mergedQueryEditFlowOptions() {
+    return this._mergedQueryEditFlowOptions
   }
 
   appendTo(el: HTMLElement | string): IEmbedBuilder {

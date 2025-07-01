@@ -34,6 +34,7 @@ import type {
   IEmbedClient,
   ILookerConnection,
   IConnectOptions,
+  DashboardTileMergeEvent,
 } from './types'
 import { IS_URL, extractPageTypeFromUrl } from './utils'
 import type { EmbedBuilderEx } from './EmbedBuilderEx'
@@ -235,17 +236,18 @@ export class EmbedClientEx implements IEmbedClient {
 
   private async createIframe(url: string, waitUntilLoaded?: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
-    if (!this._builder.handlers['session:expired']) {
-      this._builder.handlers['session:expired'] = []
+    const handlers = { ...this._builder.handlers }
+    if (!handlers['session:expired']) {
+      handlers['session:expired'] = []
     }
-    this._builder.handlers['session:expired'].push(() => {
+    handlers['session:expired'].push(() => {
       this._hasSessionExpired = true
       this._sdk.clearSession()
     })
-    if (!this._builder.handlers['page:changed']) {
-      this._builder.handlers['page:changed'] = []
+    if (!handlers['page:changed']) {
+      handlers['page:changed'] = []
     }
-    this._builder.handlers['page:changed'].push((event: PageChangedEvent) => {
+    handlers['page:changed'].push((event: PageChangedEvent) => {
       if (this._connection) {
         const pathname = (event?.page?.url || '').split('?')[0]
         if (pathname !== this._connection._currentPathname) {
@@ -263,47 +265,35 @@ export class EmbedClientEx implements IEmbedClient {
         resolve(this._client as EmbedConnection)
       }
     })
-    if (!this._builder.handlers['dashboard:edit:start']) {
-      this._builder.handlers['dashboard:edit:start'] = []
+    if (!handlers['dashboard:edit:start']) {
+      handlers['dashboard:edit:start'] = []
     }
-    this._builder.handlers['dashboard:edit:start'].push(() =>
-      this.updateEditing(true)
-    )
-    if (!this._builder.handlers['dashboard:edit:cancel']) {
-      this._builder.handlers['dashboard:edit:cancel'] = []
+    handlers['dashboard:edit:start'].push(() => this.updateEditing(true))
+    if (!handlers['dashboard:edit:cancel']) {
+      handlers['dashboard:edit:cancel'] = []
     }
-    this._builder.handlers['dashboard:edit:cancel'].push(() =>
-      this.updateEditing(false)
-    )
-    if (!this._builder.handlers['dashboard:save:complete']) {
-      this._builder.handlers['dashboard:save:complete'] = []
+    handlers['dashboard:edit:cancel'].push(() => this.updateEditing(false))
+    if (!handlers['dashboard:save:complete']) {
+      handlers['dashboard:save:complete'] = []
     }
-    this._builder.handlers['dashboard:save:complete'].push(() =>
-      this.updateEditing(false)
-    )
-    if (!this._builder.handlers['look:edit:start']) {
-      this._builder.handlers['look:edit:start'] = []
+    handlers['dashboard:save:complete'].push(() => this.updateEditing(false))
+    if (!handlers['look:edit:start']) {
+      handlers['look:edit:start'] = []
     }
-    this._builder.handlers['look:edit:start'].push(() =>
-      this.updateEditing(true)
-    )
-    if (!this._builder.handlers['look:edit:cancel']) {
-      this._builder.handlers['look:edit:cancel'] = []
+    handlers['look:edit:start'].push(() => this.updateEditing(true))
+    if (!handlers['look:edit:cancel']) {
+      handlers['look:edit:cancel'] = []
     }
-    this._builder.handlers['look:edit:cancel'].push(() =>
-      this.updateEditing(false)
-    )
-    if (!this._builder.handlers['look:save:complete']) {
-      this._builder.handlers['look:save:complete'] = []
+    handlers['look:edit:cancel'].push(() => this.updateEditing(false))
+    if (!handlers['look:save:complete']) {
+      handlers['look:save:complete'] = []
     }
-    this._builder.handlers['look:save:complete'].push(() =>
-      this.updateEditing(false)
-    )
+    handlers['look:save:complete'].push(() => this.updateEditing(false))
     if (this._builder.dialogScroll) {
-      if (!this._builder.handlers['env:client:dialog']) {
-        this._builder.handlers['env:client:dialog'] = []
+      if (!handlers['env:client:dialog']) {
+        handlers['env:client:dialog'] = []
       }
-      this._builder.handlers['env:client:dialog'].push(
+      handlers['env:client:dialog'].push(
         ({ open, placement }: EnvClientDialogEvent) => {
           // Placement of 'cover' means that the dialog top is close
           // to the top of the IFRAME. The top MAY be scrolled out
@@ -325,10 +315,10 @@ export class EmbedClientEx implements IEmbedClient {
       )
     }
     if (this._builder.dynamicIFrameHeight) {
-      if (!this._builder.handlers['page:properties:changed']) {
-        this._builder.handlers['page:properties:changed'] = []
+      if (!handlers['page:properties:changed']) {
+        handlers['page:properties:changed'] = []
       }
-      this._builder.handlers['page:properties:changed'].push(
+      handlers['page:properties:changed'].push(
         ({ height }: PagePropertiesChangedEvent) => {
           if (height && height > 100 && this._host) {
             this._host.iframe.style.height = `${height}px`
@@ -336,19 +326,29 @@ export class EmbedClientEx implements IEmbedClient {
         }
       )
     }
-    if (this._builder.isCookielessEmbed) {
-      if (!this._builder.handlers['session:status']) {
-        this._builder.handlers['session:status'] = []
+    if (this._builder.mergedQueryEditFlowOptions) {
+      if (!handlers['dashboard:tile:merge']) {
+        handlers['dashboard:tile:merge'] = []
       }
-      this._builder.handlers['session:status'].push((event: SessionStatus) => {
+      handlers['dashboard:tile:merge'].push(
+        (event: DashboardTileMergeEvent) => {
+          return this.mergedQueryEditFlow(event)
+        }
+      )
+    }
+    if (this._builder.isCookielessEmbed) {
+      if (!handlers['session:status']) {
+        handlers['session:status'] = []
+      }
+      handlers['session:status'].push((event: SessionStatus) => {
         if (event?.expired) {
           this._cookielessSessionExpired = true
         }
       })
-      if (!this._builder.handlers['session:tokens:request']) {
-        this._builder.handlers['session:tokens:request'] = []
+      if (!handlers['session:tokens:request']) {
+        handlers['session:tokens:request'] = []
       }
-      this._builder.handlers['session:tokens:request'].push(async () => {
+      handlers['session:tokens:request'].push(async () => {
         const cookielessSession = this._sdk._cookielessSession
         // Make typescript happy. This should not happen
         if (!cookielessSession || !this._client) {
@@ -476,8 +476,9 @@ export class EmbedClientEx implements IEmbedClient {
         this._sdk._generateTokensPromise = undefined
       })
     }
-    for (const eventType in this._builder.handlers) {
-      for (const handler of this._builder.handlers[eventType]) {
+
+    for (const eventType in handlers) {
+      for (const handler of handlers[eventType]) {
         this._hostBuilder.on(eventType, (...args) =>
           handler.apply(this._client, args)
         )
@@ -876,5 +877,38 @@ export class EmbedClientEx implements IEmbedClient {
         this._lookerVersion = version
       }
     }
+  }
+
+  // This should be private but exposed for testing purposes
+  mergedQueryEditFlow(event: DashboardTileMergeEvent) {
+    if (event.dashboard_modified) {
+      let cancel = false
+      if (
+        this._builder.mergedQueryEditFlowOptions
+          ?.confirmMessageIfDashboardModified
+      ) {
+        cancel = !window.confirm(
+          this._builder.mergedQueryEditFlowOptions
+            ?.confirmMessageIfDashboardModified
+        )
+      } else if (
+        this._builder.mergedQueryEditFlowOptions?.cancelIfDashboardModified
+      ) {
+        cancel = true
+      }
+      if (cancel) {
+        return { cancel: true }
+      }
+    }
+    if (this._host?.iframe) {
+      const saveIframe = this._host?.iframe
+      saveIframe.style.display = 'none'
+      window.setTimeout(async () => {
+        const newConnection = await this.createIframe(event.absoluteUrl, true)
+        this._connection?.resetConnectionHost(newConnection)
+        saveIframe.remove()
+      })
+    }
+    return { cancel: true }
   }
 }
