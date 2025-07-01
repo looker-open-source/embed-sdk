@@ -164,6 +164,26 @@ describe('EmbedBuilderEx', () => {
     expect(builder.dialogScroll).toBeTruthy()
   })
 
+  it('can request merged query flow', () => {
+    builder.withMergedQueryEditFlow({ cancelIfDashboardModified: true })
+    expect(builder.mergedQueryEditFlowOptions).toStrictEqual({
+      cancelIfDashboardModified: true,
+    })
+    builder.withMergedQueryEditFlow({
+      confirmMessageIfDashboardModified:
+        'Dashboard edits will be lost. Proceed?',
+    })
+    expect(builder.mergedQueryEditFlowOptions).toStrictEqual({
+      confirmMessageIfDashboardModified:
+        'Dashboard edits will be lost. Proceed?',
+    })
+    expect(() => {
+      builder.withMergedQueryEditFlow({})
+    }).toThrow(
+      'Either confirmMessageIfDashboardModified or cancelIfDashboardModified must be set. confirmMessageIfDashboardModified takes precedence.'
+    )
+  })
+
   it('ignores allow login screen when signed url', () => {
     builder.withAllowLoginScreen()
     expect(builder.allowLoginScreen).toBeFalsy()

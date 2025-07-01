@@ -144,6 +144,18 @@ const openMergeQuery = (
   return { cancel: true }
 }
 
+const mergeQueryCancelledMessage = (
+  event: DashboardTileMergeEvent
+): CancellableEventResponse => {
+  if (event.dashboard_modified) {
+    updateStatus(
+      'Please save your dashboard changes before editing a merge query otherwise the edits will be lost.'
+    )
+    return { cancel: true }
+  }
+  return { cancel: false }
+}
+
 /**
  * A canceller callback can prevent the default behavior of links on a dashboard.
  * In this instance, if the click will navigate to a new window, the navigation is
@@ -720,6 +732,13 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     // the Looker login page will be displayed. Note that this will not
     // in Looker core.
     .withAllowLoginScreen()
+    // Warn the user if they will lose dashboard edits when requesting
+    // merge query edit
+    // .withMergedQueryEditFlow({
+    //   confirmMessageIfDashboardModified: 'Dashboard has been modified. Proceed and lose edits?',
+    // })
+    // Let the embed SDK handle the merged edit flow.
+    .withMergedQueryEditFlow({ cancelIfDashboardModified: true })
     // Append to the #dashboard element
     .appendTo('#embed-container')
     .on('page:changed', (event: PageChangedEvent) => {
@@ -742,8 +761,10 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     .on('drillmodal:explore', preventNavigation)
     .on('dashboard:tile:explore', preventNavigation)
     .on('dashboard:tile:view', preventNavigation)
+    // Display a message if a merged query dashboard has unsaved changes
+    .on('dashboard:tile:merge', mergeQueryCancelledMessage)
     // Open merge query in its own window
-    .on('dashboard:tile:merge', openMergeQuery)
+    // .on('dashboard:tile:merge', openMergeQuery)
     // Listen to messages to display explore progress
     .on('explore:ready', () => updateStatus('Loaded'))
     .on('explore:run:start', () => updateStatus('Running'))

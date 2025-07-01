@@ -53,6 +53,8 @@ export class MockChattyHostConnection {
   sendAndReceive(): Promise<void> {
     return Promise.resolve()
   }
+
+  resetConnection() {}
 }
 
 export class MockChattyHost {
