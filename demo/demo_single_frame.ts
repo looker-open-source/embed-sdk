@@ -151,7 +151,6 @@ const mergeQueryCancelledMessage = (
     updateStatus(
       'Please save your dashboard changes before editing a merge query otherwise the edits will be lost.'
     )
-    return { cancel: true }
   }
   return { cancel: false }
 }

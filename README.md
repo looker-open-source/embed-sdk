@@ -735,8 +735,8 @@ If the dashboard has been modified there is the potential that the user may lose
 How should the embedding application handle the merge query. There are a few approaches:
 
 - The simplest approach is to open a new tab, passing the merge query edit URL as a query string parameter. Once the tab is open the embedding application is loaded, it can instantiate the Looker IFRAME using the merge query URL from the query parameter.
-- Another approach is to create a hidden form in the DOM with a POST method, a target window name and a hidden field containing the merge query URL. Once created the form is submitted. The tab is then opened by the browser amd the embedding application is loaded and can instantiate the Looker IFRAME using the merge query edit URL which would need to be included in the load HTML something.
-- Yet another approach is to hide the existing Looker IFRAME and create a new Looker IFRAME using the embed SDK with the merge query edit URL. The merge query edit URL MUST NOT be loaded using the current embed connection. This will not work as Looker will lose the context of the dashboard being editied. Once the new IFRAME has loaded and the connection established, the old IFRAME can be destroyed.
+- Another approach is to create a hidden form in the DOM with a POST method, a target window name and a hidden field containing the merge query URL. Once created the form is submitted. The tab is then opened by the browser and the embedding application is loaded and can instantiate the Looker IFRAME using the merge query edit URL which would need to be included in the load HTML somewhere.
+- Yet another approach is to hide the existing Looker IFRAME and create a new Looker IFRAME using the embed SDK with the merge query edit URL. The merge query edit URL MUST NOT be loaded using the current embed connection. This will not work as Looker will lose the context of the dashboard being edited. Once the new IFRAME has loaded and the connection established, the old IFRAME can be destroyed.
 
 **Example handler**
 
@@ -766,7 +766,7 @@ const openMergeQuery = (
 
 #### Let the Embed SDK handle the merge query edit flow
 
-The embed SDK implements the option to hide the current IFRAME and and create a new IFRAME. It can be activated as follows:
+The embed SDK implements the option to hide the current IFRAME and create a new IFRAME. It can be activated as follows:
 
 ```javascript
 getEmbedSDK()
@@ -802,9 +802,7 @@ getEmbedSDK()
 ```javascript
 getEmbedSDK()
   .createDashboardWithId('42')
-  .withMergedQueryEditFlow({
-    confirmMessageIfDashboardModified: { cancelIfDashboardModified: true },
-  })
+  .withMergedQueryEditFlow({ cancelIfDashboardModified: true })
   .on('dashboard:tile:merge', () => {
     updateStatus(
       'Please save the dashboard changes before editing the merge query'
