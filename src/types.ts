@@ -24,6 +24,10 @@
 
  */
 
+/**
+ * Content page type
+ */
+
 export type PageType =
   | 'dashboards'
   | 'explore'
@@ -36,6 +40,31 @@ export type PageType =
   | 'query'
   | 'preload'
   | 'unknown'
+
+/**
+ * Merged query edit flow options.
+ */
+
+export interface MergedQueryEditFlowOptions {
+  /**
+   * The message will be displayed using the javascript confirm function
+   * if the dashboard has been modified. The user may either confirm and
+   * lose the edits or cancel and save the edits before editing the
+   * merged query. This option takes precedence  over the cancelIfDashboardModified
+   * option.
+   */
+  confirmMessageIfDashboardModified?: string
+  /**
+   * Attempts to edit a merge query will automatically be cancelled
+   * if the dashboard has been modified. The embedding application should
+   * listen for the `dashboard:tile:merge` event and render some kind of
+   * message telling the user why the request to edit a merge query will
+   * not happen and what to do (save the dashboard, edit the dashboard
+   * again and then initiate the merge query). The reason for this is that
+   * any existing edits to the dashboard will be lost.
+   */
+  cancelIfDashboardModified?: boolean
+}
 
 /**
  * Connection and load options
@@ -689,6 +718,23 @@ export interface IEmbedBuilder {
    */
 
   withAriaLabel(ariaLabel: string): IEmbedBuilder
+
+  /**
+   * In the event of a `dashboard:tile:merge` event the embed SDK
+   * will inititate a flow to seamlessly handle it within the
+   * existing page. The flow is as follows:
+   * 1. The existing IFRAME is hidden.
+   * 2. A new IFRAME is created using the merge query edit URL
+   * 3. Once the edit page is loaded, the hidden IFRAME is destroyed.
+   *
+   * This is okay to do as the user is returned to the dashboard edit
+   * on save or cancel or the merged query edit. Note that the options
+   * allow the embedding application to control what happens should
+   * the dashboard have unsaved changes. If no options are provided
+   * any unsaved changes will be lost.
+   */
+
+  withMergedQueryEditFlow(options: MergedQueryEditFlowOptions): IEmbedBuilder
 
   /**
    *

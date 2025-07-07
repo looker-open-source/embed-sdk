@@ -1,6 +1,6 @@
 {
   "name": "@looker/embed-sdk",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "A toolkit for embedding Looker",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -32,7 +32,8 @@
     "server": "npm run server-prep && cd server && ts-node ./app.ts",
     "server-dev": "cd server && find . -type f -name '*.js' -delete && ts-node-dev --watch ./utils ./app.ts",
     "tsc": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "test-local": "jest --coverage=false"
   },
   "repository": {
     "type": "git",

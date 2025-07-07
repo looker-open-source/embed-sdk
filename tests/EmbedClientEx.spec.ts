@@ -29,10 +29,12 @@ import type { ChattyHostBuilder } from '@looker/chatty'
 import type {
   CookielessCallback,
   CookielessRequestInit,
+  DashboardTileMergeEvent,
   GenerateTokensCallback,
   LookerAuthConfig,
   LookerEmbedCookielessSessionData,
   LookerEmbedCookielessTokenData,
+  MergedQueryEditFlowOptions,
 } from '../src/types'
 import type { EmbedClientEx } from '../src/EmbedClientEx'
 import type { EmbedBuilderEx } from '../src/EmbedBuilderEx'
@@ -62,6 +64,7 @@ describe('EmbedClientEx', () => {
       createUrl?: string
       allowLoginScreen?: boolean
       ariaLabel?: string
+      mergedQueryFlowOptions?: MergedQueryEditFlowOptions
     } = {}
   ) => {
     const {
@@ -73,6 +76,7 @@ describe('EmbedClientEx', () => {
       createUrl,
       allowLoginScreen,
       ariaLabel,
+      mergedQueryFlowOptions,
     } = options
     const createChattyBuilder = (url: string) => {
       mockHostBuilder._url = url
@@ -95,6 +99,9 @@ describe('EmbedClientEx', () => {
     }
     if (ariaLabel) {
       builder.withAriaLabel(ariaLabel)
+    }
+    if (mergedQueryFlowOptions) {
+      builder.withMergedQueryEditFlow(mergedQueryFlowOptions)
     }
     builder
       .withDialogScroll()
@@ -666,5 +673,82 @@ describe('EmbedClientEx', () => {
     expect(connection.hasSessionExpired()).toBeFalsy()
     mockHostBuilder.fireEventForHandler('session:expired')
     expect(connection.hasSessionExpired()).toBeTruthy()
+  })
+
+  it('creates hides IFRAME when merged query event received', async () => {
+    const client = getClient({
+      mergedQueryFlowOptions: { cancelIfDashboardModified: true },
+    })
+    await client.connect()
+    expect(client.isConnected).toBeTruthy()
+    const response = client.mergedQueryEditFlow({
+      absoluteUrl: `${location.origin}/embed/merge/edit?`,
+    } as DashboardTileMergeEvent)
+    expect(response).toStrictEqual({ cancel: true })
+    expect(client._host?.iframe?.style.display).toBe('none')
+  })
+
+  it('does not hide IFRAME when cancelIfDashboardModified true, merged query event received and dashboard is modified', async () => {
+    const client = getClient({
+      mergedQueryFlowOptions: { cancelIfDashboardModified: true },
+    })
+    await client.connect()
+    expect(client.isConnected).toBeTruthy()
+    const response = client.mergedQueryEditFlow({
+      absoluteUrl: `${location.origin}/embed/merge/edit?`,
+      dashboard_modified: true,
+    } as DashboardTileMergeEvent)
+    expect(response).toStrictEqual({ cancel: true })
+    expect(client._host?.iframe?.style.display).not.toBe('none')
+  })
+
+  it('displays confirm when cancelIfDashboardModified true, merged query event received and dashboard is modified', async () => {
+    let confirmSpy: jest.SpyInstance = jest
+      .spyOn(window, 'confirm')
+      .mockImplementation(() => {
+        return false
+      })
+    const client = getClient({
+      mergedQueryFlowOptions: {
+        confirmMessageIfDashboardModified:
+          'Dashboard edits will be lost. Proceed?',
+      },
+    })
+    await client.connect()
+    expect(client.isConnected).toBeTruthy()
+    const response = client.mergedQueryEditFlow({
+      absoluteUrl: `${location.origin}/embed/merge/edit?`,
+      dashboard_modified: true,
+    } as DashboardTileMergeEvent)
+    expect(confirmSpy).toHaveBeenCalledWith(
+      'Dashboard edits will be lost. Proceed?'
+    )
+    expect(response).toStrictEqual({ cancel: true })
+    expect(client._host?.iframe?.style.display).not.toBe('none')
+  })
+
+  it('hides iframe whem confirm returns true', async () => {
+    let confirmSpy: jest.SpyInstance = jest
+      .spyOn(window, 'confirm')
+      .mockImplementation(() => {
+        return true
+      })
+    const client = getClient({
+      mergedQueryFlowOptions: {
+        confirmMessageIfDashboardModified:
+          'Dashboard edits will be lost. Proceed?',
+      },
+    })
+    await client.connect()
+    expect(client.isConnected).toBeTruthy()
+    const response = client.mergedQueryEditFlow({
+      absoluteUrl: `${location.origin}/embed/merge/edit?`,
+      dashboard_modified: true,
+    } as DashboardTileMergeEvent)
+    expect(confirmSpy).toHaveBeenCalledWith(
+      'Dashboard edits will be lost. Proceed?'
+    )
+    expect(response).toStrictEqual({ cancel: true })
+    expect(client._host?.iframe?.style.display).toBe('none')
   })
 })

@@ -708,4 +708,108 @@ const connection = await getEmbedSDK()
   .connect()
 ```
 
-This functionality is also available to the javascript API. See [here](demo/message_example.ts) for how to add this functionality.
+### Merged query edit flow
+
+Starting with Looker 25.12, the Embed SDK is aware of the merged query edit flow. By default, Looker opens the merged query edit in a separate tab. This tab is owned by Looker, not the Embedding application. The Embed SDK now allows the embedding application to change this behavior. There are two options available:
+
+1. Let the embedding application handle the behavior.
+2. Let the Embed SDK handle the behavior.
+
+#### Let the Embedding application handle the merge query edit flow
+
+The embedding application must add a listener for the `dashboard:tile:merge` event
+
+```javascript
+getEmbedSDK()
+  .createDashboardWithId('42')
+  .on('dashboard:tile:merge', openMergeQuery)
+  .appendTo('#dashboard')
+  .build()
+  .connect()
+```
+
+The handler is expected to cancel the event (in which case Looker will do nothing). The embedding application can then create a new embedding IFRAME using the url that is included in the event payload. The following needs to be considered when implementing this behavior in the embedding application.
+
+If the dashboard has been modified there is the potential that the user may lose edits made to the dashboard. The embedding application has the choice of doing nothing (in which case any edits may be lost), ask the user to confirm that they are okay with losing the edits or display a message to the user asking them to save the edits before editing the merge query.
+
+How should the embedding application handle the merge query. There are a few approaches:
+
+- The simplest approach is to open a new tab, passing the merge query edit URL as a query string parameter. Once the tab is open the embedding application is loaded, it can instantiate the Looker IFRAME using the merge query URL from the query parameter.
+- Another approach is to create a hidden form in the DOM with a POST method, a target window name and a hidden field containing the merge query URL. Once created the form is submitted. The tab is then opened by the browser and the embedding application is loaded and can instantiate the Looker IFRAME using the merge query edit URL which would need to be included in the load HTML somewhere.
+- Yet another approach is to hide the existing Looker IFRAME and create a new Looker IFRAME using the embed SDK with the merge query edit URL. The merge query edit URL MUST NOT be loaded using the current embed connection. This will not work as Looker will lose the context of the dashboard being edited. Once the new IFRAME has loaded and the connection established, the old IFRAME can be destroyed.
+
+**Example handler**
+
+```javascript
+const openMergeQuery = (
+  event: DashboardTileMergeEvent
+): CancellableEventResponse => {
+  let doMergeEdit = false
+  if (!event.dashboard_modified) {
+    doMergeEdit = true
+  } else {
+    // Ask the user to confirm they are okay with losing edits
+    doMergeEdit = window.confirm(
+      'The dashboard has unsaved changes which may be lost if the merge query is edited. Proceed?'
+    )
+  }
+  if (doMergeEdit) {
+    // The "/merge_edit" route must be implemented by the embedding application.
+    window.open(`/merge_edit?merge_url=${encodeURIComponent(event.url)}`)
+    updateStatus('Merge query edit opened in a new window')
+  } else {
+    updateStatus('Merge query edit cancelled')
+  }
+  return { cancel: true }
+}
+```
+
+#### Let the Embed SDK handle the merge query edit flow
+
+The embed SDK implements the option to hide the current IFRAME and create a new IFRAME. It can be activated as follows:
+
+```javascript
+getEmbedSDK()
+  .createDashboardWithId('42')
+  .withMergedQueryEditFlow()
+  .on('dashboard:tile:merge', openMergeQuery)
+  .appendTo('#dashboard')
+  .build()
+  .connect()
+```
+
+Consideration needs to be given about handling dashboards that have been edited. There are two options:
+
+1. Provide a message asking the user to confirm that they are okay with losing any edits. The user may cancel and save the edits.
+2. Automatically cancel the merge query edit request. The embedding application may then inform the user that the dashboard edits need to be saved.
+
+**Example with confirm message**
+
+```javascript
+getEmbedSDK()
+  .createDashboardWithId('42')
+  .withMergedQueryEditFlow({
+    confirmMessageIfDashboardModified:
+      'Dashboard has been modified. Proceed and lose edits?',
+  })
+  .appendTo('#dashboard')
+  .build()
+  .connect()
+```
+
+**Example with automatic cancel**
+
+```javascript
+getEmbedSDK()
+  .createDashboardWithId('42')
+  .withMergedQueryEditFlow({ cancelIfDashboardModified: true })
+  .on('dashboard:tile:merge', () => {
+    updateStatus(
+      'Please save the dashboard changes before editing the merge query'
+    )
+    return { cancel: true }
+  })
+  .appendTo('#dashboard')
+  .build()
+  .connect()
+```
