@@ -378,4 +378,25 @@ describe('LookerEmbedExSDK', () => {
     expect(builder.id).toBeUndefined()
     expect(builder.embedUrl).toBe('/embed/merge?mid=1234567890abcedf')
   })
+
+  it('creates conversational analytics with url builder', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createConversationalAnalyticsWithUrl(
+      '/embed/conversations/1234567890abcedf'
+    ) as EmbedBuilderEx
+    expect(builder.type).toBe('conversations')
+    expect(builder.endpoint).toBe('')
+    expect(builder.embedUrl).toBe('/embed/conversations/1234567890abcedf')
+  })
+
+  it('creates conversational analytics builder for the base page', () => {
+    const sdk = new LookerEmbedExSDK()
+    sdk.init('myhost.com', '/auth')
+    const builder = sdk.createConversationalAnalytics() as EmbedBuilderEx
+    expect(builder.type).toBe('conversations')
+    expect(builder.endpoint).toBe('/embed/conversations')
+    expect(builder.id).toBeUndefined()
+    expect(builder.embedUrl).toBe('/embed/conversations')
+  })
 })

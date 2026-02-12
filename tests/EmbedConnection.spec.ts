@@ -546,6 +546,34 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads conversational analytics', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.loadConversationalAnalytics(false, { waitUntilLoaded: false })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/conversations?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('waits for conversational analytics to be loaded', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    const loadPromise = connection.loadConversationalAnalytics()
+    mockHostBuilder.fireEventForHandler('page:changed', {})
+    await loadPromise
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/conversations?embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('loads preload', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -608,6 +636,12 @@ describe('EmbedConnection', () => {
       },
     })
     expect(connection.getPageType()).toBe('preload')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/conversations/abcdefg?embed_domain=http://localhost&sdk=3',
+      },
+    })
+    expect(connection.getPageType()).toBe('conversations')
     mockHostBuilder.fireEventForHandler('page:changed')
     expect(connection.getPageType()).toBe('unknown')
   })

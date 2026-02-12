@@ -36,6 +36,7 @@ export type PageType =
   | 'extensions'
   | 'query-visualization'
   | 'reporting'
+  | 'conversations'
   | 'message'
   | 'query'
   | 'preload'
@@ -390,6 +391,18 @@ export interface ILookerConnection {
   ): Promise<void>
 
   /**
+   * Load Looker conversational analytics. This does not recreate the IFRAME.
+   *
+   * Requires Looker 26.2 or greater. An error is thrown if unsupported
+   * Looker version.
+   */
+
+  loadConversationalAnalytics(
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ): Promise<void>
+
+  /**
    * Render the preload page. This does not recreate the IFRAME.
    *
    * Requires Looker 25.2 or greater. An error is thrown if unsupported
@@ -421,6 +434,12 @@ export interface ILookerConnection {
    */
 
   asLookConnection(): ILookerEmbedLook
+
+  /**
+   * Get the connection as conversational analytics
+   */
+
+  asConversationalAnalyticsConnection(): ILookerEmbedConversationalAnalytics
 
   /**
    * Get the current page type
@@ -578,6 +597,9 @@ export interface ILookerEmbedQueryVisualization {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ILookerEmbedReport {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ILookerEmbedConversationalAnalytics { }
 
 /**
  * Embed client
@@ -944,6 +966,20 @@ export interface ILookerEmbedSDK {
    */
 
   createReportWithId(id: string): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker conversational analytics base page.
+   */
+
+  createConversationalAnalytics(): IEmbedBuilder
+
+  /**
+   * Create an EmbedBuilder for an embedded Looker conversational analytics specific route.
+   *
+   * @param url A signed SSO embed URL or embed URL for an already authenticated Looker user
+   */
+
+  createConversationalAnalyticsWithUrl(url: string): IEmbedBuilder
 }
 
 /**

@@ -34,6 +34,7 @@ import type {
   ILookerEmbedLook,
   ILookerEmbedQueryVisualization,
   ILookerEmbedReport,
+  ILookerEmbedConversationalAnalytics,
   LoadParams,
   LoadIdParams,
   LoadUrlArgs,
@@ -49,6 +50,7 @@ import { ExtensionConnection } from './ExtensionConnection'
 import { LookConnection } from './LookConnection'
 import { QueryVisualizationConnection } from './QueryVisualizationConnection'
 import { ReportConnection } from './ReportConnection'
+import { ConversationalAnalyticsConnection } from './ConversationalAnalyticsConnection'
 import type { EmbedClientEx } from './EmbedClientEx'
 import { stringify } from './utils'
 import e = require('express')
@@ -293,6 +295,17 @@ export class EmbedConnection implements ILookerConnection {
     return this.loadId(loadIdParams)
   }
 
+  async loadConversationalAnalytics(
+    pushHistory?: boolean,
+    options?: IConnectOptions
+  ) {
+    return this.loadUrl({
+      options,
+      pushHistory,
+      url: '/embed/conversations',
+    })
+  }
+
   async preload(pushHistory?: boolean, options?: IConnectOptions) {
     return this.loadUrl({ options, pushHistory, url: '/embed/preload' })
   }
@@ -319,6 +332,10 @@ export class EmbedConnection implements ILookerConnection {
 
   asReportConnection(): ILookerEmbedReport {
     return new ReportConnection(this)
+  }
+
+  asConversationalAnalyticsConnection(): ILookerEmbedConversationalAnalytics {
+    return new ConversationalAnalyticsConnection(this)
   }
 
   getPageType() {
