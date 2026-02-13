@@ -261,6 +261,16 @@ export class LookerEmbedExSDK implements ILookerEmbedSDK {
     return new EmbedBuilderEx(this, 'reporting', '/embed/reporting').withId(id)
   }
 
+  createConversationalAnalytics() {
+    return new EmbedBuilderEx(this, 'conversations', '/embed/conversations')
+  }
+
+  createConversationalAnalyticsWithUrl(url: string) {
+    return new EmbedBuilderEx(this, 'conversations', '').withUrl(
+      santizeEmbedUrl(url)
+    )
+  }
+
   /**
    * @hidden
    */

@@ -76,7 +76,8 @@ const updateContentControls = (type = 'preload') => {
     type === 'preload' ||
     type === 'extensions' ||
     type === 'query-visualization' ||
-    type === 'reporting'
+    type === 'reporting' ||
+    type === 'conversations'
   ) {
     document.getElementById('content-controls')?.classList.add('hide')
   } else {
@@ -494,6 +495,24 @@ const loadReport = async () => {
 }
 
 /**
+ * Load conversational analytics tab function
+ */
+const loadConversationalAnalytics = async () => {
+  if (embedConnection) {
+    try {
+      await embedConnection.loadConversationalAnalytics()
+      if (!location.pathname.startsWith('/conversations')) {
+        updateCurrentUrl('/conversations')
+      }
+    } catch (error) {
+      updateStatus(
+        'Connection loadConversationalAnalytics functionality requires Looker version >= 26.2.0'
+      )
+    }
+  }
+}
+
+/**
  * Initialize the tabs
  */
 const initializeTabs = () => {
@@ -534,6 +553,11 @@ const initializeTabs = () => {
   } else {
     hideTab('report-tab')
   }
+  addTabListener(
+    'conversations-tab',
+    loadConversationalAnalytics,
+    '/conversations'
+  )
 }
 
 /**
@@ -659,6 +683,9 @@ const initializeHistoryListener = () => {
         } else if (location.pathname.startsWith('/report')) {
           updateActiveTab('report-tab')
           loadReport()
+        } else if (location.pathname.startsWith('/conversations')) {
+          updateActiveTab('conversations-tab')
+          loadConversationalAnalytics()
         } else {
           updateActiveTab('preload-tab')
           preload()
@@ -696,6 +723,8 @@ const buildInitialUrl = (runtimeConfig: RuntimeConfig) => {
     return `/embed/query-visualization/${runtimeConfig.queryVisualizationId}`
   } else if (pathname.startsWith('/report') && runtimeConfig.reportId) {
     return `/embed/reporting/${runtimeConfig.reportId}${qs}`
+  } else if (pathname.startsWith('/conversations')) {
+    return `/embed/conversations${qs}`
   } else {
     updateCurrentUrl('', false)
     return '/embed/preload'

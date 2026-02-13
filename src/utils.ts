@@ -87,6 +87,7 @@ const validPageTypes = [
   'preload',
   'query-visualization',
   'reporting',
+  'conversations',
 ]
 
 export function extractPageTypeFromUrl(url: string): PageType {

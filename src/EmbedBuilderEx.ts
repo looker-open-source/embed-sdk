@@ -268,7 +268,8 @@ export class EmbedBuilderEx implements IEmbedBuilder {
       return `${this.endpoint}${this._url}${sep}${params}`
     } else {
       const sep = params.length === 0 ? '' : '?'
-      return `${this.endpoint}/${this.id}${sep}${params}`
+      const id = this.id ? `/${this.id}` : ''
+      return `${this.endpoint}${id}${sep}${params}`
     }
   }
 
