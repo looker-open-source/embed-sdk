@@ -8,7 +8,7 @@ module.exports = {
   api_url:
     process.env.LOOKER_API_URL ||
     process.env.LOOKER_EMBED_API_URL /* deprecated */ ||
-    '',
+    'https://mycompany.looker.com',
   secret: process.env.LOOKER_EMBED_SECRET,
   demo_host: process.env.LOOKER_DEMO_HOST || 'localhost',
   demo_port: process.env.LOOKER_DEMO_PORT || 8080,
