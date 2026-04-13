@@ -460,7 +460,7 @@ LOOKER_DEMO_HOST_EXTERNAL=false
 LOOKER_WEB_URL=mycompany.looker.com
 # Looker API server (include the protocol)
 # LOOKER_EMBED_API_URL can also be used
-LOOKER_API_URL=https://mycompany.looker.com:19999
+LOOKER_API_URL=https://mycompany.looker.com
 # Host name for the demo server
 LOOKER_DEMO_HOST=localhost
 # Port for the demo server
