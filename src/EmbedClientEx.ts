@@ -241,7 +241,7 @@ export class EmbedClientEx implements IEmbedClient {
   private async createIframe(url: string, waitUntilLoaded?: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
     const handlers: CallbackStore = {}
-    for (const key in this._builder.handlers) {
+    for (const key of Object.keys(this._builder.handlers)) {
       handlers[key] = [...this._builder.handlers[key]]
     }
     if (!handlers['session:expired']) {
