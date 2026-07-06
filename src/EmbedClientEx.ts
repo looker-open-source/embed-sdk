@@ -23,7 +23,11 @@
  SOFTWARE.
 
  */
-import type { ChattyHost, ChattyHostBuilder } from '@looker/chatty'
+import type {
+  CallbackStore,
+  ChattyHost,
+  ChattyHostBuilder,
+} from '@looker/chatty'
 import type {
   CookielessRequestInit,
   EnvClientDialogEvent,
@@ -236,7 +240,10 @@ export class EmbedClientEx implements IEmbedClient {
 
   private async createIframe(url: string, waitUntilLoaded?: boolean) {
     this._hostBuilder = this._sdk.chattyHostCreator(url)
-    const handlers = { ...this._builder.handlers }
+    const handlers: CallbackStore = {}
+    for (const key of Object.keys(this._builder.handlers)) {
+      handlers[key] = [...this._builder.handlers[key]]
+    }
     if (!handlers['session:expired']) {
       handlers['session:expired'] = []
     }
