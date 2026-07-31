@@ -400,6 +400,10 @@ export class EmbedClientEx implements IEmbedClient {
                 // cookielessSessionReferenceTokenTtl of null means we did not
                 // get valid tokens
                 cookielessSession.cookielessSessionReferenceTokenTtl = null
+              } finally {
+                // Clear the generateTokensPromise. All IFRAMEs will queue up
+                // on the same promise
+                this._sdk._generateTokensPromise = undefined
               }
             }
           } else {
@@ -477,10 +481,6 @@ export class EmbedClientEx implements IEmbedClient {
           session_reference_token_ttl:
             cookielessSession.cookielessSessionReferenceTokenTtl,
         })
-
-        // Clear the generateTokensPromise. All IFRAMEs will queue up
-        // on the same promise
-        this._sdk._generateTokensPromise = undefined
       })
     }
 
