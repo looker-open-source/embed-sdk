@@ -72,7 +72,7 @@
     "express-history-api-fallback": "^2.2.1",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-jsdom": "^30.3.0",
     "prettier": "^2.4.1",
     "ts-jest": "^29.2.6",
     "ts-loader": "^9.5.2",
