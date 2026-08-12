@@ -493,6 +493,12 @@ export interface ILookerConnection {
    */
 
   openScheduleDialog(): Promise<void>
+
+  /**
+   * @deprecated use asDashboardConnection().refresh(options) instead
+   */
+
+  refresh(options?: LookerDashboardRefreshOptions): Promise<void>
 }
 
 /**
@@ -540,6 +546,14 @@ export interface ILookerEmbedDashboard {
    */
 
   openScheduleDialog(): Promise<void>
+
+  /**
+   * Convenience method for refreshing the embedded dashboard.
+   *
+   * @param options Options for refreshing the dashboard (run queries, delay timeout)
+   */
+
+  refresh(options?: LookerDashboardRefreshOptions): Promise<void>
 }
 
 /**
@@ -1205,6 +1219,21 @@ export interface LookerDashboardOptions {
 }
 
 /**
+ * Dashboard refresh options
+ */
+
+export interface LookerDashboardRefreshOptions {
+  /**
+   * Whether to re-run queries after fetching dashboard data. Defaults to true.
+   */
+  run?: boolean
+  /**
+   * Timeout in milliseconds to wait for dashboard data before rejecting. Defaults to 10,000ms.
+   */
+  delay?: number
+}
+
+/**
  * A generic Looker embed event
  */
 
@@ -1602,6 +1631,12 @@ export interface EnvClientDialogEvent extends LookerEmbedEvent {
  */
 
 export interface LookerEmbedEventMap {
+  /**
+   * Dashboard loaded event. Fired when a dashboard
+   * finishes loading or refreshing.
+   * Looker 25.2+
+   */
+  'dashboard:loaded': (this: ILookerConnection, event: DashboardEvent) => void
   'dashboard:run:start': (
     this: ILookerConnection,
     event: DashboardEvent

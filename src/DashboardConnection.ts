@@ -26,6 +26,7 @@
 
 import type {
   LookerDashboardOptions,
+  LookerDashboardRefreshOptions,
   LookerEmbedFilterParams,
   ILookerEmbedDashboard,
 } from './types'
@@ -56,5 +57,9 @@ export class DashboardConnection implements ILookerEmbedDashboard {
 
   async openScheduleDialog(): Promise<void> {
     return this._connection.sendAndReceive('dashboard:schedule_modal:open')
+  }
+
+  async refresh(options?: LookerDashboardRefreshOptions): Promise<void> {
+    return this._connection.sendAndReceive('dashboard:refresh', options)
   }
 }

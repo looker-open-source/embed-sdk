@@ -311,6 +311,25 @@ const initializeDashboardControls = (runtimeConfig: RuntimeConfig) => {
     )
   }
 
+  // Add a listener to the dashboard's "Refresh" button and send a 'dashboard:refresh' message when clicked
+  const refreshButton = document.querySelector('#refresh-dashboard')
+  if (refreshButton) {
+    refreshButton.addEventListener('click', async () => {
+      try {
+        updateStatus('#dashboard-state', 'Refreshing...')
+        await getEmbedFrame(getDashboardFrameId(runtimeConfig))?.sendAndReceive(
+          'dashboard:refresh'
+        )
+        updateStatus('#dashboard-state', 'Refreshed')
+      } catch (error: any) {
+        updateStatus(
+          '#dashboard-state',
+          `Refresh failed: ${error?.message || error}`
+        )
+      }
+    })
+  }
+
   // Add a listener to the state selector and update the dashboard filters when changed
   const stateFilter = document.querySelector('#state')
   if (stateFilter) {
