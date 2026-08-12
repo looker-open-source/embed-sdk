@@ -41,6 +41,7 @@ import type {
   LoadUrlParams,
   PageType,
   LookerDashboardOptions,
+  LookerDashboardRefreshOptions,
   LookerEmbedFilterParams,
   IConnectOptions,
   UrlParams,
@@ -432,6 +433,17 @@ export class EmbedConnection implements ILookerConnection {
     switch (this._pageType) {
       case 'dashboards':
         return this.asDashboardConnection().openScheduleDialog()
+    }
+  }
+
+  /**
+   * @deprecated use asDashboardConnection().refresh(options) instead
+   */
+
+  async refresh(options?: LookerDashboardRefreshOptions): Promise<void> {
+    switch (this._pageType) {
+      case 'dashboards':
+        return this.asDashboardConnection().refresh(options)
     }
   }
 }

@@ -147,4 +147,30 @@ describe('DashboardConnection', () => {
       undefined
     )
   })
+
+  it('refreshes a dashboard without options', async () => {
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    const connection = await getDashboardConnection()
+    await connection.refresh()
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith(
+      'dashboard:refresh',
+      undefined
+    )
+  })
+
+  it('refreshes a dashboard with options', async () => {
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    const connection = await getDashboardConnection()
+    await connection.refresh({ delay: 5000, run: false })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('dashboard:refresh', {
+      delay: 5000,
+      run: false,
+    })
+  })
 })

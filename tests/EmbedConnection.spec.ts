@@ -840,5 +840,25 @@ describe('EmbedConnection', () => {
         undefined
       )
     })
+
+    it('fires legacy refresh dashboard event', async () => {
+      const connection = await getConnection({ dashboardId: '42' })
+      const chattySendAndReceiveSpy = jest.spyOn(
+        mockChattyHostConnection,
+        'sendAndReceive'
+      )
+      mockHostBuilder.fireEventForHandler('page:changed', {
+        page: {
+          url: '/embed/dashboards/42?embed_domain=http://localhost&sdk=3',
+        },
+      })
+      connection.refresh({ run: true })
+      expect(chattySendAndReceiveSpy).toHaveBeenCalledWith(
+        'dashboard:refresh',
+        {
+          run: true,
+        }
+      )
+    })
   })
 })

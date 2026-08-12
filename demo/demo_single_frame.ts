@@ -85,9 +85,11 @@ const updateContentControls = (type = 'preload') => {
     if (type === 'dashboards') {
       document.getElementById('stop-embed')?.classList.remove('hide')
       document.getElementById('edit-embed')?.classList.remove('hide')
+      document.getElementById('refresh-embed')?.classList.remove('hide')
     } else {
       document.getElementById('stop-embed')?.classList.add('hide')
       document.getElementById('edit-embed')?.classList.add('hide')
+      document.getElementById('refresh-embed')?.classList.add('hide')
     }
   }
 }
@@ -596,6 +598,22 @@ const initializeContentControls = () => {
       switch (currentPageType) {
         case 'dashboards':
           embedConnection.asDashboardConnection().edit()
+          break
+      }
+    })
+  }
+  const refreshButton = document.querySelector('#refresh-embed')
+  if (refreshButton) {
+    refreshButton.addEventListener('click', async () => {
+      switch (currentPageType) {
+        case 'dashboards':
+          try {
+            updateStatus('Refreshing...')
+            await embedConnection.asDashboardConnection().refresh()
+            updateStatus('Refreshed')
+          } catch (error: any) {
+            updateStatus(`Refresh failed: ${error?.message || error}`)
+          }
           break
       }
     })
