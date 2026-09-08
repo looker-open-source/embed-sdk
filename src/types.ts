@@ -93,28 +93,8 @@ export interface IConnectOptions {
 }
 
 /**
- * Parameters used when loading by ID.
+ * Parameters used when loading the preload page.
  */
-
-export interface LoadParams {
-  /**
-   * id to load
-   */
-  id: string
-  /**
-   * when true pushes navigation request into browser history
-   */
-  pushHistory?: boolean
-  /**
-   * Load options
-   */
-  options?: IConnectOptions
-  /**
-   * Parameters to append to URL. Examples are filters, theme, _theme.
-   */
-  params?: UrlParams
-}
-
 export interface PreloadParams {
   /**
    * when true pushes navigation request into browser history
@@ -128,6 +108,16 @@ export interface PreloadParams {
    * Parameters to append to URL. Examples are theme, _theme.
    */
   params?: UrlParams
+}
+
+/**
+ * Parameters used when loading by ID.
+ */
+export interface LoadParams extends PreloadParams {
+  /**
+   * id to load
+   */
+  id: string
 }
 
 /**
