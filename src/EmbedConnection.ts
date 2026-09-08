@@ -44,6 +44,7 @@ import type {
   LookerEmbedFilterParams,
   IConnectOptions,
   UrlParams,
+  PreloadParams,
 } from './types'
 import { ExploreConnection } from './ExploreConnection'
 import { ExtensionConnection } from './ExtensionConnection'
@@ -306,8 +307,33 @@ export class EmbedConnection implements ILookerConnection {
     })
   }
 
-  async preload(pushHistory?: boolean, options?: IConnectOptions) {
-    return this.loadUrl({ options, pushHistory, url: '/embed/preload' })
+  async preload(
+    pushHistoryOrParams?: boolean | PreloadParams,
+    optionsArg?: IConnectOptions,
+    paramsArg?: UrlParams
+  ) {
+    let pushHistory: boolean | undefined
+    let options: IConnectOptions | undefined
+    let params: UrlParams | undefined
+    if (
+      typeof pushHistoryOrParams === 'object' &&
+      pushHistoryOrParams !== null
+    ) {
+      pushHistory = pushHistoryOrParams.pushHistory
+      options = pushHistoryOrParams.options
+      params = pushHistoryOrParams.params
+    } else {
+      pushHistory = pushHistoryOrParams
+      options = optionsArg
+      params = paramsArg
+    }
+    const urlParams = stringify(params || {})
+    const sep = urlParams ? '?' : ''
+    return this.loadUrl({
+      options,
+      pushHistory,
+      url: `/embed/preload${sep}${urlParams}`,
+    })
   }
 
   asDashboardConnection(): ILookerEmbedDashboard {

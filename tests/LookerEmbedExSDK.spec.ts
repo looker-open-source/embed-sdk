@@ -161,6 +161,15 @@ describe('LookerEmbedExSDK', () => {
     sdk.init('myhost.com', '/auth')
     const builder = sdk.createWithUrl('/embed/dashboards/42') as EmbedBuilderEx
     expect(builder.embedUrl).toBe('/embed/dashboards/42')
+    expect(builder.type).toBe('dashboards')
+    const exploreNextBuilder = sdk.createWithUrl(
+      '/embed/explore-next/mymodel/myview'
+    ) as EmbedBuilderEx
+    expect(exploreNextBuilder.type).toBe('explore')
+    const mergeNextBuilder = sdk.createWithUrl(
+      '/embed/merge-next?mid=42'
+    ) as EmbedBuilderEx
+    expect(mergeNextBuilder.type).toBe('merge')
   })
 
   it('creates preload builder', () => {

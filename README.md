@@ -506,6 +506,12 @@ LOOKER_QUERY_VISUALIZATION_ID=1234567890ABCDEF123456
 # Theme configuration, Dashboards, Looks and Explores
 LOOKER_THEME=Dark
 LOOKER_CUSTOM_THEME={"show_title":false,"show_filters_bar":false,"text_tile_text_color":"blue"}
+
+# Session length in seconds (defaults to value in demo/demo_user.json)
+LOOKER_SESSION_LENGTH=3600
+
+# Session locale (defaults to value in demo/demo_user.json, set to "-" to delete)
+LOOKER_SESSION_LOCALE=en_US
 ```
 
 - Edit the `demo/demo_user.json` file to be appropriate for the type of user you want to embed. Normally your backend service would use information about the user logged into your embedding application to inform Looker about important user properties that control data access controls. The `demo/demo_user.json` file is also used for cookieless embedding. Remember that cookieless_embed always treats `force_logout_login` as `true`. See [documentation](https://cloud.google.com/looker/docs/single-sign-on-embedding) for detailed information on the content of the embed user definition.
@@ -518,6 +524,7 @@ LOOKER_CUSTOM_THEME={"show_title":false,"show_filters_bar":false,"text_tile_text
   "first_name": "Pat",
   "last_name": "Embed",
   // Duration before session expires, in seconds. Required.
+  // Can also be overridden using LOOKER_SESSION_LENGTH in the .env file.
   "session_length": 3600,
   // Enforce logging in with these permissions. Recommended.
   "force_logout_login": true,
@@ -561,6 +568,8 @@ LOOKER_CUSTOM_THEME={"show_title":false,"show_filters_bar":false,"text_tile_text
   // Model access permissions. Required.
   "models": ["powered_by", "thelook"],
   // User attributes. Optional.
+  // Can also be overridden using LOOKER_SESSION_LOCALE in the .env file.
+  // If LOOKER_SESSION_LOCALE is "-", locale is removed.
   "user_attributes": { "locale": "en_US" },
   // Access filters. Optional.
   "access_filters": { "powered_by": { "products.brand": "Allegra K" } }

@@ -115,6 +115,21 @@ export interface LoadParams {
   params?: UrlParams
 }
 
+export interface PreloadParams {
+  /**
+   * when true pushes navigation request into browser history
+   */
+  pushHistory?: boolean
+  /**
+   * Load options
+   */
+  options?: IConnectOptions
+  /**
+   * Parameters to append to URL. Examples are theme, _theme.
+   */
+  params?: UrlParams
+}
+
 /**
  * Parameters used when loading by ID.
  */
@@ -402,6 +417,8 @@ export interface ILookerConnection {
     options?: IConnectOptions
   ): Promise<void>
 
+  preload(preloadParams: PreloadParams): Promise<void>
+
   /**
    * Render the preload page. This does not recreate the IFRAME.
    *
@@ -409,7 +426,11 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  preload(pushHistory?: boolean, options?: IConnectOptions): Promise<void>
+  preload(
+    pushHistory?: boolean,
+    options?: IConnectOptions,
+    params?: UrlParams
+  ): Promise<void>
 
   /**
    * Get the connection as a dashboard
@@ -599,7 +620,7 @@ export interface ILookerEmbedQueryVisualization {}
 export interface ILookerEmbedReport {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ILookerEmbedConversationalAnalytics { }
+export interface ILookerEmbedConversationalAnalytics {}
 
 /**
  * Embed client

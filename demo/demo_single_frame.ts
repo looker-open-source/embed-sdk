@@ -77,7 +77,8 @@ const updateContentControls = (type = 'preload') => {
     type === 'extensions' ||
     type === 'query-visualization' ||
     type === 'reporting' ||
-    type === 'conversations'
+    type === 'conversations' ||
+    type === 'merge'
   ) {
     document.getElementById('content-controls')?.classList.add('hide')
   } else {
@@ -137,7 +138,12 @@ const openMergeQuery = (
     )
   }
   if (doMergeEdit) {
-    window.open(`/merge_edit?merge_url=${encodeURIComponent(event.url)}`)
+    let url = event.url
+    const { withMergeQueryNext } = getConfiguration()
+    if (withMergeQueryNext && !url.includes('/embed/merge-next')) {
+      url = url.replace('/embed/merge', '/embed/merge-next')
+    }
+    window.open(`/merge_edit?merge_url=${encodeURIComponent(url)}`)
     updateStatus('Merge query edit opened in a new window')
   } else {
     updateStatus('Merge query edit cancelled')
@@ -322,7 +328,15 @@ const updateCurrentUrl = (pathname: string, push = true) => {
  */
 const preload = async () => {
   if (embedConnection) {
-    await embedConnection.preload()
+    const config = getConfiguration()
+    const params: UrlParams = {}
+    if (config.customTheme) {
+      params['_theme'] = config.customTheme
+    }
+    if (config.theme) {
+      params['theme'] = config.theme
+    }
+    await embedConnection.preload({ params })
     updateStatus('')
     if (location.pathname !== '/' && location.pathname !== '') {
       updateCurrentUrl('/')
@@ -386,13 +400,44 @@ const loadExplore = async () => {
         params['theme'] = config.theme
       }
       try {
-        await embedConnection.loadExplore({ id: config.exploreId, params })
+        await embedConnection.loadExplore({
+          id: config.exploreId,
+          params,
+        })
         if (!location.pathname.startsWith('/explore')) {
           updateCurrentUrl('/explore')
         }
       } catch (error) {
         updateStatus(
           'Connection loadExplore functionality requires Looker version >= 25.2.0'
+        )
+      }
+    }
+  }
+}
+
+/**
+ * Load merge query tab function
+ */
+const loadMergeQuery = async () => {
+  if (embedConnection) {
+    const config = getConfiguration()
+    if (config.mergeQueryId) {
+      const params: UrlParams = {}
+      if (config.theme) {
+        params['theme'] = config.theme
+      }
+      try {
+        await embedConnection.loadMergeQuery({
+          id: config.mergeQueryId,
+          params,
+        })
+        if (!location.pathname.startsWith('/merge')) {
+          updateCurrentUrl('/merge')
+        }
+      } catch (error) {
+        updateStatus(
+          'Connection loadMergeQuery functionality requires Looker version >= 25.2.0'
         )
       }
     }
@@ -533,6 +578,11 @@ const initializeTabs = () => {
   } else {
     hideTab('explore-tab')
   }
+  if (config.mergeQueryId) {
+    addTabListener('merge-query-tab', loadMergeQuery, '/merge')
+  } else {
+    hideTab('merge-query-tab')
+  }
   if (config.lookId) {
     addTabListener('look-tab', loadLook, '/look')
   } else {
@@ -671,6 +721,9 @@ const initializeHistoryListener = () => {
         } else if (location.pathname.startsWith('/explore')) {
           updateActiveTab('explore-tab')
           loadExplore()
+        } else if (location.pathname.startsWith('/merge')) {
+          updateActiveTab('merge-query-tab')
+          loadMergeQuery()
         } else if (location.pathname.startsWith('/look')) {
           updateActiveTab('look-tab')
           loadLook()
@@ -712,6 +765,9 @@ const buildInitialUrl = (runtimeConfig: RuntimeConfig) => {
     return `/embed/dashboards/${runtimeConfig.dashboardId2}${qs}`
   } else if (pathname.startsWith('/explore') && runtimeConfig.exploreId) {
     return `/embed/explore/${runtimeConfig.exploreId.replace('::', '/')}${qs}`
+  } else if (pathname.startsWith('/merge') && runtimeConfig.mergeQueryId) {
+    const mergeQs = qs ? `&${qs.slice(1)}` : ''
+    return `/embed/merge?mid=${runtimeConfig.mergeQueryId}${mergeQs}`
   } else if (pathname.startsWith('/look') && runtimeConfig.lookId) {
     return `/embed/looks/${runtimeConfig.lookId}${qs}`
   } else if (pathname.startsWith('/extension') && runtimeConfig.extensionId) {
@@ -720,14 +776,14 @@ const buildInitialUrl = (runtimeConfig: RuntimeConfig) => {
     pathname.startsWith('/query') &&
     runtimeConfig.queryVisualizationId
   ) {
-    return `/embed/query-visualization/${runtimeConfig.queryVisualizationId}`
+    return `/embed/query-visualization/${runtimeConfig.queryVisualizationId}${qs}`
   } else if (pathname.startsWith('/report') && runtimeConfig.reportId) {
     return `/embed/reporting/${runtimeConfig.reportId}${qs}`
   } else if (pathname.startsWith('/conversations')) {
     return `/embed/conversations${qs}`
   } else {
     updateCurrentUrl('', false)
-    return '/embed/preload'
+    return `/embed/preload${qs}`
   }
 }
 
@@ -815,7 +871,10 @@ const createEmbed = (runtimeConfig: RuntimeConfig, sdk: ILookerEmbedSDK) => {
     // Finalize the build
     .build()
     // Connect to Looker
-    .connect({ signal, waitUntilLoaded: true })
+    .connect({
+      signal,
+      waitUntilLoaded: true,
+    })
     // Finish up setup
     .then((connection) => {
       if (timeoutId) {

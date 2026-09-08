@@ -32,6 +32,7 @@ export interface RuntimeConfig {
   exploreId: string
   extensionId: string
   lookId: string
+  mergeQueryId: string
   queryVisualizationId: string
   reportId: string
   lookerHost: string
@@ -48,6 +49,10 @@ export interface RuntimeConfig {
    * When false hides the explore.
    */
   showExplore: boolean
+  /**
+   * When false hides the merge query.
+   */
+  showMergeQuery: boolean
   /**
    * When false hides the extension.
    */
@@ -93,6 +98,9 @@ const lookId = '1'
 // An Explore that the user can see. Set to '-' to disable the explore demo.
 const exploreId = 'thelook::orders'
 
+// A Merge Query that the user can see. Set to '-' to disable the merge query demo.
+const mergeQueryId = '1234567890abcedf'
+
 // An Extension that the user can see. Set to '-' to disable the extension demo.
 const extensionId = 'extension::my-great-extension'
 
@@ -115,6 +123,7 @@ const _dashboardId2 = getId(dashboardId2, process.env.LOOKER_DASHBOARD_ID_2)
 const _exploreId = getId(exploreId, process.env.LOOKER_EXPLORE_ID)
 const _extensionId = getId(extensionId, process.env.LOOKER_EXTENSION_ID)
 const _lookId = getId(lookId, process.env.LOOKER_LOOK_ID)
+const _mergeQueryId = getId(mergeQueryId, process.env.LOOKER_MERGE_QUERY_ID)
 const _queryVisualizationId = getId(
   queryVisualizationId,
   process.env.LOOKER_QUERY_VISUALIZATION_ID
@@ -131,6 +140,7 @@ let runtimeConfig: RuntimeConfig = {
   lookId: _lookId,
   lookerHost:
     process.env.LOOKER_WEB_URL || process.env.LOOKER_EMBED_HOST || lookerHost,
+  mergeQueryId: _mergeQueryId,
   preventNavigation: true,
   proxyPath: process.env.LOOKER_DEMO_PROXY_PATH || '',
   queryVisualizationId: _queryVisualizationId,
@@ -139,6 +149,7 @@ let runtimeConfig: RuntimeConfig = {
   showExplore: _exploreId.trim() !== '',
   showExtension: _extensionId.trim() !== '',
   showLook: _lookId.trim() !== '',
+  showMergeQuery: _mergeQueryId.trim() !== '',
   showQueryVisualization: _queryVisualizationId.trim() !== '',
   showReport: _reportId.trim() !== '',
   useDynamicHeights: false,
@@ -173,6 +184,7 @@ export const loadConfiguration = () => {
       config.lookId !== runtimeConfig.lookId ||
       config.extensionId !== runtimeConfig.extensionId ||
       config.exploreId !== runtimeConfig.exploreId ||
+      config.mergeQueryId !== runtimeConfig.mergeQueryId ||
       config.queryVisualizationId !== runtimeConfig.queryVisualizationId ||
       config.reportId !== runtimeConfig.reportId ||
       config.theme !== runtimeConfig.theme ||

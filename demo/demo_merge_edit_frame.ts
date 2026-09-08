@@ -88,7 +88,12 @@ const openMergeQuery = (
     )
   }
   if (doMergeEdit) {
-    window.open(`/merge_edit?merge_url=${encodeURIComponent(event.url)}`)
+    let url = event.url
+    const { withMergeQueryNext } = getConfiguration()
+    if (withMergeQueryNext && !url.includes('/embed/merge-next')) {
+      url = url.replace('/embed/merge', '/embed/merge-next')
+    }
+    window.open(`/merge_edit?merge_url=${encodeURIComponent(url)}`)
     updateStatus('Merge query edit opened in a new window')
   } else {
     updateStatus('Merge query edit cancelled')
@@ -101,7 +106,10 @@ const openMergeQuery = (
  */
 const getEmbedMergeEditUrl = () => {
   const embedUrl = decodeURIComponent(history.state?.merge_url || '')
-  return embedUrl || '/embed/preload'
+  if (embedUrl) {
+    return embedUrl
+  }
+  return '/embed/preload'
 }
 
 /**

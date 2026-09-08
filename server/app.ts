@@ -35,6 +35,24 @@ import { config } from './config'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const user = require('../demo/demo_user.json')
 
+if (process.env.LOOKER_SESSION_LENGTH) {
+  const sessionLength = parseInt(process.env.LOOKER_SESSION_LENGTH, 10)
+  if (!isNaN(sessionLength)) {
+    user.session_length = sessionLength
+  }
+}
+
+if (process.env.LOOKER_SESSION_LOCALE) {
+  if (process.env.LOOKER_SESSION_LOCALE === '-') {
+    if (user.user_attributes) {
+      delete user.user_attributes.locale
+    }
+  } else {
+    user.user_attributes = user.user_attributes || {}
+    user.user_attributes.locale = process.env.LOOKER_SESSION_LOCALE
+  }
+}
+
 const app = express()
 
 addRoutes(app, config, user)

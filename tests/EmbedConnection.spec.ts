@@ -552,7 +552,9 @@ describe('EmbedConnection', () => {
       mockChattyHostConnection,
       'sendAndReceive'
     )
-    await connection.loadConversationalAnalytics(false, { waitUntilLoaded: false })
+    await connection.loadConversationalAnalytics(false, {
+      waitUntilLoaded: false,
+    })
     expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
       pushHistory: false,
       url: '/embed/conversations?embed_domain=http://localhost&sdk=3',
@@ -587,6 +589,32 @@ describe('EmbedConnection', () => {
     })
   })
 
+  it('loads preload with params object', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.preload({ params: { theme: 'Dark' } })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/preload?theme=Dark&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
+  it('loads preload with params argument', async () => {
+    const connection = await getConnection()
+    const chattySendAndReceiveSpy = jest.spyOn(
+      mockChattyHostConnection,
+      'sendAndReceive'
+    )
+    await connection.preload(false, undefined, { theme: 'Dark' })
+    expect(chattySendAndReceiveSpy).toHaveBeenCalledWith('page:load', {
+      pushHistory: false,
+      url: '/embed/preload?theme=Dark&embed_domain=http://localhost&sdk=3',
+    })
+  })
+
   it('waits for preload to be loaded', async () => {
     const connection = await getConnection()
     const chattySendAndReceiveSpy = jest.spyOn(
@@ -612,6 +640,18 @@ describe('EmbedConnection', () => {
     })
     await loadPromise
     expect(connection.getPageType()).toBe('explore')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/explore-next/mymodel/myview?embed_domain=http://localhost&sdk=3',
+      },
+    })
+    expect(connection.getPageType()).toBe('explore')
+    mockHostBuilder.fireEventForHandler('page:changed', {
+      page: {
+        url: '/embed/merge-next?mid=123&embed_domain=http://localhost&sdk=3',
+      },
+    })
+    expect(connection.getPageType()).toBe('merge')
     mockHostBuilder.fireEventForHandler('page:changed', {
       page: {
         url: '/embed/dashboards/42?embed_domain=http://localhost&sdk=3',
