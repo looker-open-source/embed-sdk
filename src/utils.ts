@@ -91,6 +91,6 @@ const validPageTypes = [
 ]
 
 export function extractPageTypeFromUrl(url: string): PageType {
-  const pageType = url.split('?')[0]?.split('/')[2]
+  const pageType = url.split('?')[0]?.split('/')[2]?.replace('-next', '')
   return validPageTypes.includes(pageType) ? (pageType as PageType) : 'unknown'
 }

@@ -93,14 +93,9 @@ export interface IConnectOptions {
 }
 
 /**
- * Parameters used when loading by ID.
+ * Parameters used when loading the preload page.
  */
-
-export interface LoadParams {
-  /**
-   * id to load
-   */
-  id: string
+export interface PreloadParams {
   /**
    * when true pushes navigation request into browser history
    */
@@ -110,9 +105,19 @@ export interface LoadParams {
    */
   options?: IConnectOptions
   /**
-   * Parameters to append to URL. Examples are filters, theme, _theme.
+   * Parameters to append to URL. Examples are theme, _theme.
    */
   params?: UrlParams
+}
+
+/**
+ * Parameters used when loading by ID.
+ */
+export interface LoadParams extends PreloadParams {
+  /**
+   * id to load
+   */
+  id: string
 }
 
 /**
@@ -402,6 +407,8 @@ export interface ILookerConnection {
     options?: IConnectOptions
   ): Promise<void>
 
+  preload(preloadParams: PreloadParams): Promise<void>
+
   /**
    * Render the preload page. This does not recreate the IFRAME.
    *
@@ -409,7 +416,11 @@ export interface ILookerConnection {
    * Looker version.
    */
 
-  preload(pushHistory?: boolean, options?: IConnectOptions): Promise<void>
+  preload(
+    pushHistory?: boolean,
+    options?: IConnectOptions,
+    params?: UrlParams
+  ): Promise<void>
 
   /**
    * Get the connection as a dashboard
@@ -599,7 +610,7 @@ export interface ILookerEmbedQueryVisualization {}
 export interface ILookerEmbedReport {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ILookerEmbedConversationalAnalytics { }
+export interface ILookerEmbedConversationalAnalytics {}
 
 /**
  * Embed client

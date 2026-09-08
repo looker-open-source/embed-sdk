@@ -5,6 +5,22 @@ const webpack = require('webpack')
 const express = require('express')
 
 var user = require('./demo/demo_user.json')
+if (process.env.LOOKER_SESSION_LENGTH) {
+  const sessionLength = parseInt(process.env.LOOKER_SESSION_LENGTH, 10)
+  if (!isNaN(sessionLength)) {
+    user.session_length = sessionLength
+  }
+}
+if (process.env.LOOKER_SESSION_LOCALE) {
+  if (process.env.LOOKER_SESSION_LOCALE === '-') {
+    if (user.user_attributes) {
+      delete user.user_attributes.locale
+    }
+  } else {
+    user.user_attributes = user.user_attributes || {}
+    user.user_attributes.locale = process.env.LOOKER_SESSION_LOCALE
+  }
+}
 var { addRoutes } = require('./server/routes')
 
 var webpackConfig = {
@@ -47,6 +63,7 @@ var webpackConfig = {
       LOOKER_DASHBOARD_ID_2: null,
       LOOKER_LOOK_ID: null,
       LOOKER_EXPLORE_ID: null,
+      LOOKER_MERGE_QUERY_ID: null,
       LOOKER_EXTENSION_ID: null,
       LOOKER_QUERY_VISUALIZATION_ID: null,
       LOOKER_REPORT_ID: null,
@@ -56,6 +73,8 @@ var webpackConfig = {
       LOOKER_DEMO_HOST_EXTERNAL: null,
       LOOKER_THEME: null,
       LOOKER_CUSTOM_THEME: null,
+      LOOKER_SESSION_LENGTH: null,
+      LOOKER_SESSION_LOCALE: null,
     }),
   ],
   devServer: {
